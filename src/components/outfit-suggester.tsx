@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,7 +33,7 @@ type OutfitSuggesterProps = {
 };
 
 export default function OutfitSuggester({ isOpen, onOpenChange }: OutfitSuggesterProps) {
-  const [state, formAction] = useFormState(getOutfitSuggestions, initialState);
+  const [state, formAction] = useActionState(getOutfitSuggestions, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
