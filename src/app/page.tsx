@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -176,10 +176,6 @@ export default function Home() {
   const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
   const mainCarouselIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [destinationsApi, setDestinationsApi] = useState<CarouselApi>()
-  const [destinationsCurrent, setDestinationsCurrent] = useState(0)
-  const destinationsIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
     return () => clearTimeout(timer);
@@ -212,23 +208,6 @@ export default function Home() {
     mainCarouselApi.on('select', () => resetAutoplay(mainCarouselApi, mainCarouselIntervalRef));
     return () => stopAutoplay(mainCarouselIntervalRef);
   }, [mainCarouselApi, startAutoplay, stopAutoplay, resetAutoplay]);
-
-  useEffect(() => {
-    if (!destinationsApi) return;
-    
-    const onSelect = (api: CarouselApi) => setDestinationsCurrent(api.selectedScrollSnap());
-    onSelect(destinationsApi);
-    destinationsApi.on('select', onSelect);
-
-    startAutoplay(destinationsApi, destinationsIntervalRef);
-    destinationsApi.on('pointerDown', () => stopAutoplay(destinationsIntervalRef));
-    destinationsApi.on('select', () => resetAutoplay(destinationsApi, destinationsIntervalRef));
-
-    return () => {
-        stopAutoplay(destinationsIntervalRef)
-        destinationsApi.off('select', onSelect);
-    };
-  }, [destinationsApi, startAutoplay, stopAutoplay, resetAutoplay]);
 
 
   if (loading) {
@@ -285,12 +264,13 @@ export default function Home() {
       </div>
       
       <div>
-          <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
-          </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
+        </div>
+        <div className="horizontal-scroll-fade -mx-4">
+            <div className="flex space-x-4 overflow-x-auto px-4 pb-4">
                 {upcomingTours.map((tour, index) => (
-                    <Card key={index} className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
+                    <Card key={index} className="flex-shrink-0 w-2/3 sm:w-1/3 md:w-1/4 border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
                         <div className="flex flex-col h-full">
                             <div className="relative w-full aspect-[4/3]">
                             <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
@@ -309,18 +289,24 @@ export default function Home() {
                     </Card>
                 ))}
             </div>
+        </div>
       </div>
 
       <div>
           <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="horizontal-scroll-fade -mx-4">
+            <div className="flex space-x-4 overflow-x-auto px-4 pb-4">
               {destinations.map((dest, index) => (
-                  <Card key={index} className="rounded-2xl overflow-hidden border-none relative aspect-[3/4]">
+                  <Card key={index} className="flex-shrink-0 w-3/4 sm:w-2/5 md:w-1/3 rounded-2xl overflow-hidden border-none relative aspect-[3/4]">
                       <Image src={dest.image} alt={dest.name} fill className="object-cover" data-ai-hint={dest.hint} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <h3 className="absolute bottom-4 left-4 text-white text-xl font-bold">{dest.name}</h3>
+                      <Button size="icon" className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30">
+                        <PlusCircle className="h-5 w-5"/>
+                      </Button>
                   </Card>
               ))}
+            </div>
           </div>
       </div>
 
