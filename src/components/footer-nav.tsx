@@ -16,7 +16,7 @@ export default function FooterNav() {
   const pathname = usePathname();
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40">
+    <footer className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
        <div className="mx-auto max-w-md">
         <div className="bg-primary/90 backdrop-blur-xl m-4 rounded-full shadow-lg">
             <nav className="h-16 flex items-center justify-around px-2">
@@ -29,7 +29,7 @@ export default function FooterNav() {
                          isActive && "text-primary-foreground"
                     )}>
                     <item.icon className="h-7 w-7" />
-                    {isActive && <div className="absolute -bottom-1 h-1 w-8 bg-primary-foreground rounded-full" />}
+                     {isActive && <div className="absolute -bottom-1 h-1 w-full bg-primary-foreground rounded-full" />}
                     </Button>
                 </Link>
                 );

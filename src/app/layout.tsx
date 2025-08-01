@@ -2,18 +2,12 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Inter } from 'next/font/google';
 import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
 import FooterNav from '@/components/footer-nav';
-
-const metadata: Metadata = {
-  title: 'TripGlide',
-  description: 'Planifiez votre prochaine aventure.',
-};
 
 const inter = Inter({
   subsets: ['latin'],
@@ -42,11 +36,15 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {CurrentHeader}
-        <main className={`flex-1 w-full max-w-md mx-auto px-4 pb-32 ${mainPaddingTop} ${mainMarginTop}`}>
+        <div className="md:hidden">
+          {CurrentHeader}
+        </div>
+        <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-32 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
           {children}
         </main>
-        <FooterNav />
+        <div className="md:hidden">
+         <FooterNav />
+        </div>
         <Toaster />
       </body>
     </html>

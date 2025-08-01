@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40">
+    <header className="fixed top-0 left-0 right-0 z-40 md:hidden">
        <div className="mx-auto max-w-md">
         <div className="bg-primary/90 backdrop-blur-xl m-4 rounded-full shadow-lg">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
