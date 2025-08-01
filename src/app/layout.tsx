@@ -10,7 +10,6 @@ import HeaderParallax from '@/components/header-parallax';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Home, Compass, User, Search, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-import GlassNav from '@/components/glass-nav';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -79,12 +78,9 @@ export default function RootLayout({
                 <SidebarTrigger />
                 <div>{/* Other header content can go here */}</div>
             </header>
-            <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-32 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
+            <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-8 md:pb-16 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
               {children}
             </main>
-            <div className="md:hidden">
-             <GlassNav />
-            </div>
             <Toaster />
           </SidebarInset>
         </SidebarProvider>
