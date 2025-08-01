@@ -32,7 +32,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainMarginTop = pathname === '/' ? 'mt-28' : '-mt-16';
+  const mainMarginTop = pathname === '/' ? 'mt-32' : '-mt-16';
 
   return (
     <html lang="fr" className="dark scroll-smooth">

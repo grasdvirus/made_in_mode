@@ -1,5 +1,5 @@
 'use client';
-import { ChevronLeft, Heart } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -17,26 +17,24 @@ export default function HeaderParallax({ title, backgroundImage }: HeaderParalla
     <div className="relative h-64">
         <div className="absolute inset-0 w-full h-full">
             <Image 
-                src={backgroundImage || 'https://placehold.co/600x400.png'} 
+                src={backgroundImage || 'https://placehold.co/1200x400.png'} 
                 alt={title} 
                 fill 
                 className="object-cover"
                 data-ai-hint="landscape"
             />
-            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-black/30" />
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between absolute top-4 left-0 right-0 z-10">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-white/80 hover:bg-white text-foreground rounded-full">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
             <div className="flex items-center gap-2">
-                 <Button variant="ghost" size="icon" className="bg-white/80 hover:bg-white text-foreground rounded-full">
-                    <Heart className="h-6 w-6" />
-                </Button>
+                 {/* Placeholder for potential actions */}
             </div>
         </div>
         <div className="absolute bottom-0 left-0 p-6">
-            <h1 className="text-3xl font-bold text-white">{title}</h1>
+            <h1 className="text-4xl font-bold text-white tracking-tight">{title}</h1>
         </div>
     </div>
   );

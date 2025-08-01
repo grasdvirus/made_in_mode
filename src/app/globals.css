@@ -131,38 +131,7 @@
     box-shadow 0.4s ease-in-out;
 }
 
-#glass-home:checked ~ .glass-glider {
-  transform: translateX(0%);
-  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
-  box-shadow:
-    0 0 18px rgba(192, 192, 192, 0.5),
-    0 0 10px rgba(255, 255, 255, 0.4) inset;
-}
-
-#glass-discover:checked ~ .glass-glider {
-  transform: translateX(100%);
-  background: linear-gradient(135deg, #ffd70055, #ffcc00);
-  box-shadow:
-    0 0 18px rgba(255, 215, 0, 0.5),
-    0 0 10px rgba(255, 235, 150, 0.4) inset;
-}
-
-#glass-cart:checked ~ .glass-glider {
-  transform: translateX(200%);
-  background: linear-gradient(135deg, #ff8a8a55, #ff5252);
-  box-shadow:
-    0 0 18px rgba(255, 82, 82, 0.5),
-    0 0 10px rgba(255, 150, 150, 0.4) inset;
-}
-
-#glass-profile:checked ~ .glass-glider {
-  transform: translateX(300%);
-  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
-  box-shadow:
-    0 0 18px rgba(160, 216, 255, 0.5),
-    0 0 10px rgba(200, 240, 255, 0.4) inset;
-}
-
+#glass-home:checked ~ .glass-glider,
 #desktop-glass-home:checked ~ .glass-glider {
   transform: translateX(0%);
   background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
@@ -171,6 +140,7 @@
     0 0 10px rgba(255, 255, 255, 0.4) inset;
 }
 
+#glass-discover:checked ~ .glass-glider,
 #desktop-glass-discover:checked ~ .glass-glider {
   transform: translateX(100%);
   background: linear-gradient(135deg, #ffd70055, #ffcc00);
@@ -179,6 +149,7 @@
     0 0 10px rgba(255, 235, 150, 0.4) inset;
 }
 
+#glass-cart:checked ~ .glass-glider,
 #desktop-glass-cart:checked ~ .glass-glider {
   transform: translateX(200%);
   background: linear-gradient(135deg, #ff8a8a55, #ff5252);
@@ -187,6 +158,7 @@
     0 0 10px rgba(255, 150, 150, 0.4) inset;
 }
 
+#glass-profile:checked ~ .glass-glider,
 #desktop-glass-profile:checked ~ .glass-glider {
   transform: translateX(300%);
   background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
