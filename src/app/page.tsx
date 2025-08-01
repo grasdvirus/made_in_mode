@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 
 const trips = [
   {
@@ -34,6 +34,14 @@ const trips = [
     reviews: 215,
     image: 'https://placehold.co/600x800.png',
     hint: 'peru mountains'
+    },
+     {
+    name: 'Salar de Uyuni',
+    country: 'Bolivie',
+    rating: 4.8,
+    reviews: 180,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'bolivia salt flat'
     },
 ]
 
@@ -111,24 +119,48 @@ function PageSkeleton() {
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState('America');
   const [loading, setLoading] = useState(true);
+  const [api, setApi] = useState<CarouselApi>()
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
     return () => clearTimeout(timer);
   }, []);
 
+  const startAutoplay = () => {
+    if (intervalRef.current || !api) return;
+    intervalRef.current = setInterval(() => {
+        api.scrollNext();
+    }, 3000);
+  };
+
+  const stopAutoplay = () => {
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+    }
+  };
+
   useEffect(() => {
-    // This effect should only run on the client side
-    const style = document.createElement('style');
-    style.innerHTML = `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`;
-    document.head.appendChild(style);
+    if (!api) return;
+
+    startAutoplay();
+    
+    api.on('pointerDown', stopAutoplay);
+    api.on('select', (api) => {
+       // if we are at the end, go to the beginning
+        if (!api.canScrollNext()) {
+            api.scrollTo(0);
+        }
+        // restart autoplay on manual interaction
+        stopAutoplay();
+        startAutoplay();
+    });
 
     return () => {
-       if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
+      stopAutoplay();
     };
-  }, []);
+  }, [api]);
 
   if (loading) {
       return <PageSkeleton />
@@ -154,34 +186,36 @@ export default function Home() {
         </div>
 
         <div className="relative">
-            <div className="overflow-x-auto -mx-4 px-4 pb-4 no-scrollbar" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
-                <div className="flex space-x-4">
+            <Carousel setApi={setApi} opts={{ loop: true, align: 'start' }} className="w-full">
+                <CarouselContent className="-ml-4">
                     {trips.map((trip) => (
-                    <div key={trip.name} className="flex-shrink-0 w-[85%] sm:w-80 snap-center">
-                        <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
-                            <CardContent className="p-0">
-                            <div className="relative aspect-[3/4]">
-                                <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
-                                <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                                <Heart className="w-5 h-5" />
-                                </Button>
-                                <div className="absolute bottom-0 left-0 p-5 w-full">
-                                <p className="text-sm text-white/90">{trip.country}</p>
-                                <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                    <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
-                                </div>
-                                <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
-                                </div>
+                        <CarouselItem key={trip.name} className="basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 pl-4">
+                            <div className="w-full">
+                                <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
+                                    <CardContent className="p-0">
+                                    <div className="relative aspect-[3/4]">
+                                        <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
+                                        <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                                        <Heart className="w-5 h-5" />
+                                        </Button>
+                                        <div className="absolute bottom-0 left-0 p-5 w-full">
+                                        <p className="text-sm text-white/90">{trip.country}</p>
+                                        <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                            <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
+                                        </div>
+                                        <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
+                                        </div>
+                                    </div>
+                                    </CardContent>
+                                </Card>
                             </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                        </CarouselItem>
                     ))}
-                </div>
-            </div>
+                </CarouselContent>
+            </Carousel>
         </div>
         
         <div>
