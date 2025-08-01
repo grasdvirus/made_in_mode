@@ -1,17 +1,21 @@
 
 'use client';
 
+import { Inter, Poppins } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { Inter } from 'next/font/google';
 import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
-import FooterNav from '@/components/footer-nav';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { Home, Compass, User, Search, ShoppingCart } from 'lucide-react';
+import Link from 'next/link';
+import GlassNav from '@/components/glass-nav';
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-poppins',
+  weight: ['400', '600', '700']
 });
 
 function getHeader(pathname: string) {
@@ -30,22 +34,60 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
-  const mainPaddingTop = pathname === '/' ? 'pt-32' : 'pt-0';
-  const mainMarginTop = pathname === '/' ? '0' : '-mt-16';
+  
+  const mainPaddingTop = pathname === '/' ? 'pt-0' : 'pt-0';
+  const mainMarginTop = pathname === '/' ? 'mt-0' : '-mt-16';
 
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <div className="md:hidden">
-          {CurrentHeader}
-        </div>
-        <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-32 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
-          {children}
-        </main>
-        <div className="md:hidden">
-         <FooterNav />
-        </div>
-        <Toaster />
+    <html lang="fr" className="dark scroll-smooth">
+      <body className={`${poppins.variable} font-sans antialiased bg-gradient-to-b from-gray-900 to-black`}>
+        <SidebarProvider>
+          <Sidebar collapsible="icon" className="bg-gradient-to-b from-gray-900 to-black border-r border-gray-800">
+             <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton tooltip="Accueil" isActive={pathname === '/'} asChild>
+                        <Link href="/"> <Home /> <span>Accueil</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton tooltip="Découvrir" isActive={pathname === '/discover'} asChild>
+                        <Link href="/discover"> <Compass /> <span>Découvrir</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton tooltip="Recherche" isActive={pathname === '/search'} asChild>
+                        <Link href="/search"> <Search /> <span>Recherche</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton tooltip="Panier" isActive={pathname === '/cart'} asChild>
+                        <Link href="/cart"> <ShoppingCart /> <span>Panier</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton tooltip="Profil" isActive={pathname === '/profile'} asChild>
+                        <Link href="/profile"> <User /> <span>Profil</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+             </SidebarMenu>
+          </Sidebar>
+          <SidebarInset className="bg-transparent">
+            <div className="md:hidden">
+              {CurrentHeader}
+            </div>
+             <header className="hidden md:flex items-center justify-between p-4">
+                <SidebarTrigger />
+                <div>{/* Other header content can go here */}</div>
+            </header>
+            <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-32 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
+              {children}
+            </main>
+            <div className="md:hidden">
+             <GlassNav />
+            </div>
+            <Toaster />
+          </SidebarInset>
+        </SidebarProvider>
       </body>
     </html>
   );
