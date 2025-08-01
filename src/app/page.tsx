@@ -222,120 +222,118 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen text-foreground font-sans">
-      <div className="space-y-8">
-        <div className="relative md:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
-            <Input placeholder="Rechercher" className="pl-10 h-12 rounded-full bg-secondary border-none" />
-        </div>
-
-        <div>
-            <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
-                <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Asia')}>Asie</Button>
-                <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Europe')}>Europe</Button>
-                <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground" onClick={() => setActiveCategory('America')}>Amérique</Button>
-                <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('North')}>Nord</Button>
-                <Button variant={activeCategory === 'Africa' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Africa')}>Afrique</Button>
-            </div>
-        </div>
-
-        <div className="relative -mx-4 sm:mx-0">
-            <Carousel setApi={setMainCarouselApi} opts={{ loop: true, align: 'start' }} className="w-full">
-                <CarouselContent className="-ml-4">
-                    {trips.map((trip, index) => (
-                        <CarouselItem key={index} className="basis-4/5 sm:basis-1/2 md:basis-1/3 pl-4">
-                            <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
-                                <CardContent className="p-0">
-                                <div className="relative aspect-[3/4]">
-                                    <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
-                                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                                    <Heart className="w-5 h-5" />
-                                    </Button>
-                                    <div className="absolute bottom-0 left-0 p-5 w-full">
-                                    <p className="text-sm text-white/90">{trip.country}</p>
-                                    <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                        <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
-                                    </div>
-                                    <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
-                                    </div>
-                                </div>
-                                </CardContent>
-                            </Card>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-            </Carousel>
-        </div>
-        
-        <div>
-            <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
-            </div>
-             <Carousel opts={{ align: "start" }} className="w-full">
-                <CarouselContent>
-                    {upcomingTours.map((tour, index) => (
-                        <CarouselItem key={index} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/2">
-                             <Card className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
-                                <div className="flex items-center gap-4 p-2">
-                                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
-                                    <Image src={tour.image} alt={tour.name} fill className="object-cover rounded-lg" data-ai-hint={tour.hint} />
-                                    </div>
-                                    <div className="flex-1 py-2">
-                                        <h3 className="font-bold text-sm sm:text-base">{tour.name}</h3>
-                                        <p className="text-xs sm:text-sm text-muted-foreground">{tour.duration} • dès ${tour.price}/pers.</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                            <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} avis)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-                <CarouselNext className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-            </Carousel>
-        </div>
-
-        <div>
-            <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-             <Carousel setApi={setDestinationsApi} opts={{ loop: true, align: 'start' }} className="w-full relative">
-                <CarouselContent>
-                    {destinations.map((dest, index) => (
-                        <CarouselItem key={index} className="basis-full sm:basis-1/2 md:basis-1/3">
-                            <Card className="rounded-2xl overflow-hidden border-none relative">
-                                <Image src={dest.image} alt={dest.name} width={800} height={600} className="object-cover aspect-[4/3]" data-ai-hint={dest.hint} />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <h3 className="absolute bottom-4 left-4 text-white text-2xl font-bold">{dest.name}</h3>
-                            </Card>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                 <div className="absolute bottom-4 right-4 flex items-center gap-4">
-                    <CarouselPrevious className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
-                    <CarouselNext className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
-                </div>
-                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-                    {destinations.map((_, i) => (
-                        <button
-                        key={i}
-                        onClick={() => destinationsApi?.scrollTo(i)}
-                        className={cn(
-                            'h-2 w-2 rounded-full transition-all',
-                            i === destinationsCurrent ? 'w-4 bg-white' : 'bg-white/50'
-                        )}
-                        />
-                    ))}
-                </div>
-            </Carousel>
-        </div>
-
+    <div className="space-y-8">
+      <div className="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+          <Input placeholder="Rechercher" className="pl-10 h-12 rounded-full bg-secondary border-none" />
       </div>
+
+      <div>
+          <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
+              <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Asia')}>Asie</Button>
+              <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Europe')}>Europe</Button>
+              <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground" onClick={() => setActiveCategory('America')}>Amérique</Button>
+              <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('North')}>Nord</Button>
+              <Button variant={activeCategory === 'Africa' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Africa')}>Afrique</Button>
+          </div>
+      </div>
+
+      <div className="relative -mx-4 sm:mx-0">
+          <Carousel setApi={setMainCarouselApi} opts={{ loop: true, align: 'start' }} className="w-full">
+              <CarouselContent className="-ml-4">
+                  {trips.map((trip, index) => (
+                      <CarouselItem key={index} className="basis-4/5 sm:basis-1/2 md:basis-1/3 pl-4">
+                          <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
+                              <CardContent className="p-0">
+                              <div className="relative aspect-[3/4]">
+                                  <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
+                                  <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                                  <Heart className="w-5 h-5" />
+                                  </Button>
+                                  <div className="absolute bottom-0 left-0 p-5 w-full">
+                                  <p className="text-sm text-white/90">{trip.country}</p>
+                                  <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                                  <div className="flex items-center gap-2 mt-1">
+                                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                      <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
+                                  </div>
+                                  <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
+                                  </div>
+                              </div>
+                              </CardContent>
+                          </Card>
+                      </CarouselItem>
+                  ))}
+              </CarouselContent>
+          </Carousel>
+      </div>
+      
+      <div>
+          <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
+          </div>
+            <Carousel opts={{ align: "start" }} className="w-full">
+              <CarouselContent>
+                  {upcomingTours.map((tour, index) => (
+                      <CarouselItem key={index} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/2">
+                            <Card className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
+                              <div className="flex items-center gap-4 p-2">
+                                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+                                  <Image src={tour.image} alt={tour.name} fill className="object-cover rounded-lg" data-ai-hint={tour.hint} />
+                                  </div>
+                                  <div className="flex-1 py-2">
+                                      <h3 className="font-bold text-sm sm:text-base">{tour.name}</h3>
+                                      <p className="text-xs sm:text-sm text-muted-foreground">{tour.duration} • dès ${tour.price}/pers.</p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                          <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} avis)</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </Card>
+                      </CarouselItem>
+                  ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+              <CarouselNext className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+          </Carousel>
+      </div>
+
+      <div>
+          <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
+            <Carousel setApi={setDestinationsApi} opts={{ loop: true, align: 'start' }} className="w-full relative">
+              <CarouselContent>
+                  {destinations.map((dest, index) => (
+                      <CarouselItem key={index} className="basis-full sm:basis-1/2 md:basis-1/3">
+                          <Card className="rounded-2xl overflow-hidden border-none relative">
+                              <Image src={dest.image} alt={dest.name} width={800} height={600} className="object-cover aspect-[4/3]" data-ai-hint={dest.hint} />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                              <h3 className="absolute bottom-4 left-4 text-white text-2xl font-bold">{dest.name}</h3>
+                          </Card>
+                      </CarouselItem>
+                  ))}
+              </CarouselContent>
+                <div className="absolute bottom-4 right-4 flex items-center gap-4">
+                  <CarouselPrevious className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
+                  <CarouselNext className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
+              </div>
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                  {destinations.map((_, i) => (
+                      <button
+                      key={i}
+                      onClick={() => destinationsApi?.scrollTo(i)}
+                      className={cn(
+                          'h-2 w-2 rounded-full transition-all',
+                          i === destinationsCurrent ? 'w-4 bg-white' : 'bg-white/50'
+                      )}
+                      />
+                  ))}
+              </div>
+          </Carousel>
+      </div>
+
     </div>
   );
 }
