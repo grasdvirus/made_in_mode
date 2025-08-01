@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', id: 'glass-home', label: 'Accueil' },
   { href: '/discover', id: 'glass-discover', label: 'Découvrir' },
-  { href: '/search', id: 'glass-search', label: 'Recherche' },
   { href: '/cart', id: 'glass-cart', label: 'Panier' },
   { href: '/profile', id: 'glass-profile', label: 'Profil' },
 ];

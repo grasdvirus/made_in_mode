@@ -21,7 +21,6 @@ function getHeader(pathname: string) {
     if (pathname === '/discover') return <HeaderParallax title="Découvrir" />;
     if (pathname === '/cart') return <HeaderParallax title="Mon Panier" />;
     if (pathname === '/profile') return <HeaderParallax title="Mon Profil" />;
-    if (pathname === '/search') return <HeaderParallax title="Recherche" />;
     return null;
 }
 
@@ -33,15 +32,14 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainPaddingTop = pathname === '/' ? 'pt-40' : 'pt-0';
-  const mainMarginTop = pathname === '/' ? 'mt-0' : '-mt-16';
+  const mainMarginTop = pathname === '/' ? 'mt-28' : '-mt-16';
 
   return (
     <html lang="fr" className="dark scroll-smooth">
       <body className={`${poppins.variable} font-sans antialiased bg-gradient-to-b from-gray-900 to-black scroll-hover`}>
         <div className="flex flex-col min-h-screen">
           {CurrentHeader}
-          <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-24 ${mainPaddingTop} ${mainMarginTop}`}>
+          <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-24 ${mainMarginTop}`}>
             {children}
           </main>
           <GlassFooterNav />

@@ -5,21 +5,21 @@
 @layer base {
   :root {
     --background: 240 5% 12%;
-    --foreground: 0 0% 98%;
+    --foreground: 240 5% 95%;
     --card: 240 5% 12%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 240 5% 95%;
     --popover: 240 5% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 240 5% 95%;
     --primary: 84 45% 55%;
     --primary-foreground: 84 100% 10%;
     --secondary: 240 5% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 240 5% 95%;
     --muted: 240 5% 22%;
     --muted-foreground: 240 5% 63%;
     --accent: 84 45% 60%;
     --accent-foreground: 84 100% 10%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 240 5% 95%;
     --border: 240 5% 20%;
     --input: 240 5% 20%;
     --ring: 84 45% 55%;
@@ -28,21 +28,21 @@
 
   .dark {
     --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --foreground: 240 5% 95%;
     --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 240 5% 95%;
     --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 240 5% 95%;
     --primary: 84 45% 55%;
     --primary-foreground: 84 100% 10%;
     --secondary: 240 5% 12%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 240 5% 95%;
     --muted: 240 5% 18%;
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 240 5% 60%;
     --accent: 84 45% 60%;
     --accent-foreground: 84 100% 10%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 240 5% 95%;
     --border: 240 5% 15%;
     --input: 240 5% 15%;
     --ring: 84 45% 55%;
@@ -122,7 +122,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: calc(100% / 5);
+  width: calc(100% / 4);
   border-radius: 1rem;
   z-index: 1;
   transition:
@@ -147,16 +147,8 @@
     0 0 10px rgba(255, 235, 150, 0.4) inset;
 }
 
-#glass-search:checked ~ .glass-glider {
-  transform: translateX(200%);
-  background: linear-gradient(135deg, #89f7fe55, #66a6ff);
-  box-shadow:
-    0 0 18px rgba(102, 166, 255, 0.5),
-    0 0 10px rgba(170, 210, 255, 0.4) inset;
-}
-
 #glass-cart:checked ~ .glass-glider {
-  transform: translateX(300%);
+  transform: translateX(200%);
   background: linear-gradient(135deg, #ff8a8a55, #ff5252);
   box-shadow:
     0 0 18px rgba(255, 82, 82, 0.5),
@@ -164,7 +156,39 @@
 }
 
 #glass-profile:checked ~ .glass-glider {
-  transform: translateX(400%);
+  transform: translateX(300%);
+  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
+  box-shadow:
+    0 0 18px rgba(160, 216, 255, 0.5),
+    0 0 10px rgba(200, 240, 255, 0.4) inset;
+}
+
+#desktop-glass-home:checked ~ .glass-glider {
+  transform: translateX(0%);
+  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
+  box-shadow:
+    0 0 18px rgba(192, 192, 192, 0.5),
+    0 0 10px rgba(255, 255, 255, 0.4) inset;
+}
+
+#desktop-glass-discover:checked ~ .glass-glider {
+  transform: translateX(100%);
+  background: linear-gradient(135deg, #ffd70055, #ffcc00);
+  box-shadow:
+    0 0 18px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 235, 150, 0.4) inset;
+}
+
+#desktop-glass-cart:checked ~ .glass-glider {
+  transform: translateX(200%);
+  background: linear-gradient(135deg, #ff8a8a55, #ff5252);
+  box-shadow:
+    0 0 18px rgba(255, 82, 82, 0.5),
+    0 0 10px rgba(255, 150, 150, 0.4) inset;
+}
+
+#desktop-glass-profile:checked ~ .glass-glider {
+  transform: translateX(300%);
   background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
   box-shadow:
     0 0 18px rgba(160, 216, 255, 0.5),
