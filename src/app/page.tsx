@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,37 +51,45 @@ const upcomingTours = [
       name: 'Brésil Iconique',
       duration: '8 jours',
       price: 659,
+      originalPrice: 750,
       rating: 4.6,
       reviews: 56,
       image: 'https://placehold.co/400x300.png',
-      hint: 'brazil mountains'
+      hint: 'brazil mountains',
+      bgColor: 'bg-teal-500/10'
     },
     {
       name: 'Paradis balnéaire',
       duration: '5 jours',
       price: 450,
+      originalPrice: 520,
       rating: 4.8,
       reviews: 89,
       image: 'https://placehold.co/400x300.png',
-      hint: 'brazil beach'
+      hint: 'brazil beach',
+      bgColor: 'bg-rose-500/10'
     },
     {
       name: 'Aventure en Amazonie',
       duration: '7 jours',
       price: 720,
+      originalPrice: 800,
       rating: 4.7,
       reviews: 78,
       image: 'https://placehold.co/400x300.png',
-      hint: 'amazon rainforest'
+      hint: 'amazon rainforest',
+      bgColor: 'bg-orange-500/10'
     },
     {
         name: 'Voyage Patagonie',
         duration: '10 jours',
         price: 950,
+        originalPrice: 1050,
         rating: 4.9,
         reviews: 110,
         image: 'https://placehold.co/400x300.png',
-        hint: 'patagonia mountains'
+        hint: 'patagonia mountains',
+        bgColor: 'bg-indigo-500/10'
     }
 ]
 
@@ -216,11 +224,7 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      <div className="relative md:hidden">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"/>
-          <Input placeholder="Rechercher" className="pl-10 h-12 rounded-full bg-secondary border-none" />
-      </div>
-
+      
       <div>
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
@@ -270,20 +274,25 @@ export default function Home() {
         <div className="horizontal-scroll-fade -mx-4">
             <div className="flex space-x-4 overflow-x-auto px-4 pb-4">
                 {upcomingTours.map((tour, index) => (
-                    <Card key={index} className="flex-shrink-0 w-2/3 sm:w-1/3 md:w-1/4 border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
-                        <div className="flex flex-col h-full">
-                            <div className="relative w-full aspect-[4/3]">
-                            <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                    <Card key={index} className="flex-shrink-0 w-[280px] border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm flex flex-row">
+                        <div className="bg-secondary p-2 flex items-center justify-center rounded-l-2xl">
+                            <h3 className="font-bold text-sm text-secondary-foreground [writing-mode:vertical-rl] rotate-180 whitespace-nowrap text-center">{tour.name}</h3>
+                        </div>
+                        <div className={cn("flex flex-col flex-1", tour.bgColor)}>
+                            <div className="relative w-full aspect-square p-4">
+                                <Image src={tour.image} alt={tour.name} fill className="object-contain drop-shadow-xl" data-ai-hint={tour.hint} />
                             </div>
-                            <div className="flex-1 p-3 flex flex-col justify-between">
-                                <div>
-                                    <h3 className="font-bold text-sm sm:text-base">{tour.name}</h3>
-                                    <p className="text-xs sm:text-sm text-muted-foreground">{tour.duration} • ${tour.price}</p>
+                            <div className="p-4 flex items-center justify-between">
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Heart className="w-5 h-5" />
+                                </Button>
+                                <div className='text-right'>
+                                    <p className="text-sm text-muted-foreground line-through">${tour.originalPrice}</p>
+                                    <p className="font-bold text-lg">${tour.price}</p>
                                 </div>
-                                <div className="flex items-center gap-1 mt-1">
-                                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                    <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews})</p>
-                                </div>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                    <ShoppingCart className="w-5 h-5" />
+                                </Button>
                             </div>
                         </div>
                     </Card>
