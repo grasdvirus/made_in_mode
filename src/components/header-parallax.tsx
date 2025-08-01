@@ -1,8 +1,7 @@
 'use client';
-import { ChevronLeft, Heart, Search } from 'lucide-react';
+import { ChevronLeft, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 type HeaderParallaxProps = {
@@ -33,9 +32,6 @@ export default function HeaderParallax({ title, backgroundImage }: HeaderParalla
             <div className="flex items-center gap-2">
                  <Button variant="ghost" size="icon" className="bg-white/80 hover:bg-white text-foreground rounded-full">
                     <Heart className="h-6 w-6" />
-                </Button>
-                <Button variant="ghost" size="icon" className="bg-white/80 hover:bg-white text-foreground rounded-full">
-                    <Search className="h-6 w-6" />
                 </Button>
             </div>
         </div>

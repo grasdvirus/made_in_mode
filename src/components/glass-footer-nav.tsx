@@ -24,6 +24,8 @@ export default function GlassFooterNav() {
     router.push(href);
   };
   
+  const currentNavId = navItems.find(item => item.href === pathname)?.id || 'glass-home';
+  
   return (
     <>
       {/* Mobile Footer */}
@@ -72,7 +74,7 @@ export default function GlassFooterNav() {
                       <label htmlFor={`desktop-${item.id}`}>{item.label}</label>
                   </React.Fragment>
               ))}
-              <div className="glass-glider"></div>
+               <div className="glass-glider"></div>
             </nav>
           </div>
         </div>
