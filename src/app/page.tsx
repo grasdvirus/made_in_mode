@@ -1,14 +1,15 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { cn } from '@/lib/utils';
 
 const trips = [
   {
@@ -63,6 +64,15 @@ const upcomingTours = [
       reviews: 89,
       image: 'https://placehold.co/400x300.png',
       hint: 'brazil beach'
+    },
+    {
+      name: 'Aventure en Amazonie',
+      duration: '7 jours',
+      price: 720,
+      rating: 4.7,
+      reviews: 78,
+      image: 'https://placehold.co/400x300.png',
+      hint: 'amazon rainforest'
     }
 ]
 
@@ -86,6 +96,11 @@ const destinations = [
         name: 'Rome',
         image: 'https://placehold.co/800x600.png',
         hint: 'italy colosseum'
+    },
+    {
+        name: 'Santorin',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'greece santorini'
     }
 ]
 
@@ -143,48 +158,64 @@ function PageSkeleton() {
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState('America');
   const [loading, setLoading] = useState(true);
-  const [api, setApi] = useState<CarouselApi>()
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
+  const mainCarouselIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [destinationsApi, setDestinationsApi] = useState<CarouselApi>()
+  const [destinationsCurrent, setDestinationsCurrent] = useState(0)
+  const destinationsIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
     return () => clearTimeout(timer);
   }, []);
 
-  const startAutoplay = () => {
+  const startAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
     if (intervalRef.current || !api) return;
     intervalRef.current = setInterval(() => {
         api.scrollNext();
-    }, 3000);
-  };
+    }, 4000);
+  }, []);
 
-  const stopAutoplay = () => {
+  const stopAutoplay = useCallback((intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
     if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
     }
-  };
+  }, []);
+  
+  const resetAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    stopAutoplay(intervalRef);
+    startAutoplay(api, intervalRef);
+  }, [startAutoplay, stopAutoplay]);
+
 
   useEffect(() => {
-    if (!api) return;
+    if (!mainCarouselApi) return;
+    startAutoplay(mainCarouselApi, mainCarouselIntervalRef);
+    mainCarouselApi.on('pointerDown', () => stopAutoplay(mainCarouselIntervalRef));
+    mainCarouselApi.on('select', () => resetAutoplay(mainCarouselApi, mainCarouselIntervalRef));
+    return () => stopAutoplay(mainCarouselIntervalRef);
+  }, [mainCarouselApi, startAutoplay, stopAutoplay, resetAutoplay]);
 
-    startAutoplay();
+  useEffect(() => {
+    if (!destinationsApi) return;
     
-    api.on('pointerDown', stopAutoplay);
-    api.on('select', (api) => {
-       // if we are at the end, go to the beginning
-        if (!api.canScrollNext()) {
-            api.scrollTo(0);
-        }
-        // restart autoplay on manual interaction
-        stopAutoplay();
-        startAutoplay();
-    });
+    const onSelect = (api: CarouselApi) => setDestinationsCurrent(api.selectedScrollSnap());
+    onSelect(destinationsApi);
+    destinationsApi.on('select', onSelect);
+
+    startAutoplay(destinationsApi, destinationsIntervalRef);
+    destinationsApi.on('pointerDown', () => stopAutoplay(destinationsIntervalRef));
+    destinationsApi.on('select', () => resetAutoplay(destinationsApi, destinationsIntervalRef));
 
     return () => {
-      stopAutoplay();
+        stopAutoplay(destinationsIntervalRef)
+        destinationsApi.off('select', onSelect);
     };
-  }, [api]);
+  }, [destinationsApi, startAutoplay, stopAutoplay, resetAutoplay]);
+
 
   if (loading) {
       return <PageSkeleton />
@@ -209,33 +240,31 @@ export default function Home() {
             </div>
         </div>
 
-        <div className="relative">
-            <Carousel setApi={setApi} opts={{ loop: true, align: 'start' }} className="w-full">
+        <div className="relative -mx-4">
+            <Carousel setApi={setMainCarouselApi} opts={{ loop: true, align: 'start' }} className="w-full">
                 <CarouselContent className="-ml-4">
-                    {trips.map((trip) => (
-                        <CarouselItem key={trip.name} className="basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 pl-4">
-                            <div className="w-full">
-                                <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
-                                    <CardContent className="p-0">
-                                    <div className="relative aspect-[3/4]">
-                                        <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
-                                        <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                                        <Heart className="w-5 h-5" />
-                                        </Button>
-                                        <div className="absolute bottom-0 left-0 p-5 w-full">
-                                        <p className="text-sm text-white/90">{trip.country}</p>
-                                        <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                            <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
-                                        </div>
-                                        <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
-                                        </div>
+                    {trips.map((trip, index) => (
+                        <CarouselItem key={index} className="basis-4/5 sm:basis-1/2 md:basis-1/3 pl-4">
+                            <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
+                                <CardContent className="p-0">
+                                <div className="relative aspect-[3/4]">
+                                    <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
+                                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                                    <Heart className="w-5 h-5" />
+                                    </Button>
+                                    <div className="absolute bottom-0 left-0 p-5 w-full">
+                                    <p className="text-sm text-white/90">{trip.country}</p>
+                                    <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                        <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
                                     </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
+                                    <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
+                                    </div>
+                                </div>
+                                </CardContent>
+                            </Card>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -245,35 +274,37 @@ export default function Home() {
         <div>
             <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
-                <Button variant="link" className="text-sm">Voir tout</Button>
             </div>
-            <div className="space-y-4">
-            {upcomingTours.map((tour) => (
-                <Card key={tour.name} className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                    <div className="relative w-24 h-24 shrink-0">
-                    <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
-                    </div>
-                    <div className="flex-1 py-2 pr-4">
-                    <h3 className="font-bold">{tour.name}</h3>
-                    <p className="text-sm text-muted-foreground">{tour.duration} • dès ${tour.price}/personne</p>
-                    <div className="flex items-center gap-2 mt-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                        <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} avis)</p>
-                    </div>
-                    </div>
-                    <Button variant="secondary" size="icon" className="shrink-0 mr-4 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </Button>
-                </div>
-                </Card>
-            ))}
-            </div>
+             <Carousel opts={{ align: "start" }} className="w-full">
+                <CarouselContent>
+                    {upcomingTours.map((tour, index) => (
+                        <CarouselItem key={index} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/2">
+                             <Card className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="relative w-24 h-24 shrink-0">
+                                    <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                                    </div>
+                                    <div className="flex-1 py-2">
+                                        <h3 className="font-bold">{tour.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{tour.duration} • dès ${tour.price}/personne</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                            <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} avis)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10" />
+                <CarouselNext className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-10" />
+            </Carousel>
         </div>
 
         <div>
             <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-             <Carousel opts={{ loop: true }} className="w-full">
+             <Carousel setApi={setDestinationsApi} opts={{ loop: true, align: 'start' }} className="w-full relative">
                 <CarouselContent>
                     {destinations.map((dest, index) => (
                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
@@ -285,6 +316,22 @@ export default function Home() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
+                 <div className="absolute bottom-4 right-4 flex items-center gap-4">
+                    <CarouselPrevious className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
+                    <CarouselNext className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
+                </div>
+                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                    {destinations.map((_, i) => (
+                        <button
+                        key={i}
+                        onClick={() => destinationsApi?.scrollTo(i)}
+                        className={cn(
+                            'h-2 w-2 rounded-full transition-all',
+                            i === destinationsCurrent ? 'w-4 bg-white' : 'bg-white/50'
+                        )}
+                        />
+                    ))}
+                </div>
             </Carousel>
         </div>
 
@@ -292,3 +339,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
