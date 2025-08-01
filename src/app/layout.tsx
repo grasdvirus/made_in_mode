@@ -70,7 +70,7 @@ export default function RootLayout({
                 </SidebarMenuItem>
              </SidebarMenu>
           </Sidebar>
-          <SidebarInset className="bg-transparent">
+          <SidebarInset className="bg-transparent flex flex-col min-h-screen">
             <div className="md:hidden">
               {CurrentHeader}
             </div>
@@ -78,7 +78,7 @@ export default function RootLayout({
                 <SidebarTrigger />
                 <div>{/* Other header content can go here */}</div>
             </header>
-            <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-8 md:pb-16 md:pt-8 ${mainPaddingTop} ${mainMarginTop}`}>
+            <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-8 md:pb-16 ${pathname === '/' ? 'pt-0 md:pt-8' : ''} ${mainPaddingTop} ${mainMarginTop}`}>
               {children}
             </main>
             <Toaster />
