@@ -35,7 +35,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainPaddingTop = pathname === '/' ? 'pt-0' : 'pt-0';
+  const mainPaddingTop = pathname === '/' ? 'pt-28' : 'pt-0';
   const mainMarginTop = pathname === '/' ? 'mt-0' : '-mt-16';
 
   return (
