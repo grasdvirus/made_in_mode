@@ -1,16 +1,15 @@
 
 import FooterNav from '@/components/footer-nav';
-import Header from '@/components/header';
+import Header from '@/components/header-parallax';
 
 export default function DiscoverPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
-      <Header />
-      <main className="flex-1 w-full max-w-md mx-auto px-4 pt-28 pb-32">
-        <h1 className="text-4xl font-extrabold tracking-tighter leading-tight font-headline uppercase">
-          Discover
-        </h1>
-        <p className="text-muted-foreground mt-4">This is the discover page. Content coming soon!</p>
+      <Header title="Discover" />
+      <main className="flex-1 w-full max-w-md mx-auto px-4 pb-32 -mt-16">
+        <div className="bg-background rounded-t-3xl p-6 min-h-[80vh] shadow-2xl">
+          <p className="text-muted-foreground mt-4">This is the discover page. Content coming soon!</p>
+        </div>
       </main>
       <FooterNav />
     </div>

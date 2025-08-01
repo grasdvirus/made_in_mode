@@ -5,81 +5,119 @@ import Header from '@/components/header';
 import FooterNav from '@/components/footer-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { Heart } from 'lucide-react';
+import { Heart, Search, Star } from 'lucide-react';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
 
-const products = [
+const trips = [
   {
-    name: 'Obsidian Pulse',
-    style: 'Arctic Veil',
-    price: 189.00,
-    image: 'https://placehold.co/500x600.png',
-    hint: 'red jacket'
+    name: 'Rio de Janeiro',
+    country: 'Brazil',
+    rating: 5.0,
+    reviews: 143,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'brazil landscape'
   },
-  {
-    name: 'Another Product',
-    style: 'Future Tech',
-    price: 249.00,
-    image: 'https://placehold.co/500x600.png',
-    hint: 'purple jacket'
-  }
+]
+
+const upcomingTours = [
+    {
+      name: 'Iconic Brazil',
+      duration: '8 days',
+      price: 659,
+      rating: 4.6,
+      reviews: 56,
+      image: 'https://placehold.co/400x300.png',
+      hint: 'brazil mountains'
+    },
+    {
+      name: 'Beach Paradise',
+      duration: '5 days',
+      price: 450,
+      rating: 4.8,
+      reviews: 89,
+      image: 'https://placehold.co/400x300.png',
+      hint: 'brazil beach'
+    }
 ]
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState('Outerwear');
-  
+  const [activeCategory, setActiveCategory] = useState('America');
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
-      <div className="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-primary/20 via-primary/5 to-transparent -z-10" />
       <Header />
       <main className="flex-1 w-full max-w-md mx-auto px-4 pt-28 pb-32">
         <div className="space-y-6">
-          <h1 className="text-4xl font-extrabold tracking-tighter leading-tight font-headline uppercase">
-            Glow Hard. <br />
-            Run The Future.
-          </h1>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <Button variant={activeCategory === 'Outerwear' ? 'secondary': 'ghost'} onClick={() => setActiveCategory('Outerwear')}>Outerwear</Button>
-            <Button variant={activeCategory === 'Jackets & Puffers' ? 'secondary': 'ghost'} onClick={() => setActiveCategory('Jackets & Puffers')}>Jackets & Puffers</Button>
-            <Button variant={activeCategory === 'T-Shirts' ? 'secondary': 'ghost'} onClick={() => setActiveCategory('T-Shirts')}>T-Shirts</Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input placeholder="Search" className="pl-10 h-12 rounded-full bg-secondary border-none" />
           </div>
 
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {products.map((product) => (
-                <CarouselItem key={product.name} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="bg-card/80 backdrop-blur-sm border-white/10 rounded-3xl overflow-hidden group">
-                      <CardContent className="p-0">
-                        <div className="relative aspect-[5/6]">
-                          <Image src={product.image} alt={product.name} fill className="object-cover" data-ai-hint={product.hint}/>
-                          <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
-                            <Heart className="w-5 h-5" />
-                          </Button>
-                        </div>
-                        <div className="p-4">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h3 className="font-bold text-lg">{product.name}</h3>
-                              <p className="text-sm text-muted-foreground">{product.style}</p>
-                            </div>
-                            <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Select your next trip</h2>
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3">
+              <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Asia')}>Asia</Button>
+              <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Europe')}>Europe</Button>
+              <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground" onClick={() => setActiveCategory('America')}>America</Button>
+              <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('North')}>North</Button>
+            </div>
+          </div>
+
+          <div>
+            {trips.map((trip) => (
+              <Card key={trip.name} className="border-none shadow-xl rounded-3xl overflow-hidden group">
+                <CardContent className="p-0">
+                  <div className="relative aspect-[3/4]">
+                    <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent" />
+                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                      <Heart className="w-5 h-5" />
+                    </Button>
+                    <div className="absolute bottom-0 left-0 p-5 w-full">
+                       <p className="text-sm text-white/90">{trip.country}</p>
+                       <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                       <div className="flex items-center gap-2 mt-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} reviews)</p>
+                       </div>
+                       <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">See more</Button>
+                    </div>
                   </div>
-                </CarouselItem>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+           <div>
+            <div className="flex justify-between items-center mb-2">
+                <h2 className="text-xl font-bold tracking-tight">Upcoming tours</h2>
+                <Button variant="link" className="text-sm">See all</Button>
+            </div>
+            <div className="space-y-4">
+              {upcomingTours.map((tour) => (
+                <Card key={tour.name} className="border-none shadow-lg rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-24 h-24 shrink-0">
+                      <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                    </div>
+                    <div className="flex-1 py-2 pr-4">
+                      <h3 className="font-bold">{tour.name}</h3>
+                      <p className="text-sm text-muted-foreground">{tour.duration} • from ${tour.price}/person</p>
+                       <div className="flex items-center gap-2 mt-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} reviews)</p>
+                       </div>
+                    </div>
+                    <Button variant="secondary" size="icon" className="shrink-0 mr-4 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </Button>
+                  </div>
+                </Card>
               ))}
-            </CarouselContent>
-          </Carousel>
+            </div>
+          </div>
+
         </div>
       </main>
       <FooterNav />

@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { Exo_2 } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'CityFit',
-  description: 'The best city-wear, styled for you.',
+  title: 'TripGlide',
+  description: 'Plan your next adventure.',
 };
 
-const exo2 = Exo_2({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-exo2',
+  variable: '--font-inter',
 });
 
 export default function RootLayout({
@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-       <body className={`${exo2.variable} font-sans antialiased`}>
+    <html lang="en">
+       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
         <Toaster />
       </body>
