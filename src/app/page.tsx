@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -335,19 +336,20 @@ export default function Home() {
 
       <div>
           <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-          <div className="horizontal-scroll-fade -mx-4">
-            <div className="flex space-x-4 overflow-x-auto px-4 pb-4">
-              {destinations.map((dest, index) => (
-                  <Card key={index} className="flex-shrink-0 w-3/4 sm:w-2/5 md:w-1/3 rounded-2xl overflow-hidden border-none relative aspect-[3/4]">
-                      <Image src={dest.image} alt={dest.name} fill className="object-cover" data-ai-hint={dest.hint} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <h3 className="absolute bottom-4 left-4 text-white text-xl font-bold">{dest.name}</h3>
-                      <Button size="icon" className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30">
-                        <PlusCircle className="h-5 w-5"/>
-                      </Button>
-                  </Card>
-              ))}
-            </div>
+          <div className="grid grid-cols-3 gap-4">
+            {destinations.map((dest, index) => (
+                <div key={index} className="relative aspect-square">
+                    <Card className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20">
+                        <Image src={dest.image} alt={dest.name} fill className="object-cover" data-ai-hint={dest.hint} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
+                           <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
+                        </div>
+                    </Card>
+                     <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
+                        <PlusCircle className="h-4 w-4"/>
+                    </Button>
+                </div>
+            ))}
           </div>
       </div>
     </div>
