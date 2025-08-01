@@ -42,9 +42,30 @@ export default function Header() {
              )}
           </div>
 
-          <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0">
-            <SlidersHorizontal className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0">
+                <SlidersHorizontal className="h-5 w-5" />
+            </Button>
+            <div className="flex-1 max-w-xl md:hidden flex items-center relative">
+                <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="Rechercher..." 
+                    className="bg-background/20 border-none rounded-full pl-12 h-11 text-primary-foreground placeholder:text-primary-foreground/70 focus:bg-background/30 w-full"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                />
+                {searchValue && (
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="absolute right-2 rounded-full h-7 w-7 text-muted-foreground"
+                        onClick={() => setSearchValue('')}
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                )}
+            </div>
+          </div>
         </div>
        </div>
     </header>

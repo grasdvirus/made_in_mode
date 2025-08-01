@@ -45,6 +45,14 @@ const trips = [
     image: 'https://placehold.co/600x800.png',
     hint: 'bolivia salt flat'
     },
+     {
+    name: 'Île de Pâques',
+    country: 'Chili',
+    rating: 4.7,
+    reviews: 190,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'chile easter island'
+    },
 ]
 
 const upcomingTours = [
@@ -241,26 +249,7 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-       <div className="flex-1 max-w-xl md:hidden flex items-center relative">
-          <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
-          <Input 
-             placeholder="Rechercher une destination..." 
-             className="bg-background/20 border-none rounded-full pl-12 h-11 text-primary-foreground placeholder:text-primary-foreground/70 focus:bg-background/30"
-             value={searchValue}
-             onChange={(e) => setSearchValue(e.target.value)}
-          />
-          {searchValue && (
-             <Button 
-                 variant="ghost" 
-                 size="icon" 
-                 className="absolute right-2 rounded-full h-7 w-7 text-muted-foreground"
-                 onClick={() => setSearchValue('')}
-             >
-                 <X className="h-4 w-4" />
-             </Button>
-          )}
-       </div>
-      
+       
       <div>
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
@@ -311,7 +300,7 @@ export default function Home() {
             <Carousel setApi={setToursCarouselApi} opts={{ align: "start" }} className="w-full">
                 <CarouselContent className="-ml-4">
                     {upcomingTours.map((tour, index) => (
-                        <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3 md:basis-1/2 lg:basis-1/3">
+                        <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3 md:basis-1/2 lg:basis-1/4">
                             <Card className="flex-shrink-0 w-full border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm flex flex-row">
                                 <div className="bg-secondary p-2 flex items-center justify-center rounded-l-2xl">
                                     <h3 className="font-bold text-sm text-secondary-foreground [writing-mode:vertical-rl] rotate-180 whitespace-nowrap text-center">{tour.name}</h3>
@@ -357,7 +346,7 @@ export default function Home() {
 
       <div>
           <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {destinations.map((dest, index) => (
                 <div key={index} className="relative aspect-square">
                     <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
