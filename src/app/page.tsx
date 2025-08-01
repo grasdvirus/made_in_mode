@@ -73,6 +73,15 @@ const upcomingTours = [
       reviews: 78,
       image: 'https://placehold.co/400x300.png',
       hint: 'amazon rainforest'
+    },
+    {
+        name: 'Voyage Patagonie',
+        duration: '10 jours',
+        price: 950,
+        rating: 4.9,
+        reviews: 110,
+        image: 'https://placehold.co/400x300.png',
+        hint: 'patagonia mountains'
     }
 ]
 
@@ -101,6 +110,11 @@ const destinations = [
         name: 'Santorin',
         image: 'https://placehold.co/800x600.png',
         hint: 'greece santorini'
+    },
+    {
+        name: 'Bali',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'indonesia bali'
     }
 ]
 
@@ -274,64 +288,40 @@ export default function Home() {
           <div className="flex justify-between items-center mb-2">
               <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
           </div>
-            <Carousel opts={{ align: "start" }} className="w-full">
-              <CarouselContent>
-                  {upcomingTours.map((tour, index) => (
-                      <CarouselItem key={index} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/2">
-                            <Card className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
-                              <div className="flex items-center gap-4 p-2">
-                                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
-                                  <Image src={tour.image} alt={tour.name} fill className="object-cover rounded-lg" data-ai-hint={tour.hint} />
-                                  </div>
-                                  <div className="flex-1 py-2">
-                                      <h3 className="font-bold text-sm sm:text-base">{tour.name}</h3>
-                                      <p className="text-xs sm:text-sm text-muted-foreground">{tour.duration} • dès ${tour.price}/pers.</p>
-                                      <div className="flex items-center gap-2 mt-1">
-                                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                          <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} avis)</p>
-                                      </div>
-                                  </div>
-                              </div>
-                          </Card>
-                      </CarouselItem>
-                  ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-              <CarouselNext className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-          </Carousel>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {upcomingTours.map((tour, index) => (
+                    <Card key={index} className="border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
+                        <div className="flex flex-col h-full">
+                            <div className="relative w-full aspect-[4/3]">
+                            <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                            </div>
+                            <div className="flex-1 p-3 flex flex-col justify-between">
+                                <div>
+                                    <h3 className="font-bold text-sm sm:text-base">{tour.name}</h3>
+                                    <p className="text-xs sm:text-sm text-muted-foreground">{tour.duration} • ${tour.price}</p>
+                                </div>
+                                <div className="flex items-center gap-1 mt-1">
+                                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                    <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews})</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                ))}
+            </div>
       </div>
 
       <div>
           <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-            <Carousel setApi={setDestinationsApi} opts={{ loop: true, align: 'start' }} className="w-full relative">
-              <CarouselContent>
-                  {destinations.map((dest, index) => (
-                      <CarouselItem key={index} className="basis-full sm:basis-1/2 md:basis-1/3">
-                          <Card className="rounded-2xl overflow-hidden border-none relative">
-                              <Image src={dest.image} alt={dest.name} width={800} height={600} className="object-cover aspect-[4/3]" data-ai-hint={dest.hint} />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                              <h3 className="absolute bottom-4 left-4 text-white text-2xl font-bold">{dest.name}</h3>
-                          </Card>
-                      </CarouselItem>
-                  ))}
-              </CarouselContent>
-                <div className="absolute bottom-4 right-4 flex items-center gap-4">
-                  <CarouselPrevious className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
-                  <CarouselNext className="static -translate-y-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-none" />
-              </div>
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-                  {destinations.map((_, i) => (
-                      <button
-                      key={i}
-                      onClick={() => destinationsApi?.scrollTo(i)}
-                      className={cn(
-                          'h-2 w-2 rounded-full transition-all',
-                          i === destinationsCurrent ? 'w-4 bg-white' : 'bg-white/50'
-                      )}
-                      />
-                  ))}
-              </div>
-          </Carousel>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {destinations.map((dest, index) => (
+                  <Card key={index} className="rounded-2xl overflow-hidden border-none relative aspect-[3/4]">
+                      <Image src={dest.image} alt={dest.name} fill className="object-cover" data-ai-hint={dest.hint} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <h3 className="absolute bottom-4 left-4 text-white text-xl font-bold">{dest.name}</h3>
+                  </Card>
+              ))}
+          </div>
       </div>
 
     </div>

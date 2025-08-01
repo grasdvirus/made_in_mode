@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40">
        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="h-20 mt-4 flex items-center justify-between bg-primary/90 backdrop-blur-lg rounded-2xl px-4 shadow-lg">
+        <div className="h-20 mt-4 flex items-center justify-between bg-primary/90 backdrop-blur-lg rounded-3xl px-4 shadow-lg">
           <div className="flex items-center gap-3 overflow-hidden">
             <Avatar className="h-12 w-12 border-2 border-primary-foreground/50">
               <AvatarImage src="https://placehold.co/80x80.png" alt="Vanessa" data-ai-hint="female portrait"/>
