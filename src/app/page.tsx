@@ -5,6 +5,7 @@ import Header from '@/components/header';
 import FooterNav from '@/components/footer-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
 
@@ -44,29 +45,41 @@ export default function Home() {
             <Button variant={activeCategory === 'T-Shirts' ? 'secondary': 'ghost'} onClick={() => setActiveCategory('T-Shirts')}>T-Shirts</Button>
           </div>
 
-          <div className="space-y-4">
-            {products.map(product => (
-               <Card key={product.name} className="bg-card/80 backdrop-blur-sm border-white/10 rounded-2xl overflow-hidden group">
-                <CardContent className="p-0">
-                  <div className="relative aspect-[5/6]">
-                    <Image src={product.image} alt={product.name} fill className="object-cover" data-ai-hint={product.hint}/>
-                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
-                      <Heart className="w-5 h-5" />
-                    </Button>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {products.map((product) => (
+                <CarouselItem key={product.name} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card className="bg-card/80 backdrop-blur-sm border-white/10 rounded-3xl overflow-hidden group">
+                      <CardContent className="p-0">
+                        <div className="relative aspect-[5/6]">
+                          <Image src={product.image} alt={product.name} fill className="object-cover" data-ai-hint={product.hint}/>
+                          <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
+                            <Heart className="w-5 h-5" />
+                          </Button>
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="font-bold text-lg">{product.name}</h3>
+                              <p className="text-sm text-muted-foreground">{product.style}</p>
+                            </div>
+                            <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-bold text-lg">{product.name}</h3>
-                        <p className="text-sm text-muted-foreground">{product.style}</p>
-                      </div>
-                      <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </main>
       <FooterNav />

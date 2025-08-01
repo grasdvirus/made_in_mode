@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, Compass, Search, ShoppingBag, User } from 'lucide-react';
+import { Home, Compass, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -9,8 +9,6 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', icon: Home },
   { href: '/discover', icon: Compass },
-  { href: '/search', icon: Search },
-  { href: '/cart', icon: ShoppingBag },
   { href: '/profile', icon: User },
 ];
 
