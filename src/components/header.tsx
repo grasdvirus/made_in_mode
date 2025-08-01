@@ -8,17 +8,17 @@ export default function Header() {
        <div className="mx-auto max-w-md">
         <div className="bg-primary/90 backdrop-blur-xl m-4 rounded-full shadow-lg">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 overflow-hidden">
               <Avatar className="h-12 w-12 border-2 border-primary-foreground/50">
                 <AvatarImage src="https://placehold.co/80x80.png" alt="Vanessa" data-ai-hint="female portrait"/>
                 <AvatarFallback>V</AvatarFallback>
               </Avatar>
-              <div className="text-primary-foreground">
-                <h1 className="font-bold text-lg">Bonjour, Vanessa</h1>
-                <p className="text-sm text-primary-foreground/80">Bienvenue sur TripGlide</p>
+              <div className="text-primary-foreground truncate">
+                <h1 className="font-bold text-lg truncate">Bonjour, Vanessa</h1>
+                <p className="text-sm text-primary-foreground/80 truncate">Bienvenue sur TripGlide</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30">
+            <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 flex-shrink-0">
               <SlidersHorizontal className="h-5 w-5" />
             </Button>
           </div>
