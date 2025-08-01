@@ -336,7 +336,7 @@ export default function Home() {
 
       <div>
           <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {destinations.map((dest, index) => (
                 <div key={index} className="relative aspect-square">
                     <Card className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20">

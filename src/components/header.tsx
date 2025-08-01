@@ -1,9 +1,12 @@
-import { SlidersHorizontal, Search } from 'lucide-react';
+import { SlidersHorizontal, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from './ui/input';
+import React from 'react';
 
 export default function Header() {
+  const [searchValue, setSearchValue] = React.useState('');
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40">
        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -21,7 +24,22 @@ export default function Header() {
 
           <div className="flex-1 max-w-xl hidden md:flex items-center relative mx-8">
              <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
-             <Input placeholder="Rechercher une destination..." className="bg-background/20 border-none rounded-full pl-12 h-11 text-primary-foreground placeholder:text-primary-foreground/70 focus:bg-background/30"/>
+             <Input 
+                placeholder="Rechercher une destination..." 
+                className="bg-background/20 border-none rounded-full pl-12 h-11 text-primary-foreground placeholder:text-primary-foreground/70 focus:bg-background/30"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+             />
+             {searchValue && (
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-2 rounded-full h-7 w-7 text-muted-foreground"
+                    onClick={() => setSearchValue('')}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+             )}
           </div>
 
           <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0">
