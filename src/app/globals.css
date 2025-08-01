@@ -76,29 +76,20 @@
   }
   body {
     @apply bg-background text-foreground;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
-  }
-
-  /* Webkit (Chrome, Edge, Safari) */
-  body::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  body::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-  }
-
-  body:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2); /* légère transparence au hover */
-  }
-
-  body::-webkit-scrollbar-track {
-    background: transparent;
   }
 }
+
+.scroll-hover::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 255, 0.2);
+  border-radius: 3px;
+}
+.scroll-hover:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 255, 0.4);
+}
+
 
 .glass-radio-group {
   --bg: rgba(255, 255, 255, 0.06);

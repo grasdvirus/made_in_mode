@@ -40,7 +40,7 @@ export default function RootLayout({
 
   return (
     <html lang="fr" className="dark scroll-smooth">
-      <body className={`${poppins.variable} font-sans antialiased bg-gradient-to-b from-gray-900 to-black`}>
+      <body className={`${poppins.variable} font-sans antialiased bg-gradient-to-b from-gray-900 to-black scroll-hover`}>
         <SidebarProvider>
           <Sidebar collapsible="icon" className="bg-gradient-to-b from-gray-900 to-black border-r border-gray-800">
              <SidebarMenu>
