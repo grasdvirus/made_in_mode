@@ -20,7 +20,7 @@ function getHeader(pathname: string) {
     if (pathname === '/') return <Header />;
     if (pathname === '/discover') return <HeaderParallax title="Découvrir" />;
     if (pathname === '/cart') return <HeaderParallax title="Mon Panier" />;
-    if (pathname === '/profile') return <HeaderParallax title="Mon Profil" />;
+    if (pathname === '/profile') return null; // Removed header for profile page
     return null;
 }
 
@@ -32,7 +32,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainMarginTop = pathname === '/' ? 'mt-32' : '-mt-16';
+  const mainMarginTop = pathname === '/' ? 'mt-32' : (pathname === '/profile' ? 'mt-8' : '-mt-16');
 
   return (
     <html lang="fr" className="dark scroll-smooth">

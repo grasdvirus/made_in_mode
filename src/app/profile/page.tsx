@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight } from 'lucide-react';
+import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -45,13 +45,20 @@ export default function ProfilePage() {
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-6 min-h-[80vh] shadow-2xl space-y-6">
+            <div className="flex items-center justify-between">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
+                    <ChevronLeft className="h-6 w-6" />
+                </Button>
+                <h1 className="text-2xl font-bold">Mon Profil</h1>
+                <div className="w-10"></div> {/* Spacer */}
+            </div>
             
             <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24 border-4 border-primary">
                     <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="female portrait" />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
-                <h1 className="text-2xl font-bold">{user.name}</h1>
+                <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
             </div>
 
