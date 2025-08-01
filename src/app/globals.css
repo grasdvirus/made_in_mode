@@ -15,7 +15,7 @@
     --secondary: 240 5% 18%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 5% 22%;
-    --muted-foreground: 0 0% 60%;
+    --muted-foreground: 240 5% 63%;
     --accent: 84 45% 60%;
     --accent-foreground: 84 100% 10%;
     --destructive: 0 62.8% 30.6%;
@@ -24,15 +24,6 @@
     --input: 240 5% 20%;
     --ring: 84 45% 55%;
     --radius: 1.5rem;
-
-    --sidebar-background: 240 5% 12%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 20%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 5% 18%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-ring: 0 0% 98%;
   }
 
   .dark {
@@ -55,15 +46,6 @@
     --border: 240 5% 15%;
     --input: 240 5% 15%;
     --ring: 84 45% 55%;
-
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 15%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 5% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-ring: 0 0% 98%;
   }
 }
 
@@ -89,7 +71,6 @@
 .scroll-hover:hover::-webkit-scrollbar-thumb {
   background-color: rgba(136, 185, 98, 0.4);
 }
-
 
 .glass-radio-group {
   --bg: rgba(255, 255, 255, 0.06);
@@ -117,9 +98,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 80px;
+  min-width: 60px;
   font-size: 14px;
-  padding: 0.8rem 1.6rem;
+  padding: 0.8rem 1rem;
   cursor: pointer;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -141,7 +122,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: calc(100% / 3);
+  width: calc(100% / 5);
   border-radius: 1rem;
   z-index: 1;
   transition:
@@ -166,8 +147,24 @@
     0 0 10px rgba(255, 235, 150, 0.4) inset;
 }
 
-#glass-profile:checked ~ .glass-glider {
+#glass-search:checked ~ .glass-glider {
   transform: translateX(200%);
+  background: linear-gradient(135deg, #89f7fe55, #66a6ff);
+  box-shadow:
+    0 0 18px rgba(102, 166, 255, 0.5),
+    0 0 10px rgba(170, 210, 255, 0.4) inset;
+}
+
+#glass-cart:checked ~ .glass-glider {
+  transform: translateX(300%);
+  background: linear-gradient(135deg, #ff8a8a55, #ff5252);
+  box-shadow:
+    0 0 18px rgba(255, 82, 82, 0.5),
+    0 0 10px rgba(255, 150, 150, 0.4) inset;
+}
+
+#glass-profile:checked ~ .glass-glider {
+  transform: translateX(400%);
   background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
   box-shadow:
     0 0 18px rgba(160, 216, 255, 0.5),

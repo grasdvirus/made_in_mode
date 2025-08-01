@@ -7,7 +7,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
-import FooterNav from '@/components/footer-nav';
+import GlassFooterNav from '@/components/glass-footer-nav';
 
 
 const poppins = Poppins({
@@ -44,7 +44,7 @@ export default function RootLayout({
           <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-24 ${mainPaddingTop} ${mainMarginTop}`}>
             {children}
           </main>
-          <FooterNav />
+          <GlassFooterNav />
           <Toaster />
         </div>
       </body>
