@@ -2,10 +2,10 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -188,6 +188,8 @@ export default function Home() {
   const [toursCarouselApi, setToursCarouselApi] = useState<CarouselApi>();
   const [toursCarouselCount, setToursCarouselCount] = useState(0);
   const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
+  
+  const [searchValue, setSearchValue] = React.useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
@@ -239,6 +241,25 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
+       <div className="flex-1 max-w-xl md:hidden flex items-center relative">
+          <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+          <Input 
+             placeholder="Rechercher une destination..." 
+             className="bg-background/20 border-none rounded-full pl-12 h-11 text-primary-foreground placeholder:text-primary-foreground/70 focus:bg-background/30"
+             value={searchValue}
+             onChange={(e) => setSearchValue(e.target.value)}
+          />
+          {searchValue && (
+             <Button 
+                 variant="ghost" 
+                 size="icon" 
+                 className="absolute right-2 rounded-full h-7 w-7 text-muted-foreground"
+                 onClick={() => setSearchValue('')}
+             >
+                 <X className="h-4 w-4" />
+             </Button>
+          )}
+       </div>
       
       <div>
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
@@ -339,12 +360,12 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4">
             {destinations.map((dest, index) => (
                 <div key={index} className="relative aspect-square">
-                    <Card className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20">
+                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
                         <Image src={dest.image} alt={dest.name} fill className="object-cover" data-ai-hint={dest.hint} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
                            <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
                         </div>
-                    </Card>
+                    </div>
                      <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
                         <PlusCircle className="h-4 w-4"/>
                     </Button>
