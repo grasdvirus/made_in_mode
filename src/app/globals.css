@@ -83,11 +83,11 @@
   width: 6px;
 }
 .scroll-hover::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 255, 0.2);
+  background-color: rgba(136, 185, 98, 0.2);
   border-radius: 3px;
 }
 .scroll-hover:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 255, 0.4);
+  background-color: rgba(136, 185, 98, 0.4);
 }
 
 

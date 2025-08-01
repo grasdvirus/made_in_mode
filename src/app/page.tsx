@@ -66,6 +66,30 @@ const upcomingTours = [
     }
 ]
 
+const destinations = [
+    {
+        name: 'Paris',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'france eiffel tower'
+    },
+    {
+        name: 'Tokyo',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'japan city night'
+    },
+    {
+        name: 'New York',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'new york city skyline'
+    },
+    {
+        name: 'Rome',
+        image: 'https://placehold.co/800x600.png',
+        hint: 'italy colosseum'
+    }
+]
+
+
 function PageSkeleton() {
     return (
         <div className="space-y-6 animate-pulse">
@@ -246,6 +270,24 @@ export default function Home() {
             ))}
             </div>
         </div>
+
+        <div>
+            <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
+             <Carousel opts={{ loop: true }} className="w-full">
+                <CarouselContent>
+                    {destinations.map((dest, index) => (
+                        <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                            <Card className="rounded-2xl overflow-hidden border-none relative">
+                                <Image src={dest.image} alt={dest.name} width={800} height={600} className="object-cover aspect-[4/3]" data-ai-hint={dest.hint} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <h3 className="absolute bottom-4 left-4 text-white text-2xl font-bold">{dest.name}</h3>
+                            </Card>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+        </div>
+
       </div>
     </div>
   );
