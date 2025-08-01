@@ -1,11 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import Header from '@/components/header';
-import FooterNav from '@/components/footer-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Search, Star } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -115,25 +114,24 @@ export default function Home() {
         setLoading(false);
     }, 2000);
 
-    // Helper to hide scrollbar
     const style = document.createElement('style');
     style.innerHTML = `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`;
     document.head.appendChild(style);
 
     return () => {
       clearTimeout(timer);
-      document.head.removeChild(style);
+       if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
-      <Header />
-      <main className="flex-1 w-full max-w-md mx-auto px-4 pt-32 pb-32">
         {loading ? <PageSkeleton /> : (
             <div className="space-y-8">
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
                 <Input placeholder="Rechercher" className="pl-10 h-12 rounded-full bg-secondary border-none" />
             </div>
 
@@ -210,8 +208,6 @@ export default function Home() {
 
             </div>
         )}
-      </main>
-      <FooterNav />
     </div>
   );
 }
