@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/header';
 import FooterNav from '@/components/footer-nav';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Search, Star } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 const trips = [
   {
@@ -41,84 +43,137 @@ const upcomingTours = [
     }
 ]
 
+function PageSkeleton() {
+    return (
+        <div className="space-y-6">
+            <Skeleton className="h-12 w-full rounded-full" />
+            
+            <div>
+                <Skeleton className="h-6 w-48 mb-3" />
+                <div className="flex gap-2">
+                    <Skeleton className="h-10 w-24 rounded-full" />
+                    <Skeleton className="h-10 w-24 rounded-full" />
+                    <Skeleton className="h-10 w-24 rounded-full" />
+                </div>
+            </div>
+
+            <Skeleton className="aspect-[3/4] w-full rounded-3xl" />
+
+            <div>
+                <Skeleton className="h-6 w-40 mb-3" />
+                <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="w-24 h-24 rounded-lg" />
+                        <div className="space-y-2 flex-1">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-4 w-1/4" />
+                        </div>
+                        <Skeleton className="w-8 h-8 rounded-full" />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="w-24 h-24 rounded-lg" />
+                        <div className="space-y-2 flex-1">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-4 w-1/4" />
+                        </div>
+                        <Skeleton className="w-8 h-8 rounded-full" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState('America');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <Header />
       <main className="flex-1 w-full max-w-md mx-auto px-4 pt-32 pb-32">
-        <div className="space-y-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input placeholder="Search" className="pl-10 h-12 rounded-full bg-secondary border-none" />
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">Select your next trip</h2>
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3">
-              <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Asia')}>Asia</Button>
-              <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Europe')}>Europe</Button>
-              <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground" onClick={() => setActiveCategory('America')}>America</Button>
-              <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('North')}>North</Button>
+        {loading ? <PageSkeleton /> : (
+            <div className="space-y-6">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input placeholder="Search" className="pl-10 h-12 rounded-full bg-secondary border-none" />
             </div>
-          </div>
 
-          <div>
-            {trips.map((trip) => (
-              <Card key={trip.name} className="border-none shadow-xl rounded-3xl overflow-hidden group">
-                <CardContent className="p-0">
-                  <div className="relative aspect-[3/4]">
-                    <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent" />
-                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                      <Heart className="w-5 h-5" />
-                    </Button>
-                    <div className="absolute bottom-0 left-0 p-5 w-full">
-                       <p className="text-sm text-white/90">{trip.country}</p>
-                       <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                       <div className="flex items-center gap-2 mt-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} reviews)</p>
-                       </div>
-                       <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">See more</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-           <div>
-            <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-bold tracking-tight">Upcoming tours</h2>
-                <Button variant="link" className="text-sm">See all</Button>
+            <div>
+                <h2 className="text-xl font-bold tracking-tight">Select your next trip</h2>
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3">
+                <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Asia')}>Asia</Button>
+                <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('Europe')}>Europe</Button>
+                <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground" onClick={() => setActiveCategory('America')}>America</Button>
+                <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full" onClick={() => setActiveCategory('North')}>North</Button>
+                </div>
             </div>
-            <div className="space-y-4">
-              {upcomingTours.map((tour) => (
-                <Card key={tour.name} className="border-none shadow-lg rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-24 h-24 shrink-0">
-                      <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+
+            <div>
+                {trips.map((trip) => (
+                <Card key={trip.name} className="border-none shadow-xl rounded-3xl overflow-hidden group">
+                    <CardContent className="p-0">
+                    <div className="relative aspect-[3/4]">
+                        <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent" />
+                        <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                        <Heart className="w-5 h-5" />
+                        </Button>
+                        <div className="absolute bottom-0 left-0 p-5 w-full">
+                        <p className="text-sm text-white/90">{trip.country}</p>
+                        <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} reviews)</p>
+                        </div>
+                        <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">See more</Button>
+                        </div>
                     </div>
-                    <div className="flex-1 py-2 pr-4">
-                      <h3 className="font-bold">{tour.name}</h3>
-                      <p className="text-sm text-muted-foreground">{tour.duration} • from ${tour.price}/person</p>
-                       <div className="flex items-center gap-2 mt-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} reviews)</p>
-                       </div>
-                    </div>
-                    <Button variant="secondary" size="icon" className="shrink-0 mr-4 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </Button>
-                  </div>
+                    </CardContent>
                 </Card>
-              ))}
+                ))}
             </div>
-          </div>
+            
+            <div>
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-xl font-bold tracking-tight">Upcoming tours</h2>
+                    <Button variant="link" className="text-sm">See all</Button>
+                </div>
+                <div className="space-y-4">
+                {upcomingTours.map((tour) => (
+                    <Card key={tour.name} className="border-none shadow-lg rounded-2xl overflow-hidden">
+                    <div className="flex items-center gap-4">
+                        <div className="relative w-24 h-24 shrink-0">
+                        <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                        </div>
+                        <div className="flex-1 py-2 pr-4">
+                        <h3 className="font-bold">{tour.name}</h3>
+                        <p className="text-sm text-muted-foreground">{tour.duration} • from ${tour.price}/person</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <p className="text-xs text-muted-foreground"><span className="font-bold text-foreground">{tour.rating}</span> ({tour.reviews} reviews)</p>
+                        </div>
+                        </div>
+                        <Button variant="secondary" size="icon" className="shrink-0 mr-4 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </Button>
+                    </div>
+                    </Card>
+                ))}
+                </div>
+            </div>
 
-        </div>
+            </div>
+        )}
       </main>
       <FooterNav />
     </div>
