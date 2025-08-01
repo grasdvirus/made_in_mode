@@ -184,6 +184,10 @@ export default function Home() {
   const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
   const mainCarouselIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [toursCarouselApi, setToursCarouselApi] = useState<CarouselApi>();
+  const [toursCarouselCount, setToursCarouselCount] = useState(0);
+  const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
+
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
     return () => clearTimeout(timer);
@@ -216,6 +220,16 @@ export default function Home() {
     mainCarouselApi.on('select', () => resetAutoplay(mainCarouselApi, mainCarouselIntervalRef));
     return () => stopAutoplay(mainCarouselIntervalRef);
   }, [mainCarouselApi, startAutoplay, stopAutoplay, resetAutoplay]);
+  
+  useEffect(() => {
+    if (!toursCarouselApi) return;
+    setToursCarouselCount(toursCarouselApi.scrollSnapList().length);
+    setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
+
+    toursCarouselApi.on('select', () => {
+      setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
+    });
+  }, [toursCarouselApi]);
 
 
   if (loading) {
@@ -271,31 +285,49 @@ export default function Home() {
         <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
         </div>
-        <div className="horizontal-scroll-fade -mx-4">
-            <div className="flex space-x-4 overflow-x-auto px-4 pb-4">
-                {upcomingTours.map((tour, index) => (
-                    <Card key={index} className="flex-shrink-0 w-[280px] border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm flex flex-row">
-                        <div className="bg-secondary p-2 flex items-center justify-center rounded-l-2xl">
-                            <h3 className="font-bold text-sm text-secondary-foreground [writing-mode:vertical-rl] rotate-180 whitespace-nowrap text-center">{tour.name}</h3>
-                        </div>
-                        <div className={cn("flex flex-col flex-1", tour.bgColor)}>
-                            <div className="relative w-full aspect-square p-4">
-                                <Image src={tour.image} alt={tour.name} fill className="object-contain drop-shadow-xl" data-ai-hint={tour.hint} />
-                            </div>
-                            <div className="p-4 flex items-center justify-between">
-                                <Button variant="ghost" size="icon" className="rounded-full">
-                                    <Heart className="w-5 h-5" />
-                                </Button>
-                                <div className='text-right'>
-                                    <p className="text-sm text-muted-foreground line-through">${tour.originalPrice}</p>
-                                    <p className="font-bold text-lg">${tour.price}</p>
+        <div className="relative -mx-4 sm:mx-0">
+            <Carousel setApi={setToursCarouselApi} opts={{ align: "start" }} className="w-full">
+                <CarouselContent className="-ml-4">
+                    {upcomingTours.map((tour, index) => (
+                        <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3 md:basis-1/2 lg:basis-1/3">
+                            <Card className="flex-shrink-0 w-full border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm flex flex-row">
+                                <div className="bg-secondary p-2 flex items-center justify-center rounded-l-2xl">
+                                    <h3 className="font-bold text-sm text-secondary-foreground [writing-mode:vertical-rl] rotate-180 whitespace-nowrap text-center">{tour.name}</h3>
                                 </div>
-                                <Button variant="ghost" size="icon" className="rounded-full">
-                                    <ShoppingCart className="w-5 h-5" />
-                                </Button>
-                            </div>
-                        </div>
-                    </Card>
+                                <div className={cn("flex flex-col flex-1", tour.bgColor)}>
+                                    <div className="relative w-full aspect-square">
+                                        <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
+                                    </div>
+                                    <div className="p-4 flex items-center justify-between">
+                                        <Button variant="ghost" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm">
+                                            <Heart className="w-5 h-5" />
+                                        </Button>
+                                        <div className='text-right'>
+                                            <p className="text-sm text-muted-foreground line-through">${tour.originalPrice}</p>
+                                            <p className="font-bold text-lg">${tour.price}</p>
+                                        </div>
+                                        <Button variant="ghost" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm">
+                                            <ShoppingCart className="w-5 h-5" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden sm:flex" />
+                <CarouselNext className="hidden sm:flex" />
+            </Carousel>
+             <div className="flex justify-start gap-2 pt-4 px-4">
+                {Array.from({ length: toursCarouselCount }).map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => toursCarouselApi?.scrollTo(i)}
+                        className={cn(
+                            "h-2 w-2 rounded-full transition-all",
+                            i === toursCarouselCurrent -1 ? 'w-4 bg-primary' : 'bg-primary/20'
+                        )}
+                    />
                 ))}
             </div>
         </div>
@@ -318,7 +350,6 @@ export default function Home() {
             </div>
           </div>
       </div>
-
     </div>
   );
 }
