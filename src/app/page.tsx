@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <Header />
-      <main className="flex-1 w-full max-w-md mx-auto px-4 pt-28 pb-32">
+      <main className="flex-1 w-full max-w-md mx-auto px-4 pt-32 pb-32">
         <div className="space-y-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
