@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'TripGlide',
-  description: 'Plan your next adventure.',
+  description: 'Planifiez votre prochaine aventure.',
 };
 
 const inter = Inter({
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr" className="scroll-smooth">
        <body className={`${inter.variable} font-sans antialiased`}>
         {children}
         <Toaster />
