@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground w-full mt-12 py-6">
+    <footer className="bg-secondary text-secondary-foreground w-full py-6">
       <div className="container max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <h3 className="text-lg font-bold">Made in Mode</h3>
         
@@ -19,7 +19,7 @@ export default function Footer() {
             <span>Français</span>
         </Button>
       </div>
-       <div className="mt-6 border-t border-border pt-4 text-center text-sm text-muted-foreground">
+       <div className="mt-4 border-t border-border pt-4 text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Made in Mode. Tous droits réservés.</p>
         </div>
     </footer>

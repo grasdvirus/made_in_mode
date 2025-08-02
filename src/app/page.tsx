@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search, Heart, Clock, MapPin, X, ArrowRight, ShoppingBag } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -74,7 +74,9 @@ const categories = [
     { name: 'Chaussures', image: 'https://placehold.co/200x200.png', hint: 'stylish shoes' },
     { name: 'Accessoires', image: 'https://placehold.co/200x200.png', hint: 'fashion accessories' },
     { name: 'Robes', image: 'https://placehold.co/200x200.png', hint: 'elegant dress' },
-    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection' }
+    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection' },
+    { name: 'Manteaux', image: 'https://placehold.co/200x200.png', hint: 'winter coat' },
+    { name: 'Bijoux', image: 'https://placehold.co/200x200.png', hint: 'luxury jewelry' }
 ]
 
 const products = [
@@ -156,21 +158,31 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="p-4 md:p-6 space-y-12">
+      <main className="p-4 md:p-6 space-y-8">
         {/* Categories Section */}
         <section>
-             <div className="horizontal-scroll-fade">
-                <div className="flex items-center gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+             <Carousel
+                opts={{
+                    align: "start",
+                    dragFree: true,
+                }}
+                className="w-full"
+            >
+                <CarouselContent>
                     {categories.map((category, index) => (
-                        <div key={index} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-20">
-                            <div className="relative w-20 h-20">
-                                <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50" data-ai-hint={category.hint} />
+                        <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                            <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-20 mx-auto">
+                                <div className="relative w-20 h-20">
+                                    <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50" data-ai-hint={category.hint} />
+                                </div>
+                                <span className="text-sm font-medium">{category.name}</span>
                             </div>
-                            <span className="text-sm font-medium">{category.name}</span>
-                        </div>
+                        </CarouselItem>
                     ))}
-                </div>
-            </div>
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+            </Carousel>
         </section>
 
         {/* Yacht Carousel Section */}
