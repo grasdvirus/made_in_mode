@@ -235,3 +235,33 @@
   color: lightgrey;
 }
 
+@keyframes scroll-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes scroll-down {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-scroll-up {
+  animation: scroll-up 60s linear infinite;
+}
+
+.animate-scroll-down {
+  animation: scroll-down 60s linear infinite;
+}
+
+.scroller:hover .animate-scroll-up,
+.scroller:hover .animate-scroll-down {
+  animation-play-state: paused;
+}

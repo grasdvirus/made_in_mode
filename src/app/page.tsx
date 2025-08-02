@@ -1,10 +1,9 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -214,6 +213,47 @@ function PageSkeleton() {
     )
 }
 
+const AnimatedDestinations = () => {
+    const destinationsColumn1 = [...destinations, ...destinations];
+    const destinationsColumn2 = [...destinations, ...destinations].reverse();
+
+    return (
+        <div className="relative h-96 overflow-hidden scroller grid grid-cols-2 gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
+            <div className="animate-scroll-down space-y-4">
+                {destinationsColumn1.map((dest, index) => (
+                    <div key={`col1-${index}`} className="relative aspect-square group">
+                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
+                            <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" data-ai-hint={dest.hint} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
+                               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
+                            </div>
+                        </div>
+                         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
+                            <PlusCircle className="h-4 w-4"/>
+                        </Button>
+                    </div>
+                ))}
+            </div>
+            <div className="animate-scroll-up space-y-4">
+                {destinationsColumn2.map((dest, index) => (
+                    <div key={`col2-${index}`} className="relative aspect-square group">
+                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
+                            <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" data-ai-hint={dest.hint} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
+                               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
+                            </div>
+                        </div>
+                         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
+                            <PlusCircle className="h-4 w-4"/>
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState('America');
   const [loading, setLoading] = useState(true);
@@ -377,58 +417,38 @@ export default function Home() {
       </div>
 
       <div>
-          <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {destinations.map((dest, index) => (
-                <div key={index} className="relative aspect-square group">
-                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
-                        <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" data-ai-hint={dest.hint} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
-                           <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
-                        </div>
-                    </div>
-                     <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
-                        <PlusCircle className="h-4 w-4"/>
-                    </Button>
-                </div>
-            ))}
-          </div>
+        <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
+        <AnimatedDestinations />
       </div>
       
       <div>
         <h2 className="text-xl font-bold tracking-tight mb-4">Notre sélection éditoriale</h2>
-         <Carousel opts={{ align: 'start' }} className="w-full -mx-4 sm:mx-0">
-            <CarouselContent className="-ml-4">
-                {editorialPicks.map((pick, index) => (
-                    <CarouselItem key={index} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
-                        <Card className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col">
-                            <CardContent className="p-0 flex-1 flex flex-col">
-                                <div className="relative aspect-video w-full">
-                                    <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
-                                </div>
-                                <div className="p-6 flex flex-col flex-1">
-                                    <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                                        <Avatar className="w-8 h-8">
-                                        <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
-                                        <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
-                                        </Avatar>
-                                        <span>{pick.author}</span>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <Button className="rounded-full w-full">
-                                            Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </CarouselItem>
-                ))}
-            </CarouselContent>
-             <CarouselPrevious className="hidden sm:flex left-2" />
-             <CarouselNext className="hidden sm:flex right-2" />
-        </Carousel>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {editorialPicks.map((pick, index) => (
+                <Card key={index} className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col">
+                    <CardContent className="p-0 flex-1 flex flex-col">
+                        <div className="relative aspect-video w-full">
+                            <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
+                        </div>
+                        <div className="p-6 flex flex-col flex-1">
+                            <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                                <Avatar className="w-8 h-8">
+                                <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
+                                <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
+                                </Avatar>
+                                <span>{pick.author}</span>
+                            </div>
+                            <div className="mt-auto">
+                                <Button className="rounded-full w-full">
+                                    Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
       </div>
 
       <div className="relative rounded-2xl overflow-hidden">
