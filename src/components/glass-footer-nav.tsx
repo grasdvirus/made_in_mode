@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState } from 'react';
@@ -22,8 +23,6 @@ export default function GlassFooterNav() {
   const handleNavChange = (href: string) => {
     router.push(href);
   };
-  
-  const currentNavId = navItems.find(item => item.href === pathname)?.id || 'glass-home';
   
   return (
     <>
