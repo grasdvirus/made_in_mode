@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X, ArrowRight } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X, ArrowRight, Compass } from 'lucide-react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,47 +14,70 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 
-const trips = [
+const allTrips = [
   {
     name: 'Rio de Janeiro',
     country: 'Brésil',
     rating: 5.0,
     reviews: 143,
     image: 'https://placehold.co/600x800.png',
-    hint: 'brazil landscape'
+    hint: 'brazil landscape',
+    continent: 'Amérique',
   },
-    {
+  {
     name: 'Chutes d\'Iguazu',
     country: 'Argentine',
     rating: 4.9,
     reviews: 112,
     image: 'https://placehold.co/600x800.png',
-    hint: 'argentina waterfall'
-    },
-    {
+    hint: 'argentina waterfall',
+    continent: 'Amérique',
+  },
+  {
     name: 'Machu Picchu',
     country: 'Pérou',
     rating: 4.9,
     reviews: 215,
     image: 'https://placehold.co/600x800.png',
-    hint: 'peru mountains'
-    },
-     {
+    hint: 'peru mountains',
+    continent: 'Amérique',
+  },
+   {
     name: 'Salar de Uyuni',
     country: 'Bolivie',
     rating: 4.8,
     reviews: 180,
     image: 'https://placehold.co/600x800.png',
-    hint: 'bolivia salt flat'
-    },
-     {
+    hint: 'bolivia salt flat',
+    continent: 'Amérique',
+  },
+   {
     name: 'Île de Pâques',
     country: 'Chili',
     rating: 4.7,
     reviews: 190,
     image: 'https://placehold.co/600x800.png',
-    hint: 'chile easter island'
-    },
+    hint: 'chile easter island',
+    continent: 'Amérique',
+  },
+  {
+    name: 'Kyoto',
+    country: 'Japon',
+    rating: 4.9,
+    reviews: 250,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'japan kyoto',
+    continent: 'Asie',
+  },
+  {
+    name: 'Santorin',
+    country: 'Grèce',
+    rating: 4.8,
+    reviews: 310,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'greece santorini',
+    continent: 'Europe',
+  },
 ]
 
 const upcomingTours = [
@@ -255,7 +278,7 @@ const AnimatedDestinationsLarge = () => {
 
 
 export default function DiscoverPage() {
-  const [activeCategory, setActiveCategory] = useState('America');
+  const [activeCategory, setActiveCategory] = useState('Amérique');
   const [loading, setLoading] = useState(true);
   
   const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
@@ -266,6 +289,8 @@ export default function DiscoverPage() {
   const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
   
   const [searchValue, setSearchValue] = React.useState('');
+
+  const filteredTrips = allTrips.filter(trip => trip.continent === activeCategory);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
@@ -322,50 +347,57 @@ export default function DiscoverPage() {
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
           <div className="horizontal-scroll-fade">
               <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
-                  <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Asia')}>Asie</Button>
-                  <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Europe')}>Europe</Button>
-                  <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground flex-shrink-0" onClick={() => setActiveCategory('America')}>Amérique</Button>
-                  <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('North')}>Nord</Button>
-                  <Button variant={activeCategory === 'Africa' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Africa')}>Afrique</Button>
-                  <Button variant={activeCategory === 'Oceania' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Oceania')}>Océanie</Button>
-                  <Button variant={activeCategory === 'Antarctica' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Antarctica')}>Antarctique</Button>
+                  <Button variant={activeCategory === 'Asie' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Asie' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Asie')}>Asie</Button>
+                  <Button variant={activeCategory === 'Europe' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Europe' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Europe')}>Europe</Button>
+                  <Button variant={activeCategory === 'Amérique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Amérique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Amérique')}>Amérique</Button>
+                  <Button variant={activeCategory === 'Afrique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Afrique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Afrique')}>Afrique</Button>
+                  <Button variant={activeCategory === 'Océanie' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Océanie' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Océanie')}>Océanie</Button>
+                  <Button variant={activeCategory === 'Antarctique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Antarctique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Antarctique')}>Antarctique</Button>
               </div>
           </div>
       </div>
 
       <div className="relative -mx-4 sm:mx-0">
-          <Carousel setApi={setMainCarouselApi} opts={{ loop: true, align: 'start' }} className="w-full">
-              <CarouselContent className="-ml-4">
-                  {trips.map((trip, index) => (
-                      <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                          <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
-                              <CardContent className="p-0">
-                              <div className="relative aspect-[3/4]">
-                                  <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
-                                  <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                                  <Heart className="w-5 h-5" />
-                                  </Button>
-                                  <div className="absolute bottom-0 left-0 p-5 w-full">
-                                  <p className="text-sm text-white/90">{trip.country}</p>
-                                  <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                      <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
-                                  </div>
-                                  <Link href="/discover" passHref>
-                                    <Button asChild className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">
-                                        <span>Voir plus</span>
+          {filteredTrips.length > 0 ? (
+            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
+                <CarouselContent className="-ml-4">
+                    {filteredTrips.map((trip, index) => (
+                        <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                            <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
+                                <CardContent className="p-0">
+                                <div className="relative aspect-[3/4]">
+                                    <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
+                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
+                                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                                    <Heart className="w-5 h-5" />
                                     </Button>
-                                  </Link>
-                                  </div>
-                              </div>
-                              </CardContent>
-                          </Card>
-                      </CarouselItem>
-                  ))}
-              </CarouselContent>
-          </Carousel>
+                                    <div className="absolute bottom-0 left-0 p-5 w-full">
+                                    <p className="text-sm text-white/90">{trip.country}</p>
+                                    <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                        <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
+                                    </div>
+                                    <Link href="/discover" passHref>
+                                        <Button asChild className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">
+                                            <span>Voir plus</span>
+                                        </Button>
+                                    </Link>
+                                    </div>
+                                </div>
+                                </CardContent>
+                            </Card>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+          ) : (
+             <Card className="flex flex-col items-center justify-center p-12 text-center bg-secondary/50 border-dashed min-h-[300px]">
+                <Compass className="w-16 h-16 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold">Aucun voyage trouvé</h3>
+                <p className="text-muted-foreground mt-2">Essayez de sélectionner une autre catégorie pour trouver votre bonheur !</p>
+            </Card>
+          )}
       </div>
       
       <div>
