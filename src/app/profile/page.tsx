@@ -62,7 +62,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{user.email}</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {/* Personal Information */}
                 <Card className="lg:col-span-2">
@@ -88,7 +88,7 @@ export default function ProfilePage() {
                             <Input id="address" defaultValue={user.address} disabled={!editMode} />
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
+                    <CardFooter className="flex flex-wrap justify-between gap-2">
                          <Button variant="outline" onClick={() => { /* Logic for managing addresses */ }}>Gérer mes adresses</Button>
                          <Button onClick={() => setEditMode(!editMode)}>
                             {editMode ? 'Sauvegarder' : 'Modifier mes informations'}
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                     <CardContent>
                         <ul className="space-y-3">
                             {paymentHistory.map(payment => (
-                                <li key={payment.id} className="flex items-center justify-between">
+                                <li key={payment.id} className="flex items-center justify-between flex-wrap gap-2">
                                     <div >
                                         <p className="font-medium">{payment.amount} - {payment.date}</p>
                                         <p className={`text-sm ${payment.status === 'Réussi' ? 'text-green-500' : 'text-red-500'}`}>{payment.status}</p>

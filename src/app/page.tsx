@@ -397,32 +397,38 @@ export default function Home() {
       
       <div>
         <h2 className="text-xl font-bold tracking-tight mb-4">Notre sélection éditoriale</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-6">
-          {editorialPicks.map((pick, index) => (
-            <Card key={index} className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group">
-                <CardContent className="p-0">
-                    <div className="grid md:grid-cols-2 items-center">
-                        <div className="relative aspect-video md:aspect-[4/3] h-full">
-                            <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
-                        </div>
-                        <div className="p-6">
-                            <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                                <Avatar className="w-8 h-8">
-                                <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
-                                <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
-                                </Avatar>
-                                <span>{pick.author}</span>
-                            </div>
-                            <Button className="rounded-full">
-                                Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-          ))}
-        </div>
+         <Carousel opts={{ align: 'start' }} className="w-full -mx-4 sm:mx-0">
+            <CarouselContent className="-ml-4">
+                {editorialPicks.map((pick, index) => (
+                    <CarouselItem key={index} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                        <Card className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col">
+                            <CardContent className="p-0 flex-1 flex flex-col">
+                                <div className="relative aspect-video w-full">
+                                    <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
+                                </div>
+                                <div className="p-6 flex flex-col flex-1">
+                                    <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
+                                    <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                                        <Avatar className="w-8 h-8">
+                                        <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
+                                        <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
+                                        </Avatar>
+                                        <span>{pick.author}</span>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <Button className="rounded-full w-full">
+                                            Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+             <CarouselPrevious className="hidden sm:flex left-2" />
+             <CarouselNext className="hidden sm:flex right-2" />
+        </Carousel>
       </div>
 
       <div className="relative rounded-2xl overflow-hidden">
