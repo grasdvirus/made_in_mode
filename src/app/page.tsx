@@ -218,7 +218,7 @@ const AnimatedDestinations = () => {
     const destinationsColumn2 = [...destinations, ...destinations, ...destinations].reverse();
 
     return (
-        <div className="relative h-[500px] overflow-hidden scroller flex justify-center gap-4 md:hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
+        <div className="relative h-[500px] overflow-hidden scroller flex justify-center gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
             <div className="animate-scroll-down space-y-4">
                 {destinationsColumn1.map((dest, index) => (
                     <DestinationCard key={`col1-vert-${index}`} dest={dest} />
@@ -355,7 +355,7 @@ export default function Home() {
                                   </div>
                                   <Link href="/discover" passHref>
                                     <Button asChild className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">
-                                        <a>Voir plus</a>
+                                        <span>Voir plus</span>
                                     </Button>
                                   </Link>
                                   </div>
