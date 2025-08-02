@@ -180,8 +180,8 @@ export default function HomePage() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="hidden md:flex" />
-                <CarouselNext className="hidden md:flex" />
+                <CarouselPrevious className="flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
+                <CarouselNext className="flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
             </Carousel>
         </section>
 
