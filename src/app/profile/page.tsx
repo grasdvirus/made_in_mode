@@ -8,31 +8,16 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft, Shield } from 'lucide-react';
 import { signOut } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
     const router = useRouter();
     const [editMode, setEditMode] = useState(false);
-
-    // Mock user data - replace with actual data from your backend/auth provider
-    const user = {
-        name: 'Vanessa',
-        email: 'vanessa@example.com',
-        phone: '+33 6 12 34 56 78',
-        authMethod: 'Google',
-        avatar: 'https://placehold.co/80x80.png',
-        address: '123 Rue de la Mode, 75001 Paris, France'
-    };
-    
-    // Mock payment history
-    const paymentHistory = [
-        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA' },
-        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA' },
-        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
-    ];
+    const [user, loading] = useAuthState(auth);
 
     const handleSignOut = async () => {
         try {
@@ -42,10 +27,30 @@ export default function ProfilePage() {
             console.error('Error signing out: ', error);
         }
     };
+    
+    // Mock data - replace with actual data from your backend/auth provider
+    const mockUser = {
+        name: user?.displayName || 'Vanessa',
+        email: user?.email || 'vanessa@example.com',
+        phone: '+33 6 12 34 56 78',
+        authMethod: user?.providerData[0]?.providerId || 'Google',
+        avatar: user?.photoURL || 'https://placehold.co/80x80.png',
+        address: '123 Rue de la Mode, 75001 Paris, France'
+    };
+    
+    const paymentHistory = [
+        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA' },
+        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA' },
+        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
+    ];
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
+    }
 
     return (
-        <div className="bg-background rounded-t-3xl p-4 sm:p-6 min-h-[80vh] shadow-2xl space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="bg-background rounded-t-3xl sm:p-6 min-h-[80vh] shadow-2xl space-y-6">
+            <div className="flex items-center justify-between p-4 sm:p-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                     <ChevronLeft className="h-6 w-6" />
                 </Button>
@@ -53,16 +58,16 @@ export default function ProfilePage() {
                 <div className="w-10"></div> {/* Spacer */}
             </div>
             
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-2 p-4 sm:p-0">
                 <Avatar className="w-24 h-24 border-4 border-primary">
-                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="female portrait" />
-                    <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarImage src={mockUser.avatar} alt={mockUser.name} data-ai-hint="female portrait" />
+                    <AvatarFallback>{mockUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
-                <h2 className="text-2xl font-bold">{user.name}</h2>
-                <p className="text-muted-foreground">{user.email}</p>
+                <h2 className="text-2xl font-bold">{mockUser.name}</h2>
+                <p className="text-muted-foreground">{mockUser.email}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 sm:p-0">
 
                 {/* Personal Information */}
                 <Card className="lg:col-span-2">
@@ -73,19 +78,19 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nom complet</Label>
-                            <Input id="name" defaultValue={user.name} disabled={!editMode} />
+                            <Input id="name" defaultValue={mockUser.name} disabled={!editMode} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Adresse email</Label>
-                            <Input id="email" type="email" defaultValue={user.email} disabled />
+                            <Input id="email" type="email" defaultValue={mockUser.email} disabled />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="phone">Numéro de téléphone</Label>
-                            <Input id="phone" type="tel" defaultValue={user.phone} disabled={!editMode} />
+                            <Input id="phone" type="tel" defaultValue={mockUser.phone} disabled={!editMode} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Adresse de livraison</Label>
-                            <Input id="address" defaultValue={user.address} disabled={!editMode} />
+                            <Input id="address" defaultValue={mockUser.address} disabled={!editMode} />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-wrap justify-between gap-2">
@@ -105,7 +110,7 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div>
                             <p className="text-sm font-medium">Méthode d’authentification</p>
-                            <p className="text-sm text-muted-foreground">{user.authMethod}</p>
+                            <p className="text-sm text-muted-foreground">{mockUser.authMethod}</p>
                         </div>
                         <Button className="w-full">Changer mon mot de passe</Button>
                     </CardContent>
@@ -175,6 +180,12 @@ export default function ProfilePage() {
                             </Button>
                         </CardContent>
                     </Card>
+
+                    {user?.email === 'grasdvirus@gmail.com' && (
+                        <Button variant="secondary" onClick={() => router.push('/admin')} className="w-full">
+                            <Shield className="mr-2 h-4 w-4" /> Tableau de bord Admin
+                        </Button>
+                    )}
 
                     <Button variant="destructive" onClick={handleSignOut} className="w-full">
                         <LogOut className="mr-2 h-4 w-4" /> Se déconnecter

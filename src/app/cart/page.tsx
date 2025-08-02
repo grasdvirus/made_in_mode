@@ -89,8 +89,8 @@ export default function CartPage() {
   const total = subtotal + shipping;
 
   return (
-    <div className="bg-background rounded-t-3xl p-4 sm:p-6 min-h-[80vh] shadow-2xl">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="bg-background rounded-t-3xl sm:p-6 min-h-[80vh] shadow-2xl">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-4 sm:p-0">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
            <h2 className="text-2xl font-bold flex items-center gap-3">
