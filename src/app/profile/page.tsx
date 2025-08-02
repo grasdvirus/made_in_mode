@@ -29,9 +29,9 @@ export default function ProfilePage() {
     
     // Mock payment history
     const paymentHistory = [
-        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '€79.99' },
-        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '€129.50' },
-        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '€45.00' },
+        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA' },
+        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA' },
+        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
     ];
 
     const handleSignOut = async () => {

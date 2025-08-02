@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Minus, X, CreditCard, ShoppingCart, Percent, Ticket } from 'lucide-react';
+import { Plus, Minus, X, CreditCard, ShoppingCart, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type CartItem = {
@@ -27,7 +27,7 @@ const initialCartItems: CartItem[] = [
     id: 1,
     name: 'T-shirt Épuré',
     category: 'Hauts',
-    price: 35.0,
+    price: 20000,
     quantity: 1,
     image: 'https://placehold.co/200x200.png',
     hint: 'white t-shirt',
@@ -38,7 +38,7 @@ const initialCartItems: CartItem[] = [
     id: 2,
     name: 'Jean Slim Urbain',
     category: 'Pantalons',
-    price: 79.99,
+    price: 45000,
     quantity: 1,
     image: 'https://placehold.co/200x200.png',
     hint: 'black jeans',
@@ -49,7 +49,7 @@ const initialCartItems: CartItem[] = [
     id: 3,
     name: 'Baskets en Cuir',
     category: 'Chaussures',
-    price: 120.0,
+    price: 65000,
     quantity: 1,
     image: 'https://placehold.co/200x200.png',
     hint: 'leather sneakers',
@@ -85,7 +85,7 @@ export default function CartPage() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const shipping = subtotal > 50 ? 0 : 9.99;
+  const shipping = subtotal > 30000 ? 0 : 5000;
   const total = subtotal + shipping;
 
   return (
@@ -114,7 +114,7 @@ export default function CartPage() {
                   <h3 className="font-semibold">{item.name}</h3>
                   <p className="text-sm text-muted-foreground">{item.category}</p>
                    <p className="text-sm text-muted-foreground">Taille: {item.size} / Couleur: {item.color}</p>
-                  <p className="font-bold text-lg mt-1">€{item.price.toFixed(2)}</p>
+                  <p className="font-bold text-lg mt-1">FCFA {item.price.toLocaleString()}</p>
                 </div>
                 <div className="flex flex-col items-end justify-between h-full">
                   <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8" onClick={() => removeItem(item.id)}>
@@ -151,11 +151,11 @@ export default function CartPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span>Sous-total</span>
-                <span className="font-medium">€{subtotal.toFixed(2)}</span>
+                <span className="font-medium">FCFA {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Livraison</span>
-                <span className="font-medium">{shipping === 0 ? 'Gratuite' : `€${shipping.toFixed(2)}`}</span>
+                <span className="font-medium">{shipping === 0 ? 'Gratuite' : `FCFA ${shipping.toLocaleString()}`}</span>
               </div>
                <div className="flex items-center gap-2">
                  <Input placeholder="Code promo" className="bg-background/50 border-border" />
@@ -164,7 +164,7 @@ export default function CartPage() {
               <Separator />
               <div className="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span>€{total.toFixed(2)}</span>
+                <span>FCFA {total.toLocaleString()}</span>
               </div>
             </CardContent>
             <CardFooter>

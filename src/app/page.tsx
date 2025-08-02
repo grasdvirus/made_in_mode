@@ -59,8 +59,8 @@ const upcomingTours = [
     {
       name: 'Brésil Iconique',
       duration: '8 jours',
-      price: 659,
-      originalPrice: 750,
+      price: 430000,
+      originalPrice: 490000,
       rating: 4.6,
       reviews: 56,
       image: 'https://placehold.co/400x300.png',
@@ -70,8 +70,8 @@ const upcomingTours = [
     {
       name: 'Paradis balnéaire',
       duration: '5 jours',
-      price: 450,
-      originalPrice: 520,
+      price: 295000,
+      originalPrice: 340000,
       rating: 4.8,
       reviews: 89,
       image: 'https://placehold.co/400x300.png',
@@ -81,8 +81,8 @@ const upcomingTours = [
     {
       name: 'Aventure en Amazonie',
       duration: '7 jours',
-      price: 720,
-      originalPrice: 800,
+      price: 470000,
+      originalPrice: 525000,
       rating: 4.7,
       reviews: 78,
       image: 'https://placehold.co/400x300.png',
@@ -92,8 +92,8 @@ const upcomingTours = [
     {
         name: 'Voyage Patagonie',
         duration: '10 jours',
-        price: 950,
-        originalPrice: 1050,
+        price: 620000,
+        originalPrice: 680000,
         rating: 4.9,
         reviews: 110,
         image: 'https://placehold.co/400x300.png',
@@ -386,8 +386,8 @@ export default function Home() {
                                             <Heart className="w-5 h-5" />
                                         </Button>
                                         <div className='text-right'>
-                                            <p className="text-sm text-muted-foreground line-through">${tour.originalPrice}</p>
-                                            <p className="font-bold text-lg">${tour.price}</p>
+                                            <p className="text-sm text-muted-foreground line-through">FCFA {tour.originalPrice.toLocaleString()}</p>
+                                            <p className="font-bold text-lg">FCFA {tour.price.toLocaleString()}</p>
                                         </div>
                                         <Button variant="ghost" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm glass-button">
                                             <ShoppingCart className="w-5 h-5" />
