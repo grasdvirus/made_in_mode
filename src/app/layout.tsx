@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Inter, Poppins } from 'next/font/google';
@@ -8,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
+import Footer from '@/components/footer';
 
 
 const poppins = Poppins({
@@ -33,6 +35,7 @@ export default function RootLayout({
   const CurrentHeader = getHeader(pathname);
   
   const mainMarginTop = pathname === '/' ? 'mt-32' : (pathname === '/profile' ? 'mt-8' : '-mt-16');
+  const showFooter = pathname !== '/login';
 
   return (
     <html lang="fr" className="dark scroll-smooth">
@@ -42,7 +45,12 @@ export default function RootLayout({
           <main className={`flex-1 w-full max-w-6xl mx-auto px-4 pb-24 ${mainMarginTop}`}>
             {children}
           </main>
-          <GlassFooterNav />
+          {showFooter && (
+            <>
+              <Footer />
+              <GlassFooterNav />
+            </>
+          )}
           <Toaster />
         </div>
       </body>

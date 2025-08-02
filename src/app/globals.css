@@ -180,3 +180,58 @@
     0 0 18px hsla(var(--primary) / 0.5),
     0 0 10px hsla(var(--primary) / 0.4) inset;
 }
+
+/* Custom Notification Style */
+.notification-card {
+  width: 320px;
+  height: 150px;
+  background-color: #353535;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  backdrop-filter: blur(10px);
+  transition: 0.5s ease-in-out;
+}
+
+.notification-card:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.notification-img {
+  width: 100px;
+  height: 100px;
+  margin-left: 10px;
+  border-radius: 10px;
+  background: linear-gradient(#d7cfcf, #9198e5);
+}
+
+.notification-textBox {
+  width: calc(100% - 130px);
+  margin-left: 10px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.notification-textContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-h1 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.notification-p {
+  font-size: 12px;
+  font-weight: lighter;
+}
+
+.notification-span {
+  font-size: 10px;
+  color: lightgrey;
+}
+
