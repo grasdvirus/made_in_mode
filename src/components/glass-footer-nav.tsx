@@ -4,15 +4,15 @@
 
 import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, Compass, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', id: 'glass-home', label: 'Accueil' },
-  { href: '/discover', id: 'glass-discover', label: 'Découvrir' },
-  { href: '/cart', id: 'glass-cart', label: 'Panier' },
-  { href: '/profile', id: 'glass-profile', label: 'Profil' },
+  { href: '/', id: 'glass-home', label: 'Explore', icon: Compass },
+  { href: '/discover', id: 'glass-discover', label: 'Discover', icon: Search },
+  { href: '/cart', id: 'glass-cart', label: 'Cart', icon: ShoppingCart },
+  { href: '/profile', id: 'glass-profile', label: 'Profile', icon: User },
 ];
 
 export default function GlassFooterNav() {
@@ -38,7 +38,10 @@ export default function GlassFooterNav() {
                       checked={pathname === item.href}
                       onChange={() => handleNavChange(item.href)}
                   />
-                  <label htmlFor={item.id}>{item.label}</label>
+                  <label htmlFor={item.id} className="flex flex-col items-center gap-1 !p-3">
+                    <item.icon className="h-5 w-5" />
+                    <span className="text-xs">{item.label}</span>
+                  </label>
               </React.Fragment>
           ))}
           <div className="glass-glider"></div>

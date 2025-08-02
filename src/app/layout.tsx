@@ -20,7 +20,7 @@ const poppins = Poppins({
 });
 
 function getHeader(pathname: string) {
-    if (pathname === '/') return <Header />;
+    if (pathname === '/') return null;
     if (pathname === '/discover') return <Header />;
     if (pathname === '/cart') return null;
     if (pathname === '/profile') return null;
@@ -35,15 +35,15 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainMarginTop = (pathname === '/' || pathname === '/discover') ? 'mt-32' : 'mt-8';
+  const mainMarginTop = (pathname === '/discover') ? 'mt-32' : 'mt-8';
   const showFooter = pathname !== '/login';
 
   return (
     <html lang="fr" className="dark scroll-smooth">
-      <body className={`${poppins.variable} font-sans antialiased bg-gradient-to-b from-gray-900 to-black scroll-hover select-none`}>
+      <body className={`${poppins.variable} font-sans antialiased bg-background text-foreground scroll-hover select-none`}>
         <div className="flex flex-col min-h-screen">
           {CurrentHeader}
-          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${mainMarginTop} ${showFooter ? 'pb-24 md:pb-8' : ''}`}>
+          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooter ? 'pb-24 md:pb-8' : ''}`}>
             {children}
           </main>
           {showFooter && (

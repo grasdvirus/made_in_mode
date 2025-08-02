@@ -1,200 +1,135 @@
 
-
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, MapPin, Star, Sun, Mountain, Building, Ship } from 'lucide-react';
+import { Search, Heart, Clock, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const allDestinations = [
+const yachtData = [
   {
-    name: 'Santorin, Grèce',
-    category: 'Plage',
-    rating: 4.9,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'greece santorini',
+    name: 'Manhattan - Elegant Sea South',
+    location: 'Monaco',
+    duration: '1h 30m',
+    type: 'Private',
+    price: 350,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'luxury yacht',
   },
   {
-    name: 'Kyoto, Japon',
-    category: 'Ville',
-    rating: 4.8,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'japan kyoto',
+    name: 'Azure Spirit - Ocean Voyager',
+    location: 'St. Tropez',
+    duration: '2h',
+    type: 'Group',
+    price: 150,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'modern yacht',
   },
   {
-    name: 'Parc national de Banff, Canada',
-    category: 'Montagne',
-    rating: 4.9,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'canada mountains',
+    name: 'Serenity - Coastal Cruiser',
+    location: 'Cannes',
+    duration: '1h',
+    type: 'Private',
+    price: 280,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'sleek yacht',
   },
   {
-    name: 'Bora Bora, Polynésie française',
-    category: 'Plage',
-    rating: 4.9,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'bora bora beach',
+    name: 'Neptune’s Chariot',
+    location: 'Nice',
+    duration: '2h 30m',
+    type: 'Private',
+    price: 550,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'large yacht',
   },
-  {
-    name: 'Rome, Italie',
-    category: 'Ville',
-    rating: 4.7,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'italy rome',
-  },
-  {
-    name: 'Mont Everest, Népal',
-    category: 'Montagne',
-    rating: 4.8,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'mount everest',
-  },
-  {
-    name: 'Maldives',
-    category: 'Plage',
-    rating: 4.9,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'maldives beach',
-  },
-  {
-    name: 'New York, USA',
-    category: 'Ville',
-    rating: 4.6,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'new york city',
-  },
-  {
-    name: 'Croisière en Alaska',
-    category: 'Croisière',
-    rating: 4.7,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'alaska cruise',
-  },
-    {
-    name: 'Paris, France',
-    category: 'Ville',
-    rating: 4.7,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'paris france',
-    },
-    {
-    name: 'Zermatt, Suisse',
-    category: 'Montagne',
-    rating: 4.9,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'switzerland mountains',
-    },
-    {
-    name: 'Phuket, Thaïlande',
-    category: 'Plage',
-    rating: 4.6,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'thailand beach',
-    },
 ];
 
-const filters = [
-  { name: 'Tous', icon: Star, category: 'Tous' },
-  { name: 'Plage', icon: Sun, category: 'Plage' },
-  { name: 'Montagne', icon: Mountain, category: 'Montagne' },
-  { name: 'Ville', icon: Building, category: 'Ville' },
-  { name: 'Croisière', icon: Ship, category: 'Croisière' },
-];
+const AcePlaceLogo = () => (
+    <div className="flex items-center gap-2">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M2 7L12 12L22 7" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M12 12V22" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M17 4.5L7 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        </svg>
+        <div>
+            <h1 className="text-white font-bold text-xl leading-none">ACEPLACE</h1>
+            <p className="text-white/70 text-xs leading-none">YACHTING EXPERIENCE</p>
+        </div>
+    </div>
+)
 
-
-export default function Home() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('Tous');
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    // Trigger entrance animation for the grid
-    setAnimate(true);
-  }, []);
-
-  const filteredDestinations = useMemo(() => {
-    return allDestinations.filter(dest => {
-      const matchesFilter = activeFilter === 'Tous' || dest.category === activeFilter;
-      const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
-  }, [searchTerm, activeFilter]);
-  
+export default function HomePage() {
   return (
-    <div className="bg-background rounded-t-3xl min-h-[80vh] shadow-2xl">
-        {/* Search and Filter */}
-        <div className="p-4 sm:p-6 sticky top-0 bg-background/80 backdrop-blur-lg z-10 rounded-t-3xl">
-            <div className="relative mb-4">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                    placeholder="Rechercher une destination..." 
-                    className="pl-12 h-12 text-lg rounded-full bg-secondary border-none"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 horizontal-scroll-fade">
-                {filters.map(filter => (
-                    <Button 
-                        key={filter.name} 
-                        variant={activeFilter === filter.category ? 'primary' : 'ghost'}
-                        className={cn(
-                          "rounded-full flex-shrink-0 transition-all duration-300",
-                          activeFilter === filter.category && 'text-primary-foreground'
-                        )}
-                        onClick={() => setActiveFilter(filter.category)}
-                    >
-                        <filter.icon className="mr-2 h-4 w-4" />
-                        {filter.name}
-                    </Button>
-                ))}
-            </div>
+    <div className="bg-background min-h-screen -mx-4 -mt-8">
+      {/* Header with Background Image */}
+      <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
+        <Image
+          src="https://placehold.co/1200x800.png"
+          alt="Yachting experience"
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0 z-0"
+          data-ai-hint="yacht ocean"
+        />
+        <div className="absolute inset-0 bg-black/50 z-10" />
+        <div className="relative z-20 flex flex-col justify-center items-center h-full text-white p-4">
+          <AcePlaceLogo />
+          <div className="relative w-full max-w-sm mt-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70" />
+            <Input
+              placeholder="Discover yachts & experiences"
+              className="w-full h-12 pl-12 rounded-full bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 focus:border-white"
+            />
+          </div>
         </div>
-        
-        {/* Destinations Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 sm:p-6">
-            {filteredDestinations.map((dest, index) => (
-                <Card 
-                  key={`${dest.name}-${index}`}
-                  className={cn(
-                    "border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm transition-all duration-500 ease-out",
-                     animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-                  )}
-                  style={{ transitionDelay: `${index * 50}ms`}}
-                >
-                    <CardContent className="p-0">
-                        <div className="relative aspect-[4/5]">
-                            <Image 
-                                src={dest.image} 
-                                alt={dest.name} 
-                                fill 
-                                className="object-cover group-hover:scale-105 transition-transform duration-300" 
-                                data-ai-hint={dest.hint} 
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                               <div className="flex items-center gap-1.5 text-yellow-400 mb-1">
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <span className="text-white font-bold text-sm">{dest.rating}</span>
-                                </div>
-                                <h3 className="font-bold text-lg text-white leading-tight">{dest.name}</h3>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+      </header>
+
+      {/* Main Content */}
+      <main className="p-4 md:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {yachtData.map((yacht, index) => (
+            <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <Image
+                    src={yacht.image}
+                    alt={yacht.name}
+                    width={600}
+                    height={400}
+                    className="w-full h-48 object-cover"
+                    data-ai-hint={yacht.hint}
+                  />
+                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                   <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
+                    ${yacht.price}/h
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-lg text-foreground">{yacht.name}</h3>
+                  <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4" />
+                      <span>{yacht.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4" />
+                      <span>{yacht.duration}</span>
+                    </div>
+                  </div>
+                   <p className="text-sm text-primary font-semibold mt-1">{yacht.type}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        
-        {filteredDestinations.length === 0 && (
-            <div className="text-center py-20">
-                <Search className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">Aucune destination trouvée</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Essayez de modifier votre recherche ou vos filtres.</p>
-            </div>
-        )}
+      </main>
     </div>
   );
 }
