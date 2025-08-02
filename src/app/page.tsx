@@ -217,15 +217,17 @@ const AnimatedDestinations = () => {
 
     return (
         <div className="relative h-[500px] overflow-hidden scroller md:hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
-            <div className="animate-scroll-down space-y-4">
-                {destinationsColumn1.map((dest, index) => (
-                    <DestinationCard key={`col1-vert-${index}`} dest={dest} />
-                ))}
-            </div>
-            <div className="animate-scroll-up space-y-4">
-                {destinationsColumn2.map((dest, index) => (
-                    <DestinationCard key={`col2-vert-${index}`} dest={dest} />
-                ))}
+            <div className="flex justify-center gap-4">
+                <div className="animate-scroll-down space-y-4">
+                    {destinationsColumn1.map((dest, index) => (
+                        <DestinationCard key={`col1-vert-${index}`} dest={dest} />
+                    ))}
+                </div>
+                <div className="animate-scroll-up space-y-4">
+                    {destinationsColumn2.map((dest, index) => (
+                        <DestinationCard key={`col2-vert-${index}`} dest={dest} />
+                    ))}
+                </div>
             </div>
         </div>
     );
