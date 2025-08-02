@@ -38,9 +38,8 @@ export default function GlassFooterNav() {
                       checked={pathname === item.href}
                       onChange={() => handleNavChange(item.href)}
                   />
-                  <label htmlFor={item.id} className="flex flex-col items-center gap-1 !p-3">
-                    <item.icon className="h-5 w-5" />
-                    <span className="text-xs">{item.label}</span>
+                  <label htmlFor={item.id} className="!p-3">
+                    {item.label}
                   </label>
               </React.Fragment>
           ))}

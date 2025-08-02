@@ -1,12 +1,13 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Heart, Clock, MapPin } from 'lucide-react';
+import { Search, Heart, Clock, MapPin, X } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 
 const yachtData = [
@@ -46,6 +47,24 @@ const yachtData = [
     image: 'https://placehold.co/600x400.png',
     hint: 'large yacht',
   },
+   {
+    name: 'Manhattan - Elegant Sea South 2',
+    location: 'Monaco',
+    duration: '1h 30m',
+    type: 'Private',
+    price: 350,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'luxury yacht',
+  },
+  {
+    name: 'Azure Spirit - Ocean Voyager 2',
+    location: 'St. Tropez',
+    duration: '2h',
+    type: 'Group',
+    price: 150,
+    image: 'https://placehold.co/600x400.png',
+    hint: 'modern yacht',
+  },
 ];
 
 const AcePlaceLogo = () => (
@@ -64,6 +83,25 @@ const AcePlaceLogo = () => (
 )
 
 export default function HomePage() {
+  const [searchValue, setSearchValue] = React.useState('');
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [count, setCount] = React.useState(0)
+
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    setCount(api.scrollSnapList().length)
+    setCurrent(api.selectedScrollSnap() + 1)
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1)
+    })
+  }, [api])
+
+
   return (
     <div className="bg-background min-h-screen -mx-4 -mt-8">
       {/* Header with Background Image */}
@@ -79,55 +117,85 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 flex flex-col justify-center items-center h-full text-white p-4">
           <AcePlaceLogo />
-          <div className="relative w-full max-w-sm mt-6">
+          <div className="relative w-full max-w-sm mt-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70" />
             <Input
               placeholder="Discover yachts & experiences"
               className="w-full h-12 pl-12 rounded-full bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 focus:border-white"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
             />
+            {searchValue && (
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-8 w-8 text-white/70 hover:bg-white/20"
+                    onClick={() => setSearchValue('')}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="p-4 md:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {yachtData.map((yacht, index) => (
-            <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <Image
-                    src={yacht.image}
-                    alt={yacht.name}
-                    width={600}
-                    height={400}
-                    className="w-full h-48 object-cover"
-                    data-ai-hint={yacht.hint}
-                  />
-                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                   <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
-                    ${yacht.price}/h
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg text-foreground">{yacht.name}</h3>
-                  <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>{yacht.location}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      <span>{yacht.duration}</span>
-                    </div>
-                  </div>
-                   <p className="text-sm text-primary font-semibold mt-1">{yacht.type}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="relative -mx-4 sm:mx-0">
+          <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade">
+              <CarouselContent className="-ml-4">
+                {yachtData.map((yacht, index) => (
+                  <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2">
+                    <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
+                      <CardContent className="p-0">
+                        <div className="relative">
+                          <Image
+                            src={yacht.image}
+                            alt={yacht.name}
+                            width={600}
+                            height={400}
+                            className="w-full h-48 object-cover"
+                            data-ai-hint={yacht.hint}
+                          />
+                          <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
+                            <Heart className="w-5 h-5" />
+                          </Button>
+                          <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
+                            ${yacht.price}/h
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-bold text-lg text-foreground">{yacht.name}</h3>
+                          <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4" />
+                              <span>{yacht.location}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-4 h-4" />
+                              <span>{yacht.duration}</span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-primary font-semibold mt-1">{yacht.type}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+          </Carousel>
+           <div className="flex justify-start gap-2 pt-4 px-4">
+                {Array.from({ length: count }).map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => api?.scrollTo(i)}
+                        className={cn(
+                            "h-2 w-2 rounded-full transition-all bg-primary/20",
+                            i === current -1 ? 'w-4 bg-primary' : 'bg-primary/20'
+                        )}
+                    />
+                ))}
+            </div>
         </div>
       </main>
     </div>
