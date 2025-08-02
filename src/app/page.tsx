@@ -6,9 +6,10 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Heart, Clock, MapPin, X } from 'lucide-react';
+import { Search, Heart, Clock, MapPin, X, ArrowRight, ShoppingBag } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const yachtData = [
   {
@@ -66,6 +67,21 @@ const yachtData = [
     hint: 'modern yacht',
   },
 ];
+
+const categories = [
+    { name: 'Nouveautés', image: 'https://placehold.co/200x200.png', hint: 'new fashion' },
+    { name: 'Vêtements', image: 'https://placehold.co/200x200.png', hint: 'clothing rack' },
+    { name: 'Chaussures', image: 'https://placehold.co/200x200.png', hint: 'stylish shoes' },
+    { name: 'Accessoires', image: 'https://placehold.co/200x200.png', hint: 'fashion accessories' },
+    { name: 'Robes', image: 'https://placehold.co/200x200.png', hint: 'elegant dress' },
+    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection' }
+]
+
+const products = [
+    { name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
+    { name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
+    { name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
+]
 
 const AcePlaceLogo = () => (
     <div className="flex items-center gap-2">
@@ -140,8 +156,25 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="p-4 md:p-6">
-        <div className="relative -mx-4 sm:mx-0">
+      <main className="p-4 md:p-6 space-y-12">
+        {/* Categories Section */}
+        <section>
+             <div className="horizontal-scroll-fade">
+                <div className="flex items-center gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+                    {categories.map((category, index) => (
+                        <div key={index} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-20">
+                            <div className="relative w-20 h-20">
+                                <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50" data-ai-hint={category.hint} />
+                            </div>
+                            <span className="text-sm font-medium">{category.name}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        {/* Yacht Carousel Section */}
+        <section className="relative -mx-4 sm:mx-0">
           <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade">
               <CarouselContent className="-ml-4">
                 {yachtData.map((yacht, index) => (
@@ -190,13 +223,34 @@ export default function HomePage() {
                         key={i}
                         onClick={() => api?.scrollTo(i)}
                         className={cn(
-                            "h-2 w-2 rounded-full transition-all bg-primary/20",
+                            "h-2 w-2 rounded-full transition-all",
                             i === current -1 ? 'w-4 bg-primary' : 'bg-primary/20'
                         )}
                     />
                 ))}
             </div>
-        </div>
+        </section>
+
+        {/* Minimalist Products Section */}
+        <section className="space-y-4">
+            {products.map((product, index) => (
+                 <Card key={index} className="bg-secondary/50 border-none shadow-md rounded-2xl p-4">
+                    <div className="flex items-center gap-4">
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                           <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
+                        </div>
+                        <div className="flex-grow">
+                            <h3 className="font-bold text-lg">{product.name}</h3>
+                            <p className="text-muted-foreground text-sm">{product.description}</p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30">
+                            <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </Card>
+            ))}
+        </section>
+
       </main>
     </div>
   );
