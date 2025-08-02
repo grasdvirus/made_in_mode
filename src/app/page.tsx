@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -11,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 const trips = [
   {
@@ -216,18 +218,16 @@ const AnimatedDestinations = () => {
     const destinationsColumn2 = [...destinations, ...destinations, ...destinations].reverse();
 
     return (
-        <div className="relative h-[500px] overflow-hidden scroller md:hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
-            <div className="flex justify-center gap-4">
-                <div className="animate-scroll-down space-y-4">
-                    {destinationsColumn1.map((dest, index) => (
-                        <DestinationCard key={`col1-vert-${index}`} dest={dest} />
-                    ))}
-                </div>
-                <div className="animate-scroll-up space-y-4">
-                    {destinationsColumn2.map((dest, index) => (
-                        <DestinationCard key={`col2-vert-${index}`} dest={dest} />
-                    ))}
-                </div>
+        <div className="relative h-[500px] overflow-hidden scroller flex justify-center gap-4 md:hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
+            <div className="animate-scroll-down space-y-4">
+                {destinationsColumn1.map((dest, index) => (
+                    <DestinationCard key={`col1-vert-${index}`} dest={dest} />
+                ))}
+            </div>
+            <div className="animate-scroll-up space-y-4">
+                {destinationsColumn2.map((dest, index) => (
+                    <DestinationCard key={`col2-vert-${index}`} dest={dest} />
+                ))}
             </div>
         </div>
     );
@@ -353,7 +353,11 @@ export default function Home() {
                                       <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                                       <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
                                   </div>
-                                  <Button className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">Voir plus</Button>
+                                  <Link href="/discover" passHref>
+                                    <Button asChild className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">
+                                        <a>Voir plus</a>
+                                    </Button>
+                                  </Link>
                                   </div>
                               </div>
                               </CardContent>
@@ -424,29 +428,29 @@ export default function Home() {
       
       <div>
         <h2 className="text-xl font-bold tracking-tight mb-4">Notre sélection éditoriale</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
             {editorialPicks.map((pick, index) => (
-                <Card key={index} className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col">
-                    <CardContent className="p-0 flex-1 flex flex-col">
-                        <div className="relative aspect-video w-full">
+                <Card key={index} className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col md:flex-row">
+                    <CardContent className="p-0 flex-1 flex flex-col md:w-1/2">
+                        <div className="relative aspect-video w-full md:h-full">
                             <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
                         </div>
-                        <div className="p-6 flex flex-col flex-1">
-                            <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                                <Avatar className="w-8 h-8">
-                                <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
-                                <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
-                                </Avatar>
-                                <span>{pick.author}</span>
-                            </div>
-                            <div className="mt-auto">
-                                <Button className="rounded-full w-full">
-                                    Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
                     </CardContent>
+                     <div className="p-6 flex flex-col flex-1 md:w-1/2 justify-center">
+                        <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                            <Avatar className="w-8 h-8">
+                            <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
+                            <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
+                            </Avatar>
+                            <span>{pick.author}</span>
+                        </div>
+                        <div className="mt-auto md:mt-4">
+                            <Button className="rounded-full w-full">
+                                Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
                 </Card>
             ))}
         </div>
@@ -458,9 +462,11 @@ export default function Home() {
         <div className="relative p-8 md:p-12 flex flex-col items-start text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-2">Préparez votre voyage</h2>
           <p className="text-lg md:text-xl mb-4 max-w-lg">Nos outils et guides sont là pour vous aider à planifier l'aventure de vos rêves.</p>
-          <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-            Commencer à planifier <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/discover" passHref>
+            <Button asChild size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+                <a>Commencer à planifier <ArrowRight className="ml-2 h-5 w-5" /></a>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

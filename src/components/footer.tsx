@@ -1,6 +1,7 @@
 import { Facebook, Twitter, Instagram, Linkedin, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -22,10 +23,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-3">Liens rapides</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Accueil</a></li>
-              <li><a href="#" className="hover:text-primary">Destinations</a></li>
-              <li><a href="#" className="hover:text-primary">À propos</a></li>
-              <li><a href="#" className="hover:text-primary">Contact</a></li>
+              <li><Link href="/" className="hover:text-primary">Accueil</Link></li>
+              <li><Link href="/discover" className="hover:text-primary">Destinations</Link></li>
+              <li><Link href="#" className="hover:text-primary">À propos</Link></li>
+              <li><Link href="#" className="hover:text-primary">Contact</Link></li>
             </ul>
           </div>
           <div>
