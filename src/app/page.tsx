@@ -464,7 +464,7 @@ export default function Home() {
           <p className="text-lg md:text-xl mb-4 max-w-lg">Nos outils et guides sont là pour vous aider à planifier l'aventure de vos rêves.</p>
           <Link href="/discover" passHref>
             <Button asChild size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                <a>Commencer à planifier <ArrowRight className="ml-2 h-5 w-5" /></a>
+                <span>Commencer à planifier <ArrowRight className="ml-2 h-5 w-5" /></span>
             </Button>
           </Link>
         </div>
