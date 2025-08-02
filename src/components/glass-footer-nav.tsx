@@ -9,10 +9,10 @@ import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', id: 'glass-home', label: 'Explore', icon: Compass },
-  { href: '/discover', id: 'glass-discover', label: 'Discover', icon: Search },
-  { href: '/cart', id: 'glass-cart', label: 'Cart', icon: ShoppingCart },
-  { href: '/profile', id: 'glass-profile', label: 'Profile', icon: User },
+  { href: '/', id: 'glass-home', label: 'Explorer', icon: Compass },
+  { href: '/discover', id: 'glass-discover', label: 'Découvrir', icon: Search },
+  { href: '/cart', id: 'glass-cart', label: 'Panier', icon: ShoppingCart },
+  { href: '/profile', id: 'glass-profile', label: 'Profil', icon: User },
 ];
 
 export default function GlassFooterNav() {
