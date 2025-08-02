@@ -218,7 +218,7 @@ const AnimatedDestinations = () => {
     const destinationsColumn2 = [...destinations, ...destinations].reverse();
 
     return (
-        <div className="relative h-96 overflow-hidden scroller grid grid-cols-2 gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
+        <div className="relative h-[500px] overflow-hidden scroller grid grid-cols-2 gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
             <div className="animate-scroll-down space-y-4">
                 {destinationsColumn1.map((dest, index) => (
                     <div key={`col1-${index}`} className="relative aspect-square group">
