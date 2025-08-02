@@ -10,6 +10,7 @@ import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
 import Footer from '@/components/footer';
+import ScrollToTopButton from '@/components/scroll-to-top-button';
 
 
 const poppins = Poppins({
@@ -52,6 +53,7 @@ export default function RootLayout({
             </>
           )}
           <Toaster />
+          <ScrollToTopButton />
         </div>
       </body>
     </html>
