@@ -2,473 +2,199 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X, ArrowRight } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Search, MapPin, Star, Sun, Mountain, Building, Ship } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Link from 'next/link';
 
-const trips = [
+const allDestinations = [
   {
-    name: 'Rio de Janeiro',
-    country: 'Brésil',
-    rating: 5.0,
-    reviews: 143,
+    name: 'Santorin, Grèce',
+    category: 'Plage',
+    rating: 4.9,
     image: 'https://placehold.co/600x800.png',
-    hint: 'brazil landscape'
+    hint: 'greece santorini',
+  },
+  {
+    name: 'Kyoto, Japon',
+    category: 'Ville',
+    rating: 4.8,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'japan kyoto',
+  },
+  {
+    name: 'Parc national de Banff, Canada',
+    category: 'Montagne',
+    rating: 4.9,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'canada mountains',
+  },
+  {
+    name: 'Bora Bora, Polynésie française',
+    category: 'Plage',
+    rating: 4.9,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'bora bora beach',
+  },
+  {
+    name: 'Rome, Italie',
+    category: 'Ville',
+    rating: 4.7,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'italy rome',
+  },
+  {
+    name: 'Mont Everest, Népal',
+    category: 'Montagne',
+    rating: 4.8,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'mount everest',
+  },
+  {
+    name: 'Maldives',
+    category: 'Plage',
+    rating: 4.9,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'maldives beach',
+  },
+  {
+    name: 'New York, USA',
+    category: 'Ville',
+    rating: 4.6,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'new york city',
+  },
+  {
+    name: 'Croisière en Alaska',
+    category: 'Croisière',
+    rating: 4.7,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'alaska cruise',
   },
     {
-    name: 'Chutes d\'Iguazu',
-    country: 'Argentine',
-    rating: 4.9,
-    reviews: 112,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'argentina waterfall'
-    },
-    {
-    name: 'Machu Picchu',
-    country: 'Pérou',
-    rating: 4.9,
-    reviews: 215,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'peru mountains'
-    },
-     {
-    name: 'Salar de Uyuni',
-    country: 'Bolivie',
-    rating: 4.8,
-    reviews: 180,
-    image: 'https://placehold.co/600x800.png',
-    hint: 'bolivia salt flat'
-    },
-     {
-    name: 'Île de Pâques',
-    country: 'Chili',
+    name: 'Paris, France',
+    category: 'Ville',
     rating: 4.7,
-    reviews: 190,
     image: 'https://placehold.co/600x800.png',
-    hint: 'chile easter island'
+    hint: 'paris france',
     },
-]
+    {
+    name: 'Zermatt, Suisse',
+    category: 'Montagne',
+    rating: 4.9,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'switzerland mountains',
+    },
+    {
+    name: 'Phuket, Thaïlande',
+    category: 'Plage',
+    rating: 4.6,
+    image: 'https://placehold.co/600x800.png',
+    hint: 'thailand beach',
+    },
+];
 
-const upcomingTours = [
-    {
-      name: 'Brésil Iconique',
-      duration: '8 jours',
-      price: 430000,
-      originalPrice: 490000,
-      rating: 4.6,
-      reviews: 56,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'brazil mountains',
-      bgColor: 'bg-teal-500/10'
-    },
-    {
-      name: 'Paradis balnéaire',
-      duration: '5 jours',
-      price: 295000,
-      originalPrice: 340000,
-      rating: 4.8,
-      reviews: 89,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'brazil beach',
-      bgColor: 'bg-rose-500/10'
-    },
-    {
-      name: 'Aventure en Amazonie',
-      duration: '7 jours',
-      price: 470000,
-      originalPrice: 525000,
-      rating: 4.7,
-      reviews: 78,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'amazon rainforest',
-      bgColor: 'bg-orange-500/10'
-    },
-    {
-        name: 'Voyage Patagonie',
-        duration: '10 jours',
-        price: 620000,
-        originalPrice: 680000,
-        rating: 4.9,
-        reviews: 110,
-        image: 'https://placehold.co/400x300.png',
-        hint: 'patagonia mountains',
-        bgColor: 'bg-indigo-500/10'
-    }
-]
-
-const destinations = [
-    { name: 'Paris', image: 'https://placehold.co/400x400.png', hint: 'france eiffel tower' },
-    { name: 'Tokyo', image: 'https://placehold.co/400x400.png', hint: 'japan city night' },
-    { name: 'New York', image: 'https://placehold.co/400x400.png', hint: 'new york city skyline' },
-    { name: 'Rome', image: 'https://placehold.co/400x400.png', hint: 'italy colosseum' },
-    { name: 'Santorin', image: 'https://placehold.co/400x400.png', hint: 'greece santorini' },
-    { name: 'Bali', image: 'https://placehold.co/400x400.png', hint: 'indonesia bali' },
-    { name: 'Sydney', image: 'https://placehold.co/400x400.png', hint: 'australia opera house' },
-    { name: 'Le Caire', image: 'https://placehold.co/400x400.png', hint: 'egypt pyramids' }
-]
-
-const editorialPicks = [
-    {
-        title: 'Les 10 meilleures destinations pour les amoureux de la nature',
-        author: 'Alexandre Dumas',
-        avatar: 'https://placehold.co/40x40.png',
-        avatarHint: 'male portrait',
-        image: 'https://placehold.co/600x400.png',
-        imageHint: 'nature forest'
-    },
-    {
-        title: 'City-guide : un week-end parfait à Kyoto',
-        author: 'Juliette Dubois',
-        avatar: 'https://placehold.co/40x40.png',
-        avatarHint: 'female portrait',
-        image: 'https://placehold.co/600x400.png',
-        imageHint: 'japan kyoto'
-    },
-    {
-        title: 'Le guide ultime des plages secrètes de la Méditerranée',
-        author: 'Marco Polo',
-        avatar: 'https://placehold.co/40x40.png',
-        avatarHint: 'male portrait',
-        image: 'https://placehold.co/600x400.png',
-        imageHint: 'mediterranean beach'
-    }
+const filters = [
+  { name: 'Tous', icon: Star, category: 'Tous' },
+  { name: 'Plage', icon: Sun, category: 'Plage' },
+  { name: 'Montagne', icon: Mountain, category: 'Montagne' },
+  { name: 'Ville', icon: Building, category: 'Ville' },
+  { name: 'Croisière', icon: Ship, category: 'Croisière' },
 ];
 
 
-function PageSkeleton() {
-    return (
-        <div className="space-y-6 animate-pulse">
-            <div className="flex items-center justify-between">
-                <Skeleton className="h-10 w-44 rounded-full" />
-                <Skeleton className="h-12 w-12 rounded-full" />
-            </div>
-            <Skeleton className="h-12 w-full rounded-full" />
-            
-            <div>
-                <Skeleton className="h-6 w-48 mb-3 rounded-md" />
-                <div className="flex gap-2">
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                </div>
-            </div>
-
-            <div className="flex space-x-4 overflow-hidden">
-                <Skeleton className="aspect-[3/4] w-72 rounded-3xl" />
-                <Skeleton className="aspect-[3/4] w-72 rounded-3xl" />
-            </div>
-
-            <div>
-                <Skeleton className="h-6 w-40 mb-3 rounded-md" />
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="w-24 h-24 rounded-2xl" />
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-5 w-3/4 rounded-md" />
-                            <Skeleton className="h-4 w-1/2 rounded-md" />
-                            <Skeleton className="h-4 w-1/4 rounded-md" />
-                        </div>
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="w-24 h-24 rounded-2xl" />
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-5 w-3/4 rounded-md" />
-                            <Skeleton className="h-4 w-1/2 rounded-md" />
-                            <Skeleton className="h-4 w-1/4 rounded-md" />
-                        </div>
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-const DestinationCard = ({ dest }: { dest: typeof destinations[0] }) => (
-    <div className="relative aspect-square w-40 md:w-52 lg:w-64 flex-shrink-0 group">
-        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
-            <Image 
-                src={dest.image} 
-                alt={dest.name} 
-                fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-300" 
-                data-ai-hint={dest.hint} 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
-               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
-            </div>
-        </div>
-         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
-            <PlusCircle className="h-4 w-4"/>
-        </Button>
-    </div>
-);
-
-const AnimatedDestinations = () => {
-    const destinationsColumn1 = [...destinations, ...destinations, ...destinations];
-    const destinationsColumn2 = [...destinations, ...destinations, ...destinations].reverse();
-
-    return (
-        <div className="relative h-[500px] overflow-hidden scroller flex justify-center gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
-            <div className="animate-scroll-down space-y-4">
-                {destinationsColumn1.map((dest, index) => (
-                    <DestinationCard key={`col1-vert-${index}`} dest={dest} />
-                ))}
-            </div>
-            <div className="animate-scroll-up space-y-4">
-                {destinationsColumn2.map((dest, index) => (
-                    <DestinationCard key={`col2-vert-${index}`} dest={dest} />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const AnimatedDestinationsLarge = () => {
-    const destinationsRow1 = [...destinations, ...destinations, ...destinations];
-    const destinationsRow2 = [...destinations, ...destinations, ...destinations].reverse();
-
-    return (
-        <div className="hidden md:flex flex-col gap-4 scroller w-full overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'}}>
-             <div className="flex w-max animate-scroll-left space-x-4">
-                {destinationsRow1.map((dest, index) => (
-                    <DestinationCard key={`row1-horz-${index}`} dest={dest} />
-                ))}
-            </div>
-            <div className="flex w-max animate-scroll-right space-x-4">
-                {destinationsRow2.map((dest, index) => (
-                     <DestinationCard key={`row2-horz-${index}`} dest={dest} />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState('America');
-  const [loading, setLoading] = useState(true);
-  
-  const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
-  const mainCarouselIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [toursCarouselApi, setToursCarouselApi] = useState<CarouselApi>();
-  const [toursCarouselCount, setToursCarouselCount] = useState(0);
-  const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
-  
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('Tous');
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
-    return () => clearTimeout(timer);
+    // Trigger entrance animation for the grid
+    setAnimate(true);
   }, []);
 
-  const startAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    if (intervalRef.current || !api) return;
-    intervalRef.current = setInterval(() => {
-        api.scrollNext();
-    }, 4000);
-  }, []);
-
-  const stopAutoplay = useCallback((intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-    }
-  }, []);
-  
-  const resetAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    stopAutoplay(intervalRef);
-    startAutoplay(api, intervalRef);
-  }, [startAutoplay, stopAutoplay]);
-
-
-  useEffect(() => {
-    if (!mainCarouselApi) return;
-    startAutoplay(mainCarouselApi, mainCarouselIntervalRef);
-    mainCarouselApi.on('pointerDown', () => stopAutoplay(mainCarouselIntervalRef));
-    mainCarouselApi.on('select', () => resetAutoplay(mainCarouselApi, mainCarouselIntervalRef));
-    return () => stopAutoplay(mainCarouselIntervalRef);
-  }, [mainCarouselApi, startAutoplay, stopAutoplay, resetAutoplay]);
-  
-  useEffect(() => {
-    if (!toursCarouselApi) return;
-    setToursCarouselCount(toursCarouselApi.scrollSnapList().length);
-    setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
-
-    toursCarouselApi.on('select', () => {
-      setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
+  const filteredDestinations = useMemo(() => {
+    return allDestinations.filter(dest => {
+      const matchesFilter = activeFilter === 'Tous' || dest.category === activeFilter;
+      const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
     });
-  }, [toursCarouselApi]);
-
-
-  if (loading) {
-      return <PageSkeleton />
-  }
-
+  }, [searchTerm, activeFilter]);
+  
   return (
-    <div className="space-y-8 md:space-y-12">
-       
-      <div>
-          <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
-          <div className="horizontal-scroll-fade">
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
-                  <Button variant={activeCategory === 'Asia' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Asia')}>Asie</Button>
-                  <Button variant={activeCategory === 'Europe' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Europe')}>Europe</Button>
-                  <Button variant={activeCategory === 'America' ? 'primary': 'ghost'} className="rounded-full bg-primary text-primary-foreground flex-shrink-0" onClick={() => setActiveCategory('America')}>Amérique</Button>
-                  <Button variant={activeCategory === 'North' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('North')}>Nord</Button>
-                  <Button variant={activeCategory === 'Africa' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Africa')}>Afrique</Button>
-                  <Button variant={activeCategory === 'Oceania' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Oceania')}>Océanie</Button>
-                  <Button variant={activeCategory === 'Antarctica' ? 'default': 'ghost'} className="rounded-full flex-shrink-0" onClick={() => setActiveCategory('Antarctica')}>Antarctique</Button>
-              </div>
-          </div>
-      </div>
-
-      <div className="relative -mx-4 sm:mx-0">
-          <Carousel setApi={setMainCarouselApi} opts={{ loop: true, align: 'start' }} className="w-full">
-              <CarouselContent className="-ml-4">
-                  {trips.map((trip, index) => (
-                      <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                          <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
-                              <CardContent className="p-0">
-                              <div className="relative aspect-[3/4]">
-                                  <Image src={trip.image} alt={trip.name} fill className="object-cover" data-ai-hint={trip.hint} />
-                                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/70 to-transparent" />
-                                  <Button variant="ghost" size="icon" className="absolute top-4 right-4 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                                  <Heart className="w-5 h-5" />
-                                  </Button>
-                                  <div className="absolute bottom-0 left-0 p-5 w-full">
-                                  <p className="text-sm text-white/90">{trip.country}</p>
-                                  <h3 className="font-bold text-2xl text-white">{trip.name}</h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                      <p className="text-sm text-white"><span className="font-bold">{trip.rating}</span> ({trip.reviews} avis)</p>
-                                  </div>
-                                  <Link href="/discover" passHref>
-                                    <Button asChild className="w-full mt-4 bg-white/90 text-black hover:bg-white rounded-full">
-                                        <span>Voir plus</span>
-                                    </Button>
-                                  </Link>
-                                  </div>
-                              </div>
-                              </CardContent>
-                          </Card>
-                      </CarouselItem>
-                  ))}
-              </CarouselContent>
-          </Carousel>
-      </div>
-      
-      <div>
-        <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold tracking-tight">Circuits à venir</h2>
-        </div>
-        <div className="relative -mx-4 sm:mx-0">
-            <Carousel setApi={setToursCarouselApi} opts={{ align: "start" }} className="w-full">
-                <CarouselContent className="-ml-4">
-                    {upcomingTours.map((tour, index) => (
-                        <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3 md:basis-1/2 lg:basis-2/5 xl:basis-1/3">
-                            <Card className="flex-shrink-0 w-full border-none shadow-lg rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm flex flex-row">
-                                <div className="bg-secondary p-2 flex items-center justify-center rounded-l-2xl">
-                                    <h3 className="font-bold text-sm text-secondary-foreground [writing-mode:vertical-rl] rotate-180 whitespace-nowrap text-center">{tour.name}</h3>
-                                </div>
-                                <div className={cn("flex flex-col flex-1", tour.bgColor)}>
-                                    <div className="relative w-full aspect-square">
-                                        <Image src={tour.image} alt={tour.name} fill className="object-cover" data-ai-hint={tour.hint} />
-                                    </div>
-                                    <div className="p-4 flex items-center justify-between">
-                                        <Button variant="ghost" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm glass-button">
-                                            <Heart className="w-5 h-5" />
-                                        </Button>
-                                        <div className='text-right'>
-                                            <p className="text-sm text-muted-foreground line-through">FCFA {tour.originalPrice.toLocaleString()}</p>
-                                            <p className="font-bold text-lg">FCFA {tour.price.toLocaleString()}</p>
-                                        </div>
-                                        <Button variant="ghost" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm glass-button">
-                                            <ShoppingCart className="w-5 h-5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Card>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden sm:flex left-2" />
-                <CarouselNext className="hidden sm:flex right-2" />
-            </Carousel>
-             <div className="flex justify-start gap-2 pt-4 px-4">
-                {Array.from({ length: toursCarouselCount }).map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => toursCarouselApi?.scrollTo(i)}
+    <div className="bg-background rounded-t-3xl min-h-[80vh] shadow-2xl">
+        {/* Search and Filter */}
+        <div className="p-4 sm:p-6 sticky top-0 bg-background/80 backdrop-blur-lg z-10 rounded-t-3xl">
+            <div className="relative mb-4">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="Rechercher une destination..." 
+                    className="pl-12 h-12 text-lg rounded-full bg-secondary border-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 horizontal-scroll-fade">
+                {filters.map(filter => (
+                    <Button 
+                        key={filter.name} 
+                        variant={activeFilter === filter.category ? 'primary' : 'ghost'}
                         className={cn(
-                            "h-2 w-2 rounded-full transition-all glass-indicator",
-                            i === toursCarouselCurrent -1 ? 'w-4 bg-primary' : 'bg-primary/20'
+                          "rounded-full flex-shrink-0 transition-all duration-300",
+                          activeFilter === filter.category && 'text-primary-foreground'
                         )}
-                    />
+                        onClick={() => setActiveFilter(filter.category)}
+                    >
+                        <filter.icon className="mr-2 h-4 w-4" />
+                        {filter.name}
+                    </Button>
                 ))}
             </div>
         </div>
-      </div>
-
-      <div className="flex flex-col items-center">
-        <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
-        <AnimatedDestinations />
-        <AnimatedDestinationsLarge />
-      </div>
-      
-      <div>
-        <h2 className="text-xl font-bold tracking-tight mb-4">Notre sélection éditoriale</h2>
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-            {editorialPicks.map((pick, index) => (
-                <Card key={index} className="border-none shadow-lg rounded-3xl overflow-hidden bg-card/50 backdrop-blur-sm group h-full flex flex-col md:flex-row">
-                    <CardContent className="p-0 flex-1 flex flex-col md:w-1/2">
-                        <div className="relative aspect-video w-full md:h-full">
-                            <Image src={pick.image} alt={pick.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={pick.imageHint} />
+        
+        {/* Destinations Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 sm:p-6">
+            {filteredDestinations.map((dest, index) => (
+                <Card 
+                  key={`${dest.name}-${index}`}
+                  className={cn(
+                    "border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm transition-all duration-500 ease-out",
+                     animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                  )}
+                  style={{ transitionDelay: `${index * 50}ms`}}
+                >
+                    <CardContent className="p-0">
+                        <div className="relative aspect-[4/5]">
+                            <Image 
+                                src={dest.image} 
+                                alt={dest.name} 
+                                fill 
+                                className="object-cover group-hover:scale-105 transition-transform duration-300" 
+                                data-ai-hint={dest.hint} 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+                               <div className="flex items-center gap-1.5 text-yellow-400 mb-1">
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <span className="text-white font-bold text-sm">{dest.rating}</span>
+                                </div>
+                                <h3 className="font-bold text-lg text-white leading-tight">{dest.name}</h3>
+                            </div>
                         </div>
                     </CardContent>
-                     <div className="p-6 flex flex-col flex-1 md:w-1/2 justify-center">
-                        <h3 className="font-bold text-2xl leading-tight mb-3">{pick.title}</h3>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                            <Avatar className="w-8 h-8">
-                            <AvatarImage src={pick.avatar} alt={pick.author} data-ai-hint={pick.avatarHint}/>
-                            <AvatarFallback>{pick.author.slice(0,1)}</AvatarFallback>
-                            </Avatar>
-                            <span>{pick.author}</span>
-                        </div>
-                        <div className="mt-auto md:mt-4">
-                            <Button className="rounded-full w-full">
-                                Lire l'article <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
                 </Card>
             ))}
         </div>
-      </div>
-
-      <div className="relative rounded-2xl overflow-hidden">
-        <Image src="https://placehold.co/1200x400.png" alt="Préparez votre voyage" fill className="object-cover" data-ai-hint="travel planning map" />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative p-8 md:p-12 flex flex-col items-start text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2">Préparez votre voyage</h2>
-          <p className="text-lg md:text-xl mb-4 max-w-lg">Nos outils et guides sont là pour vous aider à planifier l'aventure de vos rêves.</p>
-          <Link href="/discover" passHref>
-            <Button asChild size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                <span>Commencer à planifier <ArrowRight className="ml-2 h-5 w-5" /></span>
-            </Button>
-          </Link>
-        </div>
-      </div>
+        
+        {filteredDestinations.length === 0 && (
+            <div className="text-center py-20">
+                <Search className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">Aucune destination trouvée</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Essayez de modifier votre recherche ou vos filtres.</p>
+            </div>
+        )}
     </div>
   );
 }

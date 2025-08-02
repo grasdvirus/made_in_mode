@@ -21,7 +21,7 @@ const poppins = Poppins({
 
 function getHeader(pathname: string) {
     if (pathname === '/') return <Header />;
-    if (pathname === '/discover') return <HeaderParallax title="Découvrir" />;
+    if (pathname === '/discover') return <Header />;
     if (pathname === '/cart') return null;
     if (pathname === '/profile') return null;
     return null;
@@ -35,7 +35,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainMarginTop = pathname === '/' ? 'mt-32' : 'mt-8';
+  const mainMarginTop = (pathname === '/' || pathname === '/discover') ? 'mt-32' : 'mt-8';
   const showFooter = pathname !== '/login';
 
   return (
