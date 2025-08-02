@@ -103,36 +103,14 @@ const upcomingTours = [
 ]
 
 const destinations = [
-    {
-        name: 'Paris',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'france eiffel tower'
-    },
-    {
-        name: 'Tokyo',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'japan city night'
-    },
-    {
-        name: 'New York',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'new york city skyline'
-    },
-    {
-        name: 'Rome',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'italy colosseum'
-    },
-    {
-        name: 'Santorin',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'greece santorini'
-    },
-    {
-        name: 'Bali',
-        image: 'https://placehold.co/800x600.png',
-        hint: 'indonesia bali'
-    }
+    { name: 'Paris', image: 'https://placehold.co/400x400.png', hint: 'france eiffel tower' },
+    { name: 'Tokyo', image: 'https://placehold.co/400x400.png', hint: 'japan city night' },
+    { name: 'New York', image: 'https://placehold.co/400x400.png', hint: 'new york city skyline' },
+    { name: 'Rome', image: 'https://placehold.co/400x400.png', hint: 'italy colosseum' },
+    { name: 'Santorin', image: 'https://placehold.co/400x400.png', hint: 'greece santorini' },
+    { name: 'Bali', image: 'https://placehold.co/400x400.png', hint: 'indonesia bali' },
+    { name: 'Sydney', image: 'https://placehold.co/400x400.png', hint: 'australia opera house' },
+    { name: 'Le Caire', image: 'https://placehold.co/400x400.png', hint: 'egypt pyramids' }
 ]
 
 const editorialPicks = [
@@ -213,40 +191,60 @@ function PageSkeleton() {
     )
 }
 
+const DestinationCard = ({ dest }: { dest: typeof destinations[0] }) => (
+    <div className="relative aspect-square w-40 md:w-52 lg:w-64 flex-shrink-0 group">
+        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
+            <Image 
+                src={dest.image} 
+                alt={dest.name} 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                data-ai-hint={dest.hint} 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
+               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
+            </div>
+        </div>
+         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
+            <PlusCircle className="h-4 w-4"/>
+        </Button>
+    </div>
+);
+
 const AnimatedDestinations = () => {
-    const destinationsColumn1 = [...destinations, ...destinations];
-    const destinationsColumn2 = [...destinations, ...destinations].reverse();
+    const destinationsColumn1 = [...destinations, ...destinations, ...destinations];
+    const destinationsColumn2 = [...destinations, ...destinations, ...destinations].reverse();
 
     return (
-        <div className="relative h-[500px] overflow-hidden scroller grid grid-cols-2 gap-4" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
+        <div className="relative h-[500px] overflow-hidden scroller md:hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}>
             <div className="animate-scroll-down space-y-4">
                 {destinationsColumn1.map((dest, index) => (
-                    <div key={`col1-${index}`} className="relative aspect-square group">
-                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
-                            <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" data-ai-hint={dest.hint} />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
-                               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
-                            </div>
-                        </div>
-                         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
-                            <PlusCircle className="h-4 w-4"/>
-                        </Button>
-                    </div>
+                    <DestinationCard key={`col1-vert-${index}`} dest={dest} />
                 ))}
             </div>
             <div className="animate-scroll-up space-y-4">
                 {destinationsColumn2.map((dest, index) => (
-                    <div key={`col2-${index}`} className="relative aspect-square group">
-                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
-                            <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" data-ai-hint={dest.hint} />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-center pb-3">
-                               <h3 className="text-white text-sm font-bold text-center px-1">{dest.name}</h3>
-                            </div>
-                        </div>
-                         <Button size="icon" className="absolute bottom-0 right-0 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 h-8 w-8">
-                            <PlusCircle className="h-4 w-4"/>
-                        </Button>
-                    </div>
+                    <DestinationCard key={`col2-vert-${index}`} dest={dest} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const AnimatedDestinationsLarge = () => {
+    const destinationsRow1 = [...destinations, ...destinations, ...destinations];
+    const destinationsRow2 = [...destinations, ...destinations, ...destinations].reverse();
+
+    return (
+        <div className="hidden md:flex flex-col gap-4 scroller w-full overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'}}>
+             <div className="flex w-max animate-scroll-left space-x-4">
+                {destinationsRow1.map((dest, index) => (
+                    <DestinationCard key={`row1-horz-${index}`} dest={dest} />
+                ))}
+            </div>
+            <div className="flex w-max animate-scroll-right space-x-4">
+                {destinationsRow2.map((dest, index) => (
+                     <DestinationCard key={`row2-horz-${index}`} dest={dest} />
                 ))}
             </div>
         </div>
@@ -416,9 +414,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div>
+      <div className="flex flex-col items-center">
         <h2 className="text-xl font-bold tracking-tight mb-4">Destinations populaires</h2>
         <AnimatedDestinations />
+        <AnimatedDestinationsLarge />
       </div>
       
       <div>
