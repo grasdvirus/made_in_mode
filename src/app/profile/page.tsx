@@ -181,7 +181,7 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
 
-                    {user && user.email === 'grasdvirus@gmail.com' && (
+                    {user && user.email?.toLowerCase() === 'grasdvirus@gmail.com' && (
                         <Button variant="secondary" onClick={() => router.push('/admin')} className="w-full">
                             <Shield className="mr-2 h-4 w-4" /> Tableau de bord Admin
                         </Button>
