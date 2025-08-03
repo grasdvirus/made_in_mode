@@ -4,11 +4,12 @@
 import * as React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Home, ShoppingCart, Users, Settings } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function AdminLayout({
   children,
@@ -17,6 +18,7 @@ export default function AdminLayout({
 }) {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     if (!loading && (!user || user.email !== 'grasdvirus@gmail.com')) {
@@ -49,32 +51,40 @@ export default function AdminLayout({
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin" isActive>
-                <Home />
-                Accueil
-              </SidebarMenuButton>
+                <Link href="/admin" passHref legacyBehavior>
+                    <SidebarMenuButton isActive={pathname === '/admin'}>
+                        <Home />
+                        Accueil
+                    </SidebarMenuButton>
+                </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin/products">
-                <ShoppingCart />
-                Produits
-              </SidebarMenuButton>
+                <Link href="/admin/products" passHref legacyBehavior>
+                    <SidebarMenuButton isActive={pathname.startsWith('/admin/products')}>
+                        <ShoppingCart />
+                        Produits
+                    </SidebarMenuButton>
+                </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin/users">
-                <Users />
-                Utilisateurs
-              </SidebarMenuButton>
+               <Link href="/admin/users" passHref legacyBehavior>
+                    <SidebarMenuButton isActive={pathname.startsWith('/admin/users')}>
+                        <Users />
+                        Utilisateurs
+                    </SidebarMenuButton>
+                </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
              <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/admin/settings">
-                        <Settings />
-                        Paramètres
-                    </SidebarMenuButton>
+                     <Link href="/admin/settings" passHref legacyBehavior>
+                        <SidebarMenuButton isActive={pathname.startsWith('/admin/settings')}>
+                            <Settings />
+                            Paramètres
+                        </SidebarMenuButton>
+                    </Link>
                 </SidebarMenuItem>
              </SidebarMenu>
         </SidebarFooter>

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -13,6 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+import upcomingToursData from '@/data/tours.json';
 
 const allTrips = [
   {
@@ -80,52 +80,7 @@ const allTrips = [
   },
 ]
 
-const upcomingTours = [
-    {
-      name: 'Brésil Iconique',
-      duration: '8 jours',
-      price: 430000,
-      originalPrice: 490000,
-      rating: 4.6,
-      reviews: 56,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'brazil mountains',
-      bgColor: 'bg-teal-500/10'
-    },
-    {
-      name: 'Paradis balnéaire',
-      duration: '5 jours',
-      price: 295000,
-      originalPrice: 340000,
-      rating: 4.8,
-      reviews: 89,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'brazil beach',
-      bgColor: 'bg-rose-500/10'
-    },
-    {
-      name: 'Aventure en Amazonie',
-      duration: '7 jours',
-      price: 470000,
-      originalPrice: 525000,
-      rating: 4.7,
-      reviews: 78,
-      image: 'https://placehold.co/400x300.png',
-      hint: 'amazon rainforest',
-      bgColor: 'bg-orange-500/10'
-    },
-    {
-        name: 'Voyage Patagonie',
-        duration: '10 jours',
-        price: 620000,
-        originalPrice: 680000,
-        rating: 4.9,
-        reviews: 110,
-        image: 'https://placehold.co/400x300.png',
-        hint: 'patagonia mountains',
-        bgColor: 'bg-indigo-500/10'
-    }
-]
+const upcomingTours = upcomingToursData;
 
 const destinations = [
     { name: 'Paris', image: 'https://placehold.co/400x400.png', hint: 'france eiffel tower' },
@@ -346,9 +301,9 @@ export default function DiscoverPage() {
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
       </div>
 
-      <div className="relative -mx-4 sm:mx-0">
+      <div className="relative -mx-4 sm:mx-0 no-scrollbar">
           {filteredTrips.length > 0 ? (
-            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full no-scrollbar">
+            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
                 <CarouselContent className="-ml-4">
                     {filteredTrips.map((trip, index) => (
                         <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">

@@ -1,0 +1,47 @@
+
+[
+    {
+      "name": "Brésil Iconique",
+      "duration": "8 jours",
+      "price": 430000,
+      "originalPrice": 490000,
+      "rating": 4.6,
+      "reviews": 56,
+      "image": "/images/tour-brazil-mountains.png",
+      "hint": "brazil mountains",
+      "bgColor": "bg-teal-500/10"
+    },
+    {
+      "name": "Paradis balnéaire",
+      "duration": "5 jours",
+      "price": 295000,
+      "originalPrice": 340000,
+      "rating": 4.8,
+      "reviews": 89,
+      "image": "/images/tour-brazil-beach.png",
+      "hint": "brazil beach",
+      "bgColor": "bg-rose-500/10"
+    },
+    {
+      "name": "Aventure en Amazonie",
+      "duration": "7 jours",
+      "price": 470000,
+      "originalPrice": 525000,
+      "rating": 4.7,
+      "reviews": 78,
+      "image": "/images/tour-amazon-rainforest.png",
+      "hint": "amazon rainforest",
+      "bgColor": "bg-orange-500/10"
+    },
+    {
+        "name": "Voyage Patagonie",
+        "duration": "10 jours",
+        "price": 620000,
+        "originalPrice": 680000,
+        "rating": 4.9,
+        "reviews": 110,
+        "image": "/images/tour-patagonia-mountains.png",
+        "hint": "patagonia mountains",
+        "bgColor": "bg-indigo-500/10"
+    }
+]
