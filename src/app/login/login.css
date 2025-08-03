@@ -1,6 +1,7 @@
+
 .container {
   --form-width: 315px;
-  --aspect-ratio: 1.33;
+  --aspect-ratio: 1.45;
   --login-box-color: #272727;
   --input-color: #3a3a3a;
   --button-color: #373737;
@@ -126,6 +127,11 @@
   align-items: center;
 }
 
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
 .input {
   width: 100%;
   padding: 10px;
@@ -136,10 +142,26 @@
   outline: none;
   font-size: 14px;
 }
+.input-group .input {
+    padding-right: 40px;
+}
+
 
 .input:focus {
   border: 1px solid #fff;
 }
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+}
+
 
 .button {
   width: 100%;
@@ -211,6 +233,11 @@
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .footer .link::after {
