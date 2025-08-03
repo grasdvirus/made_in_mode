@@ -1,12 +1,11 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Star, ChevronLeft, ChevronRight, Search, PlusCircle, ShoppingCart, X, ArrowRight, Compass } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Heart, Star, Compass, PlusCircle, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
@@ -120,57 +119,6 @@ const editorialPicks = [
     }
 ];
 
-
-function PageSkeleton() {
-    return (
-        <div className="space-y-6 animate-pulse">
-            <div className="flex items-center justify-between">
-                <Skeleton className="h-10 w-44 rounded-full" />
-                <Skeleton className="h-12 w-12 rounded-full" />
-            </div>
-            <Skeleton className="h-12 w-full rounded-full" />
-            
-            <div>
-                <Skeleton className="h-6 w-48 mb-3 rounded-md" />
-                <div className="flex gap-2">
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                </div>
-            </div>
-
-            <div className="flex space-x-4 overflow-hidden">
-                <Skeleton className="aspect-[3/4] w-72 rounded-3xl" />
-                <Skeleton className="aspect-[3/4] w-72 rounded-3xl" />
-            </div>
-
-            <div>
-                <Skeleton className="h-6 w-40 mb-3 rounded-md" />
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="w-24 h-24 rounded-2xl" />
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-5 w-3/4 rounded-md" />
-                            <Skeleton className="h-4 w-1/2 rounded-md" />
-                            <Skeleton className="h-4 w-1/4 rounded-md" />
-                        </div>
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="w-24 h-24 rounded-2xl" />
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-5 w-3/4 rounded-md" />
-                            <Skeleton className="h-4 w-1/2 rounded-md" />
-                            <Skeleton className="h-4 w-1/4 rounded-md" />
-                        </div>
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 const DestinationCard = ({ dest }: { dest: typeof destinations[0] }) => (
     <div className="relative aspect-square w-40 md:w-52 lg:w-64 flex-shrink-0 group">
         <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/20 relative">
@@ -233,66 +181,28 @@ const AnimatedDestinationsLarge = () => {
 
 
 export default function DiscoverPage() {
-  const [loading, setLoading] = useState(true);
-  
-  const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
-  const mainCarouselIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const [toursCarouselApi, setToursCarouselApi] = useState<CarouselApi>();
   const [toursCarouselCount, setToursCarouselCount] = useState(0);
   const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
-  
-  const [searchValue, setSearchValue] = React.useState('');
 
   const filteredTrips = allTrips;
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
-    return () => clearTimeout(timer);
-  }, []);
-
-  const startAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    if (intervalRef.current || !api) return;
-    intervalRef.current = setInterval(() => {
-        api.scrollNext();
-    }, 4000);
-  }, []);
-
-  const stopAutoplay = useCallback((intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-    }
-  }, []);
-  
-  const resetAutoplay = useCallback((api: CarouselApi | undefined, intervalRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
-    stopAutoplay(intervalRef);
-    startAutoplay(api, intervalRef);
-  }, [startAutoplay, stopAutoplay]);
-
-
-  useEffect(() => {
-    if (!mainCarouselApi) return;
-    startAutoplay(mainCarouselApi, mainCarouselIntervalRef);
-    mainCarouselApi.on('pointerDown', () => stopAutoplay(mainCarouselIntervalRef));
-    mainCarouselApi.on('select', () => resetAutoplay(mainCarouselApi, mainCarouselIntervalRef));
-    return () => stopAutoplay(mainCarouselIntervalRef);
-  }, [mainCarouselApi, startAutoplay, stopAutoplay, resetAutoplay]);
   
   useEffect(() => {
     if (!toursCarouselApi) return;
     setToursCarouselCount(toursCarouselApi.scrollSnapList().length);
     setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
 
-    toursCarouselApi.on('select', () => {
+    const onSelect = () => {
       setToursCarouselCurrent(toursCarouselApi.selectedScrollSnap() + 1);
-    });
+    };
+
+    toursCarouselApi.on('select', onSelect);
+    
+    return () => {
+        toursCarouselApi.off('select', onSelect);
+    }
   }, [toursCarouselApi]);
 
-
-  if (loading) {
-      return <PageSkeleton />
-  }
 
   return (
     <div className="space-y-8 md:space-y-12">
@@ -303,7 +213,7 @@ export default function DiscoverPage() {
 
       <div className="relative -mx-4 sm:mx-0 no-scrollbar">
           {filteredTrips.length > 0 ? (
-            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
+            <Carousel opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
                 <CarouselContent className="-ml-4">
                     {filteredTrips.map((trip, index) => (
                         <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
