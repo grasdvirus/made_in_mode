@@ -6,12 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star, Compass, PlusCircle, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import upcomingToursData from '@/data/tours.json';
 
 const allTrips = [
   {
@@ -79,7 +77,18 @@ const allTrips = [
   },
 ]
 
-const upcomingTours = upcomingToursData;
+type Tour = {
+  name: string;
+  duration: string;
+  price: number;
+  originalPrice: number;
+  rating: number;
+  reviews: number;
+  image: string;
+  hint: string;
+  bgColor: string;
+};
+
 
 const destinations = [
     { name: 'Paris', image: 'https://placehold.co/400x400.png', hint: 'france eiffel tower' },
@@ -184,8 +193,13 @@ export default function DiscoverPage() {
   const [toursCarouselApi, setToursCarouselApi] = useState<CarouselApi>();
   const [toursCarouselCount, setToursCarouselCount] = useState(0);
   const [toursCarouselCurrent, setToursCarouselCurrent] = useState(0);
+  const [upcomingTours, setUpcomingTours] = useState<Tour[]>([]);
 
-  const filteredTrips = allTrips;
+  useEffect(() => {
+    fetch('/products.json')
+      .then((res) => res.json())
+      .then((data) => setUpcomingTours(data));
+  }, []);
   
   useEffect(() => {
     if (!toursCarouselApi) return;
@@ -212,10 +226,10 @@ export default function DiscoverPage() {
       </div>
 
       <div className="relative -mx-4 sm:mx-0 no-scrollbar">
-          {filteredTrips.length > 0 ? (
-            <Carousel opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
+          {allTrips.length > 0 ? (
+            <Carousel opts={{ loop: allTrips.length > 1, align: 'start' }} className="w-full">
                 <CarouselContent className="-ml-4">
-                    {filteredTrips.map((trip, index) => (
+                    {allTrips.map((trip, index) => (
                         <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                             <Card className="border-none shadow-xl rounded-3xl overflow-hidden group w-full bg-card/50 backdrop-blur-sm">
                                 <CardContent className="p-0">

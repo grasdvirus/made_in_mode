@@ -10,24 +10,23 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import tours from "@/data/tours.json";
+import { getProducts } from "./actions"; 
 import { PlusCircle } from "lucide-react"
 import Image from "next/image"
 
-// This page reads data directly from the local JSON file.
-// In a real application, this would fetch data from a database.
+export default async function AdminProductsPage() {
+  const products = await getProducts();
 
-export default function AdminProductsPage() {
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
             <div>
-                <CardTitle>Circuits à venir</CardTitle>
-                <CardDescription>Gérez les circuits à venir affichés sur la page Découvrir.</CardDescription>
+                <CardTitle>Produits</CardTitle>
+                <CardDescription>Gérez les produits affichés sur le site.</CardDescription>
             </div>
             <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un circuit
+                <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
             </Button>
         </div>
       </CardHeader>
@@ -49,24 +48,24 @@ export default function AdminProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tours.map((tour) => (
-              <TableRow key={tour.name}>
+            {products.map((product) => (
+              <TableRow key={product.name}>
                 <TableCell className="hidden sm:table-cell">
                   <Image
-                    alt={tour.name}
+                    alt={product.name}
                     className="aspect-square rounded-md object-cover"
                     height="64"
-                    src={tour.image}
+                    src={product.image.startsWith('https://') ? product.image : `${product.image}`}
                     width="64"
-                    data-ai-hint={tour.hint}
+                    data-ai-hint={product.hint}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{tour.name}</TableCell>
+                <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">FCFA {tour.price.toLocaleString('fr-FR')}</Badge>
+                  <Badge variant="outline">FCFA {product.price.toLocaleString('fr-FR')}</Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {tour.reviews}
+                  {product.reviews}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2 justify-end">

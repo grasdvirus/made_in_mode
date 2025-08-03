@@ -30,8 +30,8 @@ export default function ProfilePage() {
     
     // Mock data - replace with actual data from your backend/auth provider
     const mockUser = {
-        name: user?.displayName || 'Vanessa',
-        email: user?.email || 'vanessa@example.com',
+        name: user?.displayName || 'christian',
+        email: user?.email || 'grasdvirus@gmail.com',
         phone: '+33 6 12 34 56 78',
         authMethod: user?.providerData[0]?.providerId || 'Google',
         avatar: user?.photoURL || 'https://placehold.co/80x80.png',

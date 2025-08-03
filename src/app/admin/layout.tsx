@@ -59,8 +59,8 @@ export default function AdminLayout({
                 </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <Link href="/admin/products" passHref legacyBehavior>
-                    <SidebarMenuButton isActive={pathname.startsWith('/admin/products')}>
+                <Link href="/admin/update-products" passHref legacyBehavior>
+                    <SidebarMenuButton isActive={pathname.startsWith('/admin/update-products')}>
                         <ShoppingCart />
                         Produits
                     </SidebarMenuButton>
