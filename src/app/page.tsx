@@ -166,7 +166,7 @@ export default function HomePage() {
                     align: "start",
                     dragFree: true,
                 }}
-                className="w-full"
+                className="w-full no-scrollbar"
             >
                 <CarouselContent>
                     {categories.map((category, index) => (
