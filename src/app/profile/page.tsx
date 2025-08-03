@@ -49,8 +49,8 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="bg-background rounded-t-3xl sm:p-6 min-h-[80vh] shadow-2xl space-y-6">
-            <div className="flex items-center justify-between p-4 sm:p-0">
+        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
+            <div className="flex items-center justify-between">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                     <ChevronLeft className="h-6 w-6" />
                 </Button>
@@ -58,7 +58,7 @@ export default function ProfilePage() {
                 <div className="w-10"></div> {/* Spacer */}
             </div>
             
-            <div className="flex flex-col items-center space-y-2 p-4 sm:p-0">
+            <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24 border-4 border-primary">
                     <AvatarImage src={mockUser.avatar} alt={mockUser.name} data-ai-hint="female portrait" />
                     <AvatarFallback>{mockUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{mockUser.email}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 sm:p-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {/* Personal Information */}
                 <Card className="lg:col-span-2">
