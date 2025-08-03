@@ -48,7 +48,7 @@ export default function LoginPage() {
 
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <div className="container">
         <div className="login-box">
           <form className="form" onSubmit={handleEmailSignIn}>

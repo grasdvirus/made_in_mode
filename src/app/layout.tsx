@@ -20,7 +20,7 @@ const poppins = Poppins({
 });
 
 function getHeader(pathname: string) {
-    if (pathname === '/' || pathname.startsWith('/admin')) return null;
+    if (pathname === '/' || pathname.startsWith('/admin') || pathname.startsWith('/login')) return null;
     if (pathname === '/discover') return <Header />;
     if (pathname === '/cart') return null;
     if (pathname === '/profile') return null;
@@ -38,7 +38,7 @@ export default function RootLayout({
   const mainMarginTop = (pathname === '/discover') ? 'mt-32' : 'mt-8';
   const showFooter = !pathname.startsWith('/login') && !pathname.startsWith('/admin');
 
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
     return (
       <html lang="fr" className="dark scroll-smooth">
         <body className={`${poppins.variable} font-sans antialiased bg-background text-foreground scroll-hover select-none`}>
@@ -54,7 +54,7 @@ export default function RootLayout({
       <body className={`${poppins.variable} font-sans antialiased bg-background text-foreground scroll-hover select-none`}>
         <div className="flex flex-col min-h-screen">
           {CurrentHeader}
-          <main className={`flex-1 w-full max-w-7xl mx-auto ${pathname !== '/' ? '' : 'px-4'} ${pathname === '/' ? '' : mainMarginTop} ${showFooter ? 'pb-20 md:pb-8' : ''}`}>
+          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooter ? 'pb-20 md:pb-8' : ''}`}>
             {children}
           </main>
           {showFooter && (
