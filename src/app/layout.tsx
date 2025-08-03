@@ -9,7 +9,6 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
-import Footer from '@/components/footer';
 import ScrollToTopButton from '@/components/scroll-to-top-button';
 
 
@@ -36,7 +35,7 @@ export default function RootLayout({
   const CurrentHeader = getHeader(pathname);
   
   const mainMarginTop = (pathname === '/discover') ? 'mt-32' : 'mt-8';
-  const showFooter = !pathname.startsWith('/login') && !pathname.startsWith('/admin');
+  const showFooterNav = !pathname.startsWith('/login') && !pathname.startsWith('/admin');
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
     return (
@@ -54,12 +53,11 @@ export default function RootLayout({
       <body className={`${poppins.variable} font-sans antialiased bg-background text-foreground scroll-hover select-none`}>
         <div className="flex flex-col min-h-screen">
           {CurrentHeader}
-          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooter ? 'pb-20 md:pb-8' : ''}`}>
+          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-20 md:pb-8' : ''}`}>
             {children}
           </main>
-          {showFooter && (
+          {showFooterNav && (
             <>
-              <Footer />
               <GlassFooterNav />
             </>
           )}
