@@ -278,7 +278,6 @@ const AnimatedDestinationsLarge = () => {
 
 
 export default function DiscoverPage() {
-  const [activeCategory, setActiveCategory] = useState('Amérique');
   const [loading, setLoading] = useState(true);
   
   const [mainCarouselApi, setMainCarouselApi] = useState<CarouselApi>()
@@ -290,7 +289,7 @@ export default function DiscoverPage() {
   
   const [searchValue, setSearchValue] = React.useState('');
 
-  const filteredTrips = allTrips.filter(trip => trip.continent === activeCategory);
+  const filteredTrips = allTrips;
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // Simulate loading
@@ -345,16 +344,6 @@ export default function DiscoverPage() {
        
       <div>
           <h2 className="text-xl font-bold tracking-tight">Choisissez votre prochain voyage</h2>
-          <div className="horizontal-scroll-fade">
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 -mx-4 px-4">
-                  <Button variant={activeCategory === 'Asie' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Asie' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Asie')}>Asie</Button>
-                  <Button variant={activeCategory === 'Europe' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Europe' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Europe')}>Europe</Button>
-                  <Button variant={activeCategory === 'Amérique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Amérique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Amérique')}>Amérique</Button>
-                  <Button variant={activeCategory === 'Afrique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Afrique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Afrique')}>Afrique</Button>
-                  <Button variant={activeCategory === 'Océanie' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Océanie' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Océanie')}>Océanie</Button>
-                  <Button variant={activeCategory === 'Antarctique' ? 'primary' : 'ghost'} className={cn("rounded-full flex-shrink-0", activeCategory === 'Antarctique' && 'bg-primary text-primary-foreground')} onClick={() => setActiveCategory('Antarctique')}>Antarctique</Button>
-              </div>
-          </div>
       </div>
 
       <div className="relative -mx-4 sm:mx-0">
