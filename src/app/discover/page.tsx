@@ -348,7 +348,7 @@ export default function DiscoverPage() {
 
       <div className="relative -mx-4 sm:mx-0">
           {filteredTrips.length > 0 ? (
-            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full">
+            <Carousel setApi={setMainCarouselApi} opts={{ loop: filteredTrips.length > 1, align: 'start' }} className="w-full no-scrollbar">
                 <CarouselContent className="-ml-4">
                     {filteredTrips.map((trip, index) => (
                         <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
