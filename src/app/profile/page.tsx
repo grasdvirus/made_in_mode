@@ -186,9 +186,9 @@ export default function ProfilePage() {
                             <Shield className="mr-2 h-4 w-4" /> Tableau de bord Admin
                         </Button>
                     )}
-
+                    
                     <Button variant="destructive" onClick={handleSignOut} className="w-full">
-                        <LogOut className="mr-2 h-4 w-4" /> Se déconnecter
+                      <LogOut className="mr-2 h-4 w-4" /> Se déconnecter
                     </Button>
                 </div>
             </div>
