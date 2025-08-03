@@ -114,7 +114,7 @@ export default function CartPage() {
                   <h3 className="font-semibold">{item.name}</h3>
                   <p className="text-sm text-muted-foreground">{item.category}</p>
                    <p className="text-sm text-muted-foreground">Taille: {item.size} / Couleur: {item.color}</p>
-                  <p className="font-bold text-lg mt-1">FCFA {item.price.toLocaleString()}</p>
+                  <p className="font-bold text-lg mt-1">FCFA {item.price.toLocaleString('fr-FR')}</p>
                 </div>
                 <div className="flex flex-col items-end justify-between h-full">
                   <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8" onClick={() => removeItem(item.id)}>
@@ -151,11 +151,11 @@ export default function CartPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span>Sous-total</span>
-                <span className="font-medium">FCFA {subtotal.toLocaleString()}</span>
+                <span className="font-medium">FCFA {subtotal.toLocaleString('fr-FR')}</span>
               </div>
               <div className="flex justify-between">
                 <span>Livraison</span>
-                <span className="font-medium">{shipping === 0 ? 'Gratuite' : `FCFA ${shipping.toLocaleString()}`}</span>
+                <span className="font-medium">{shipping === 0 ? 'Gratuite' : `FCFA ${shipping.toLocaleString('fr-FR')}`}</span>
               </div>
                <div className="flex items-center gap-2">
                  <Input placeholder="Code promo" className="bg-background/50 border-border" />
@@ -164,7 +164,7 @@ export default function CartPage() {
               <Separator />
               <div className="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span>FCFA {total.toLocaleString()}</span>
+                <span>FCFA {total.toLocaleString('fr-FR')}</span>
               </div>
             </CardContent>
             <CardFooter>
