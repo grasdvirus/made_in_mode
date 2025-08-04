@@ -46,14 +46,13 @@ export default function ProfilePage() {
     }
 
     if (!user) {
-         return <div className="flex items-center justify-center min-h-[80vh]"><p>Redirection...</p></div>;
+         return null; // Affichez rien ou un spinner pendant la redirection
     }
     
     const displayName = user.displayName || 'Utilisateur';
     const displayEmail = user.email || 'Non connecté';
     const displayAvatar = user.photoURL || 'https://placehold.co/80x80.png';
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
-    const isAdmin = user?.email?.toLowerCase() === 'grasdvirus@gmail.com';
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
@@ -170,22 +169,6 @@ export default function ProfilePage() {
 
                 {/* Support & Actions */}
                 <div className="lg:col-span-3 space-y-6">
-                    {isAdmin && (
-                         <Card className="bg-secondary/50 border-primary/50 border">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><Shield /> Administration</CardTitle>
-                                <CardDescription>Accédez au panneau de configuration du site.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                               <Link href="/admin" passHref legacyBehavior>
-                                  <Button className="w-full" asChild>
-                                      <a>Accéder au tableau de bord <GanttChart className="ml-2 h-4 w-4"/></a>
-                                  </Button>
-                               </Link>
-                            </CardContent>
-                        </Card>
-                    )}
-
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><LifeBuoy /> Support</CardTitle>
