@@ -37,11 +37,17 @@ export default function ProfilePage() {
     if (loading) {
         return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
     }
+    
+    if (!user) {
+        router.push('/login');
+        return <div className="flex items-center justify-center min-h-[80vh]"><p>Redirection...</p></div>;
+    }
 
-    const displayName = user?.displayName || 'Utilisateur';
-    const displayEmail = user?.email || 'Non connecté';
-    const displayAvatar = user?.photoURL || 'https://placehold.co/80x80.png';
-    const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+    const displayName = user.displayName || 'Utilisateur';
+    const displayEmail = user.email || 'Non connecté';
+    const displayAvatar = user.photoURL || 'https://placehold.co/80x80.png';
+    const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+    const isAdmin = user.email?.toLowerCase() === 'grasdvirus@gmail.com';
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
@@ -81,7 +87,7 @@ export default function ProfilePage() {
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="phone">Numéro de téléphone</Label>
-                            <Input id="phone" type="tel" defaultValue={user?.phoneNumber || '+33 6 12 34 56 78'} disabled={!editMode} />
+                            <Input id="phone" type="tel" defaultValue={user.phoneNumber || '+33 6 12 34 56 78'} disabled={!editMode} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Adresse de livraison</Label>
@@ -105,7 +111,7 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div>
                             <p className="text-sm font-medium">Méthode d’authentification</p>
-                            <p className="text-sm text-muted-foreground">{user?.providerData[0]?.providerId || 'Email/Password'}</p>
+                            <p className="text-sm text-muted-foreground">{user.providerData[0]?.providerId || 'Email/Password'}</p>
                         </div>
                         <Button className="w-full">Changer mon mot de passe</Button>
                     </CardContent>
@@ -176,7 +182,7 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
 
-                    {user && user.email?.toLowerCase() === 'grasdvirus@gmail.com' && (
+                    {isAdmin && (
                         <Button variant="secondary" onClick={() => router.push('/admin')} className="w-full">
                             <Shield className="mr-2 h-4 w-4" /> Tableau de bord Admin
                         </Button>

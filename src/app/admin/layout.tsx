@@ -21,12 +21,16 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   React.useEffect(() => {
-    if (!loading && (!user || user.email !== 'grasdvirus@gmail.com')) {
+    if (loading) return; // Ne rien faire pendant le chargement
+
+    // Rediriger si l'utilisateur n'est pas connecté ou n'est pas l'admin
+    if (!user || user.email?.toLowerCase() !== 'grasdvirus@gmail.com') {
       router.push('/login');
     }
   }, [user, loading, router]);
 
-  if (loading || !user || user.email !== 'grasdvirus@gmail.com') {
+  // Affiche un état de chargement ou rien en attendant la vérification
+  if (loading || !user || user.email?.toLowerCase() !== 'grasdvirus@gmail.com') {
     return (
         <div className="flex items-center justify-center h-screen">
             <div className="text-center">
