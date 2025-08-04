@@ -28,16 +28,6 @@ export default function ProfilePage() {
         }
     };
     
-    // Mock data - replace with actual data from your backend/auth provider
-    const mockUser = {
-        name: user?.displayName || 'christian',
-        email: user?.email || 'grasdvirus@gmail.com',
-        phone: '+33 6 12 34 56 78',
-        authMethod: user?.providerData[0]?.providerId || 'Google',
-        avatar: user?.photoURL || 'https://placehold.co/80x80.png',
-        address: '123 Rue de la Mode, 75001 Paris, France'
-    };
-    
     const paymentHistory = [
         { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA' },
         { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA' },
@@ -47,6 +37,11 @@ export default function ProfilePage() {
     if (loading) {
         return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
     }
+
+    const displayName = user?.displayName || 'Utilisateur';
+    const displayEmail = user?.email || 'Non connecté';
+    const displayAvatar = user?.photoURL || 'https://placehold.co/80x80.png';
+    const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
@@ -60,11 +55,11 @@ export default function ProfilePage() {
             
             <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24 border-4 border-primary">
-                    <AvatarImage src={mockUser.avatar} alt={mockUser.name} data-ai-hint="female portrait" />
-                    <AvatarFallback>{mockUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarImage src={displayAvatar} alt={displayName} data-ai-hint="female portrait" />
+                    <AvatarFallback>{avatarFallback}</AvatarFallback>
                 </Avatar>
-                <h2 className="text-2xl font-bold">{mockUser.name}</h2>
-                <p className="text-muted-foreground">{mockUser.email}</p>
+                <h2 className="text-2xl font-bold">{displayName}</h2>
+                <p className="text-muted-foreground">{displayEmail}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -78,19 +73,19 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nom complet</Label>
-                            <Input id="name" defaultValue={mockUser.name} disabled={!editMode} />
+                            <Input id="name" defaultValue={displayName} disabled={!editMode} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Adresse email</Label>
-                            <Input id="email" type="email" defaultValue={mockUser.email} disabled />
+                            <Input id="email" type="email" defaultValue={displayEmail} disabled />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="phone">Numéro de téléphone</Label>
-                            <Input id="phone" type="tel" defaultValue={mockUser.phone} disabled={!editMode} />
+                            <Input id="phone" type="tel" defaultValue={user?.phoneNumber || '+33 6 12 34 56 78'} disabled={!editMode} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Adresse de livraison</Label>
-                            <Input id="address" defaultValue={mockUser.address} disabled={!editMode} />
+                            <Input id="address" defaultValue="123 Rue de la Mode, 75001 Paris, France" disabled={!editMode} />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-wrap justify-between gap-2">
@@ -110,7 +105,7 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div>
                             <p className="text-sm font-medium">Méthode d’authentification</p>
-                            <p className="text-sm text-muted-foreground">{mockUser.authMethod}</p>
+                            <p className="text-sm text-muted-foreground">{user?.providerData[0]?.providerId || 'Email/Password'}</p>
                         </div>
                         <Button className="w-full">Changer mon mot de passe</Button>
                     </CardContent>
