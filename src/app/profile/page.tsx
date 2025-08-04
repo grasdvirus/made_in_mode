@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +19,12 @@ export default function ProfilePage() {
     const [editMode, setEditMode] = useState(false);
     const [user, loading] = useAuthState(auth);
 
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
+        }
+    }, [user, loading, router]);
+
     const handleSignOut = async () => {
         try {
             await signOut(auth);
@@ -34,15 +40,10 @@ export default function ProfilePage() {
         { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
     ];
 
-    if (loading) {
+    if (loading || !user) {
         return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
     }
     
-    if (!user) {
-        router.push('/login');
-        return <div className="flex items-center justify-center min-h-[80vh]"><p>Redirection...</p></div>;
-    }
-
     const displayName = user.displayName || 'Utilisateur';
     const displayEmail = user.email || 'Non connecté';
     const displayAvatar = user.photoURL || 'https://placehold.co/80x80.png';
