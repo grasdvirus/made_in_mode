@@ -2,42 +2,38 @@
 'use client';
 
 import * as React from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
 import { usePathname, useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Home, ShoppingCart, Users, Settings } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { AdminAuthProvider, useAdminAuth } from '@/context/admin-auth-context';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [user, loading] = useAuthState(auth);
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   React.useEffect(() => {
-    if (loading) return; // Ne rien faire pendant le chargement
-
-    // Rediriger si l'utilisateur n'est pas connecté ou n'est pas l'admin
-    if (!user || user.email?.toLowerCase() !== 'grasdvirus@gmail.com') {
-      router.push('/login');
+    if (!isLoading && !isAuthenticated) {
+      router.push('/admin/login');
     }
-  }, [user, loading, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  // Affiche un état de chargement ou rien en attendant la vérification
-  if (loading || !user || user.email?.toLowerCase() !== 'grasdvirus@gmail.com') {
+  if (isLoading || !isAuthenticated) {
     return (
-        <div className="flex items-center justify-center h-screen">
-            <div className="text-center">
-                <p>Chargement ou redirection en cours...</p>
-            </div>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center">
+          <p>Chargement ou redirection en cours...</p>
         </div>
+      </div>
     );
+  }
+  
+  // Do not render layout for the login page itself
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
   }
 
   return (
@@ -104,5 +100,18 @@ export default function AdminLayout({
         </main>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AdminAuthProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AdminAuthProvider>
   );
 }

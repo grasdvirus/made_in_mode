@@ -48,7 +48,6 @@ export default function ProfilePage() {
     const displayEmail = user.email || 'Non connecté';
     const displayAvatar = user.photoURL || 'https://placehold.co/80x80.png';
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
-    const isAdmin = user.email?.toLowerCase() === 'grasdvirus@gmail.com';
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
@@ -183,12 +182,6 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
 
-                    {isAdmin && (
-                        <Button variant="secondary" onClick={() => router.push('/admin')} className="w-full">
-                            <Shield className="mr-2 h-4 w-4" /> Tableau de bord Admin
-                        </Button>
-                    )}
-                    
                     <Button variant="destructive" onClick={handleSignOut} className="w-full">
                       <LogOut className="mr-2 h-4 w-4" /> Se déconnecter
                     </Button>
