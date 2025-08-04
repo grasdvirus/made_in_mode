@@ -8,11 +8,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft, Shield } from 'lucide-react';
+import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft, Shield, GanttChart } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -40,14 +41,19 @@ export default function ProfilePage() {
         { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
     ];
 
-    if (loading || !user) {
+    if (loading) {
         return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
+    }
+
+    if (!user) {
+         return <div className="flex items-center justify-center min-h-[80vh]"><p>Redirection...</p></div>;
     }
     
     const displayName = user.displayName || 'Utilisateur';
     const displayEmail = user.email || 'Non connecté';
     const displayAvatar = user.photoURL || 'https://placehold.co/80x80.png';
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+    const isAdmin = user?.email?.toLowerCase() === 'grasdvirus@gmail.com';
 
     return (
         <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
@@ -164,6 +170,22 @@ export default function ProfilePage() {
 
                 {/* Support & Actions */}
                 <div className="lg:col-span-3 space-y-6">
+                    {isAdmin && (
+                         <Card className="bg-secondary/50 border-primary/50 border">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Shield /> Administration</CardTitle>
+                                <CardDescription>Accédez au panneau de configuration du site.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                               <Link href="/admin" passHref legacyBehavior>
+                                  <Button className="w-full" asChild>
+                                      <a>Accéder au tableau de bord <GanttChart className="ml-2 h-4 w-4"/></a>
+                                  </Button>
+                               </Link>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><LifeBuoy /> Support</CardTitle>
