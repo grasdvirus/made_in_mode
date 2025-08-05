@@ -9,6 +9,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AdminAuthProvider, useAdminAuth } from '@/context/admin-auth-context';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAdminAuth();
@@ -20,20 +22,19 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       router.push('/admin/login');
     }
   }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading || !isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-background">
-        <div className="text-center">
-          <p>Chargement ou redirection en cours...</p>
-        </div>
-      </div>
-    );
-  }
   
   // Do not render layout for the login page itself
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+  
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-background">
+        <Loader />
+        <p className="mt-4 text-lg">Chargement en cours...</p>
+      </div>
+    );
   }
 
   return (
