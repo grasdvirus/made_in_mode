@@ -4,52 +4,61 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
-// IMPORTANT: Note that the path is now in the `public` directory.
 const dataFilePath = path.join(process.cwd(), 'public/products.json');
 
-export type Product = {
-  name: string;
-  duration: string;
-  price: number;
-  originalPrice: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  hint: string;
-  bgColor: string;
-};
+const ProductSchema = z.object({
+  name: z.string().min(1, 'Le nom est requis'),
+  duration: z.string().min(1, 'La durée est requise'),
+  price: z.number().positive('Le prix doit être positif'),
+  originalPrice: z.number().positive('Le prix original doit être positif'),
+  rating: z.number().min(0).max(5, 'La note doit être entre 0 et 5'),
+  reviews: z.number().int().nonnegative('Le nombre d\'avis ne peut pas être négatif'),
+  image: z.string().url('L\'URL de l\'image est invalide'),
+  hint: z.string().max(25, 'L\'indice de l\'image est trop long').optional().default(''),
+  bgColor: z.string().regex(/^bg-\w+-\d+$/, 'La couleur de fond est invalide').optional().default('bg-gray-200'),
+});
+
+export type Product = z.infer<typeof ProductSchema>;
 
 // Action to read products
 export async function getProducts(): Promise<Product[]> {
   try {
     const fileContent = await fs.readFile(dataFilePath, 'utf-8');
     const products = JSON.parse(fileContent);
-    return products;
+    // Validate the array of products
+    return z.array(ProductSchema).parse(products);
   } catch (error) {
-    console.error('Failed to read products:', error);
-    // If the file doesn't exist or is empty, return an empty array
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        // If file doesn't exist, create it with an empty array
+        await fs.writeFile(dataFilePath, '[]');
         return [];
     }
-    throw error;
+    console.error('Failed to read or parse products:', error);
+    // In case of parsing error or other issues, return an empty array to avoid crashing the app
+    return [];
   }
 }
 
 // Action to update products
-export async function updateProducts(products: Product[]) {
+export async function updateProducts(products: Product[]): Promise<{ success: boolean, message: string }> {
   try {
-    const jsonData = JSON.stringify(products, null, 2);
-    // This is where we would write to the file system.
+    // Validate the data before writing
+    const validatedProducts = z.array(ProductSchema).parse(products);
+    const jsonData = JSON.stringify(validatedProducts, null, 2);
     await fs.writeFile(dataFilePath, jsonData);
     
-    // Revalidate the discover page to show the new data
+    // Revalidate paths to show the new data
     revalidatePath('/discover');
-    // Also revalidate the admin page itself
     revalidatePath('/admin/update-products');
+    
     return { success: true, message: 'Produits mis à jour avec succès.' };
   } catch (error) {
     console.error('Failed to update products:', error);
+    if (error instanceof z.ZodError) {
+        return { success: false, message: `Validation failed: ${error.errors.map(e => e.message).join(', ')}` };
+    }
     return { success: false, message: 'Échec de la mise à jour des produits.' };
   }
 }
