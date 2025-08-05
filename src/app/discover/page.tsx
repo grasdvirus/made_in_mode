@@ -78,7 +78,7 @@ export default function DiscoverPage() {
   return (
     <div className="space-y-12">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Trouvez votre style de voyage</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Parcourez nos collections par continent et découvrez des aventures qui correspondent à vos envies.
         </p>
@@ -219,4 +219,3 @@ export default function DiscoverPage() {
     </div>
   );
 }
-

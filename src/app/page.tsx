@@ -172,8 +172,8 @@ export default function HomePage() {
                   <CarouselContent>
                       {categories.map((category, index) => (
                           <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
-                              <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-20 mx-auto">
-                                  <div className="relative w-20 h-20">
+                              <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto">
+                                  <div className="relative w-24 h-24">
                                       <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50" data-ai-hint={category.hint} />
                                   </div>
                                   <span className="text-sm font-medium">{category.name}</span>
