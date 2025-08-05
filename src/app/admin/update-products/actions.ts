@@ -18,6 +18,7 @@ const ProductSchema = z.object({
   image: z.string().url('L\'URL de l\'image est invalide'),
   hint: z.string().max(25, 'L\'indice de l\'image est trop long').optional().default(''),
   bgColor: z.string().optional().default('bg-gray-200'),
+  continent: z.string().min(1, 'Le continent est requis'),
 });
 
 export type Product = z.infer<typeof ProductSchema>;

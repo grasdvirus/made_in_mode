@@ -16,6 +16,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 const ProductFormSchema = z.object({
@@ -24,6 +25,7 @@ const ProductFormSchema = z.object({
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
   image: z.string().url({ message: "Veuillez entrer une URL d'image valide." }),
   hint: z.string().optional().default(''),
+  continent: z.string().min(1, { message: "Veuillez sélectionner un continent." }),
 });
 
 export type ProductFormData = z.infer<typeof ProductFormSchema>;
@@ -35,7 +37,7 @@ type ProductFormProps = {
 };
 
 export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<ProductFormData>({
+  const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: product || {
       name: 'Nouveau Produit',
@@ -43,6 +45,7 @@ export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
       price: 0,
       image: '',
       hint: '',
+      continent: 'Amérique',
     },
   });
 
@@ -140,8 +143,26 @@ export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
                         {errors.price && <p className="text-sm text-destructive">{errors.price.message}</p>}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="stock">Stock</Label>
-                        <Input id="stock" type="number" placeholder="0" />
+                        <Label htmlFor="continent">Continent</Label>
+                        <Controller
+                            name="continent"
+                            control={control}
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner un continent" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Amérique">Amérique</SelectItem>
+                                        <SelectItem value="Asie">Asie</SelectItem>
+                                        <SelectItem value="Europe">Europe</SelectItem>
+                                        <SelectItem value="Afrique">Afrique</SelectItem>
+                                        <SelectItem value="Océanie">Océanie</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                         {errors.continent && <p className="text-sm text-destructive">{errors.continent.message}</p>}
                     </div>
                 </CardContent>
             </Card>
