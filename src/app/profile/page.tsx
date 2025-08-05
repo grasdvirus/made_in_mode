@@ -82,11 +82,9 @@ export default function ProfilePage() {
                         <CardDescription>Accédez au panneau de contrôle pour gérer le site.</CardDescription>
                     </CardHeader>
                     <CardFooter>
-                        <Link href="/admin" passHref legacyBehavior>
-                           <Button asChild className="w-full">
-                             <a>Accéder au tableau de bord</a>
-                           </Button>
-                        </Link>
+                        <Button asChild className="w-full">
+                           <Link href="/admin">Accéder au tableau de bord</Link>
+                        </Button>
                     </CardFooter>
                 </Card>
 
