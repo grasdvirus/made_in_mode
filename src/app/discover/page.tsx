@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, Compass, ShoppingCart } from 'lucide-react';
+import { Heart, Star, Compass, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -23,6 +23,27 @@ type Product = {
 };
 
 const categories = ['Tout', 'Amérique', 'Asie', 'Europe', 'Afrique', 'Océanie'];
+
+const recommendedProducts = [
+    {
+        name: 'Aventure en Patagonie',
+        description: 'Explorez des paysages à couper le souffle.',
+        image: 'https://placehold.co/400x200.png',
+        hint: 'patagonia landscape',
+    },
+    {
+        name: 'Escapade à Kyoto',
+        description: 'Découvrez les temples et jardins ancestraux.',
+        image: 'https://placehold.co/400x200.png',
+        hint: 'kyoto temple',
+    },
+    {
+        name: 'Safari en Tanzanie',
+        description: 'Vivez la magie de la faune africaine.',
+        image: 'https://placehold.co/400x200.png',
+        hint: 'tanzania safari',
+    }
+]
 
 export default function DiscoverPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -54,7 +75,7 @@ export default function DiscoverPage() {
   }, [selectedCategory, products]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Trouvez votre style de voyage</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -76,8 +97,8 @@ export default function DiscoverPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {[...Array(10)].map((_, i) => (
              <Card key={i} className="rounded-2xl overflow-hidden bg-card/50 animate-pulse">
                 <div className="aspect-[4/5] bg-muted/50"></div>
                 <div className="p-4 space-y-2">
@@ -88,7 +109,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <Card 
@@ -138,6 +159,30 @@ export default function DiscoverPage() {
           )}
         </div>
       )}
+      
+      {/* Recommended Section */}
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {recommendedProducts.map((product, index) => (
+                <Card key={index} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="relative w-full sm:w-32 h-32 sm:h-20 flex-shrink-0">
+                           <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
+                        </div>
+                        <div className="flex-grow text-center sm:text-left">
+                            <h3 className="font-bold text-lg">{product.name}</h3>
+                            <p className="text-muted-foreground text-sm">{product.description}</p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
+                            <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </Card>
+            ))}
+        </div>
+      </div>
+
     </div>
   );
 }
