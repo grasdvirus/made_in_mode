@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 // The password is intentionally stored here for this simple use case.
 // In a real application, this would be validated against a server.
-const ADMIN_PASSWORD = 'grasdvirus@gmail.com';
+const ADMIN_PASSWORD = 'virusgrasd';
 const SESSION_STORAGE_KEY = 'admin-authenticated';
 
 interface AdminAuthContextType {
