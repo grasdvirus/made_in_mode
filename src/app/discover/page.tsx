@@ -8,6 +8,7 @@ import { Heart, Star, Compass, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 type Product = {
   name: string;
@@ -97,8 +98,8 @@ export default function DiscoverPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {[...Array(10)].map((_, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
              <Card key={i} className="rounded-2xl overflow-hidden bg-card/50 animate-pulse">
                 <div className="aspect-[4/5] bg-muted/50"></div>
                 <div className="p-4 space-y-2">
@@ -109,7 +110,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <Card 
@@ -163,7 +164,8 @@ export default function DiscoverPage() {
       {/* Recommended Section */}
       <div className="space-y-6">
         <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
             {recommendedProducts.map((product, index) => (
                 <Card key={index} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -181,8 +183,40 @@ export default function DiscoverPage() {
                 </Card>
             ))}
         </div>
+        
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full md:hidden no-scrollbar"
+        >
+          <CarouselContent className="-ml-4">
+            {recommendedProducts.map((product, index) => (
+              <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3">
+                 <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 h-full">
+                    <div className="flex items-center gap-4">
+                        <div className="relative w-24 h-24 flex-shrink-0">
+                           <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
+                        </div>
+                        <div className="flex-grow text-left">
+                            <h3 className="font-bold text-lg">{product.name}</h3>
+                            <p className="text-muted-foreground text-sm">{product.description}</p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30">
+                            <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
+          <CarouselNext className="flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
+        </Carousel>
       </div>
 
     </div>
   );
 }
+
