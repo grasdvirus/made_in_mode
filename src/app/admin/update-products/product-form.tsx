@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { type Product } from './actions';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
