@@ -74,6 +74,21 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                 {/* Administration Card */}
+                <Card className="lg:col-span-3 bg-secondary border-primary/50">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Shield /> Administration</CardTitle>
+                        <CardDescription>Accédez au panneau de contrôle pour gérer le site.</CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                        <Link href="/admin" passHref legacyBehavior>
+                           <Button asChild className="w-full">
+                             <a>Accéder au tableau de bord</a>
+                           </Button>
+                        </Link>
+                    </CardFooter>
+                </Card>
 
                 {/* Personal Information */}
                 <Card className="lg:col-span-2">
