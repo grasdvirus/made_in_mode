@@ -14,12 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getProducts, updateProducts, type Product } from "./actions"; 
-import { PlusCircle, Trash2, Edit, Loader2 } from "lucide-react";
+import { PlusCircle, Trash2, Edit } from "lucide-react";
 import Image from "next/image";
 import { ProductForm, type ProductFormData } from './product-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = React.useState<Product[]>([]);
@@ -112,8 +114,7 @@ export default function AdminProductsPage() {
                   <CardDescription>Gérez les produits affichés sur le site.</CardDescription>
               </div>
               <Button onClick={handleOpenAddModal} disabled={isSaving}>
-                  {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                  Ajouter un produit
+                  {isSaving ? <div className="h-6"><Loader /></div> : <><PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit</>}
               </Button>
           </div>
         </CardHeader>
@@ -135,7 +136,7 @@ export default function AdminProductsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">Chargement des produits...</TableCell>
+                  <TableCell colSpan={5} className="text-center h-48"><Loader /></TableCell>
                 </TableRow>
               ) : products.length > 0 ? (
                 products.map((product) => (

@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type Product } from './actions';
-import { Loader2 } from 'lucide-react';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
 
 const ProductFormSchema = z.object({
   name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
@@ -110,8 +111,7 @@ export function ProductForm({ product, onSave, onCancel, isSaving }: ProductForm
           Annuler
         </Button>
         <Button type="submit" disabled={isSaving}>
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sauvegarder
+          {isSaving ? <div className="h-6"><Loader /></div> : 'Sauvegarder'}
         </Button>
       </div>
     </form>

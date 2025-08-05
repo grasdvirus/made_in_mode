@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { KeyRound } from 'lucide-react';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = React.useState('');
@@ -60,7 +62,7 @@ export default function AdminLoginPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Vérification...' : 'Se connecter'}
+              {loading ? <div className="h-6"><Loader /></div> : 'Se connecter'}
             </Button>
           </CardFooter>
         </form>

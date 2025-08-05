@@ -8,12 +8,15 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft, Shield, GanttChart } from 'lucide-react';
+import { Mail, Smartphone, LogOut, User, KeyRound, Bell, ShoppingBag, LifeBuoy, FileText, ChevronRight, ChevronLeft, Shield } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
+
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -42,11 +45,11 @@ export default function ProfilePage() {
     ];
 
     if (loading) {
-        return <div className="flex items-center justify-center min-h-[80vh]"><p>Chargement...</p></div>
+        return <div className="flex flex-col items-center justify-center min-h-[80vh]"><Loader /><p className="mt-4 text-lg">Chargement du profil...</p></div>
     }
 
     if (!user) {
-         return null; // Affichez rien ou un spinner pendant la redirection
+         return null; 
     }
     
     const displayName = user.displayName || 'Utilisateur';
@@ -75,7 +78,6 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                 {/* Administration Card */}
                 <Card className="lg:col-span-3 bg-secondary border-primary/50">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Shield /> Administration</CardTitle>
