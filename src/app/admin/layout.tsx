@@ -52,7 +52,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-                <Link href="/admin" passHref legacyBehavior>
+                <Link href="/admin">
                     <SidebarMenuButton isActive={pathname === '/admin'}>
                         <Home />
                         Accueil
@@ -60,7 +60,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <Link href="/admin/update-products" passHref legacyBehavior>
+                <Link href="/admin/update-products">
                     <SidebarMenuButton isActive={pathname.startsWith('/admin/update-products')}>
                         <ShoppingCart />
                         Produits
@@ -68,7 +68,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-               <Link href="/admin/users" passHref legacyBehavior>
+               <Link href="/admin/users">
                     <SidebarMenuButton isActive={pathname.startsWith('/admin/users')}>
                         <Users />
                         Utilisateurs
@@ -80,7 +80,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
              <SidebarMenu>
                 <SidebarMenuItem>
-                     <Link href="/admin/settings" passHref legacyBehavior>
+                     <Link href="/admin/settings">
                         <SidebarMenuButton isActive={pathname.startsWith('/admin/settings')}>
                             <Settings />
                             Paramètres
