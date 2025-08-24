@@ -6,10 +6,12 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Heart, Tag, ArrowRight } from 'lucide-react';
+import { Search, Heart, Tag, ArrowRight, X } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const featuredProducts = [
   {
@@ -74,9 +76,9 @@ const categories = [
 ]
 
 const products = [
-    { id: 'p1', name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
-    { id: 'p2', name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
-    { id: 'p3', name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
+    { id: '1', name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
+    { id: '2', name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
+    { id: '3', name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
 ]
 
 const AcePlaceLogo = () => (
@@ -95,10 +97,12 @@ const AcePlaceLogo = () => (
 )
 
 export default function HomePage() {
+  const router = useRouter();
   const [searchValue, setSearchValue] = React.useState('');
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!api) {
@@ -113,6 +117,20 @@ export default function HomePage() {
     })
   }, [api])
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchValue.trim() !== '') {
+      router.push(`/discover?search=${encodeURIComponent(searchValue.trim())}`);
+    }
+  };
+
+  const handleFavorite = (e: React.MouseEvent, productName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+        title: "Favoris",
+        description: `${productName} a été ajouté à votre liste de souhaits !`,
+    });
+  };
 
   return (
     <div className="bg-background min-h-screen -mx-4 -mt-8">
@@ -136,6 +154,7 @@ export default function HomePage() {
               className="w-full h-12 pl-12 rounded-full bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 focus:border-white"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleSearch}
             />
             {searchValue && (
                 <Button 
@@ -192,14 +211,14 @@ export default function HomePage() {
                               <CardContent className="p-0">
                                 <div className="relative">
                                   <Image
-                                    src={product.images[0]}
+                                    src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x400.png'}
                                     alt={product.name}
                                     width={600}
                                     height={400}
                                     className="w-full h-48 object-cover"
                                     data-ai-hint={product.hint}
                                   />
-                                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
+                                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
                                     <Heart className="w-5 h-5" />
                                   </Button>
                                   <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">

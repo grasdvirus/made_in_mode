@@ -16,10 +16,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function ProfilePage() {
     const router = useRouter();
+    const { toast } = useToast();
     const [editMode, setEditMode] = useState(false);
     const [user, loading] = useAuthState(auth);
 
@@ -32,10 +34,19 @@ export default function ProfilePage() {
     const handleSignOut = async () => {
         try {
             await signOut(auth);
+            toast({ title: 'Déconnexion réussie', description: 'À bientôt !' });
             router.push('/login');
         } catch (error) {
             console.error('Error signing out: ', error);
+            toast({ variant: 'destructive', title: 'Erreur', description: 'La déconnexion a échoué.' });
         }
+    };
+
+    const handleGenericClick = (message: string) => {
+        toast({
+            title: "Fonctionnalité à venir",
+            description: message,
+        });
     };
     
     const paymentHistory = [
@@ -115,7 +126,7 @@ export default function ProfilePage() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-wrap justify-between gap-2">
-                         <Button variant="outline" onClick={() => { /* Logic for managing addresses */ }}>Gérer mes adresses</Button>
+                         <Button variant="outline" onClick={() => handleGenericClick("La gestion des adresses sera bientôt disponible.")}>Gérer mes adresses</Button>
                          <Button onClick={() => setEditMode(!editMode)}>
                             {editMode ? 'Sauvegarder' : 'Modifier mes informations'}
                         </Button>
@@ -133,7 +144,7 @@ export default function ProfilePage() {
                             <p className="text-sm font-medium">Méthode d’authentification</p>
                             <p className="text-sm text-muted-foreground">{user.providerData[0]?.providerId === 'password' ? 'Email & Mot de passe' : 'Google'}</p>
                         </div>
-                        <Button className="w-full">Changer mon mot de passe</Button>
+                        <Button className="w-full" onClick={() => handleGenericClick("La modification du mot de passe sera bientôt disponible.")}>Changer mon mot de passe</Button>
                     </CardContent>
                 </Card>
 
@@ -154,7 +165,7 @@ export default function ProfilePage() {
                         </div>
                     </CardContent>
                      <CardFooter>
-                        <Button variant="outline" className="w-full">Gérer les catégories préférées</Button>
+                        <Button variant="outline" className="w-full" onClick={() => handleGenericClick("La gestion des préférences sera bientôt disponible.")}>Gérer les catégories préférées</Button>
                      </CardFooter>
                 </Card>
 
@@ -172,7 +183,7 @@ export default function ProfilePage() {
                                         <p className="font-medium">{payment.item} - {payment.date}</p>
                                         <p className={`text-sm ${payment.status === 'Réussi' ? 'text-green-500' : 'text-red-500'}`}>{payment.status} - {payment.amount}</p>
                                     </div>
-                                    <Button variant="ghost" size="icon">
+                                    <Button variant="ghost" size="icon" onClick={() => handleGenericClick(`Le téléchargement de la facture ${payment.id} sera bientôt disponible.`)}>
                                         <FileText className="h-4 w-4" />
                                         <span className="sr-only">Télécharger facture</span>
                                     </Button>
@@ -189,13 +200,13 @@ export default function ProfilePage() {
                             <CardTitle className="flex items-center gap-2"><LifeBuoy /> Support</CardTitle>
                         </CardHeader>
                          <CardContent className="space-y-4">
-                            <form className="space-y-2">
+                            <form className="space-y-2" onSubmit={(e) => { e.preventDefault(); handleGenericClick('Votre question a été envoyée à notre équipe de support.'); }}>
                                 <Label htmlFor="question">Envoyer une question</Label>
                                 <Input id="question" placeholder="Votre question..." />
                                 <Button type="submit" className="w-full sm:w-auto">Envoyer</Button>
                             </form>
                              <Separator />
-                            <Button variant="outline" className="w-full justify-between">
+                            <Button variant="outline" className="w-full justify-between" onClick={() => handleGenericClick('Le support par chat sera bientôt disponible.')}>
                                 Contacter le support
                                 <ChevronRight className="h-4 w-4"/>
                             </Button>

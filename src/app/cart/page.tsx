@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Plus, Minus, X, CreditCard, ShoppingCart, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 type CartItem = {
   id: number;
@@ -62,6 +63,7 @@ const initialCartItems: CartItem[] = [
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
   const [animate, setAnimate] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Trigger entrance animation
@@ -79,7 +81,22 @@ export default function CartPage() {
   };
 
   const removeItem = (id: number) => {
+    const itemToRemove = cartItems.find(item => item.id === id);
     setCartItems(cartItems.filter(item => item.id !== id));
+    if (itemToRemove) {
+      toast({
+        title: "Article Supprimé",
+        description: `${itemToRemove.name} a été retiré de votre panier.`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCheckout = () => {
+    toast({
+      title: "Redirection vers le paiement",
+      description: "Vous allez être redirigé vers une page de paiement sécurisée.",
+    });
   };
   
   const subtotal = cartItems.reduce(
@@ -171,7 +188,7 @@ export default function CartPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg group">
+              <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg group" onClick={handleCheckout}>
                 Passer au paiement <CreditCard className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </CardFooter>

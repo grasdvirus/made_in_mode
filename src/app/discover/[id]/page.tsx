@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Star, Minus, Plus, ChevronLeft, Shirt, Diamond, Ruler } from 'lucide-react';
+import { Star, Minus, Plus, ChevronLeft, Shirt, Diamond, Ruler, Heart } from 'lucide-react';
 import { type Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -15,31 +15,6 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-
-// Mock product data for demonstration purposes
-const sampleProduct: Product = {
-  id: '1',
-  name: 'Robe de Soirée Élégante',
-  brand: 'Couture Chic',
-  images: [
-    'https://placehold.co/800x1000.png',
-    'https://placehold.co/800x1000.png',
-  ],
-  description: "Cette robe longue et fluide est la définition même de l'élégance. Son tissu soyeux et sa coupe flatteuse mettront en valeur votre silhouette pour toutes les grandes occasions. Une pièce maîtresse intemporelle pour une garde-robe sophistiquée.",
-  rating: 4.8,
-  reviews: 124,
-  price: 75000,
-  originalPrice: 95000,
-  sizes: ['XS', 'S', 'M', 'L', 'XL'],
-  colors: [
-    { name: 'Noir', hex: '#000000' },
-    { name: 'Bordeaux', hex: '#800020' },
-    { name: 'Émeraude', hex: '#50C878' },
-  ],
-  hint: 'elegant dress',
-  category: 'Robes',
-};
-
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -52,9 +27,29 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       setIsLoading(true);
       try {
         const response = await fetch('/products.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
         const products: Product[] = await response.json();
         const foundProduct = products.find(p => p.id === params.id);
-        setProduct(foundProduct || null);
+        
+        if (foundProduct) {
+          // Ensure product has default values for optional fields
+          const hydratedProduct: Product = {
+            ...foundProduct,
+            sizes: foundProduct.sizes || ['S', 'M', 'L'],
+            colors: foundProduct.colors || [{ name: 'Default', hex: '#000000' }],
+            originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
+            rating: foundProduct.rating || 4.5,
+            reviews: foundProduct.reviews || 0,
+            category: foundProduct.category || 'Non classé',
+            description: foundProduct.description || 'Aucune description disponible.'
+          };
+          setProduct(hydratedProduct);
+        } else {
+          setProduct(null);
+        }
+
       } catch (error) {
         console.error("Failed to fetch product", error);
         toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger les détails du produit.' });
@@ -65,21 +60,38 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     fetchProduct();
   }, [params.id, toast]);
 
-  const [selectedColor, setSelectedColor] = useState(product?.colors[0] || sampleProduct.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || sampleProduct.sizes[0]);
+  const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string } | undefined>(undefined);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (product) {
-      setSelectedColor(product.colors[0]);
-      setSelectedSize(product.sizes[0]);
+      setSelectedColor(product.colors?.[0]);
+      setSelectedSize(product.sizes?.[0]);
     }
   }, [product]);
+  
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+        title: "Favoris",
+        description: `${product?.name} a été ajouté à votre liste de souhaits !`,
+    });
+  };
 
   const handleAddToCart = () => {
+    if (!product || !selectedSize || !selectedColor) {
+        toast({
+            variant: "destructive",
+            title: "Sélection requise",
+            description: "Veuillez sélectionner une couleur et une taille.",
+        });
+        return;
+    }
     toast({
       title: "Ajouté au Panier!",
-      description: `${quantity} x ${product?.name} (${selectedSize}, ${selectedColor.name})`,
+      description: `${quantity} x ${product.name} (${selectedSize}, ${selectedColor.name})`,
     });
   };
 
@@ -98,26 +110,43 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 <ChevronLeft className="h-6 w-6" />
             </Button>
             <h1 className="text-xl font-bold truncate px-4">{product.name}</h1>
-            <div className="w-10"></div> {/* Spacer */}
+            <Button variant="ghost" size="icon" onClick={handleFavorite} className="bg-secondary text-foreground rounded-full">
+                <Heart className="h-6 w-6" />
+            </Button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
           <Carousel className="w-full">
             <CarouselContent>
-              {product.images.map((image, index) => (
-                <CarouselItem key={index}>
-                  <Card className="overflow-hidden aspect-[4/5] relative bg-secondary rounded-2xl">
-                    <Image
-                      src={image}
-                      alt={`${product.name} - vue ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      data-ai-hint={product.hint}
-                    />
-                  </Card>
-                </CarouselItem>
-              ))}
+              {product.images && product.images.length > 0 ? (
+                  product.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <Card className="overflow-hidden aspect-[4/5] relative bg-secondary rounded-2xl">
+                        <Image
+                          src={image}
+                          alt={`${product.name} - vue ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          data-ai-hint={product.hint}
+                        />
+                      </Card>
+                    </CarouselItem>
+                  ))
+              ) : (
+                 <CarouselItem>
+                      <Card className="overflow-hidden aspect-[4/5] relative bg-secondary rounded-2xl">
+                        <Image
+                          src="https://placehold.co/800x1000.png"
+                          alt="Image par défaut"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          data-ai-hint={product.hint}
+                        />
+                      </Card>
+                    </CarouselItem>
+              )}
             </CarouselContent>
             <CarouselPrevious className="absolute left-4 hidden sm:inline-flex bg-background/50 hover:bg-background/80" />
             <CarouselNext className="absolute right-4 hidden sm:inline-flex bg-background/50 hover:bg-background/80" />
@@ -145,39 +174,43 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <Separator />
             
             <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-medium">Couleur: <span className="font-normal text-muted-foreground">{selectedColor.name}</span></h3>
-                <RadioGroup value={selectedColor.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex)!)} className="flex items-center gap-2 mt-2">
-                  {product.colors.map((color) => (
-                    <div key={color.hex}>
-                      <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
-                      <label htmlFor={color.hex} className={cn(
-                        "w-8 h-8 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
-                        selectedColor.hex === color.hex ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
-                      )} style={{ backgroundColor: color.hex }}>
-                         { selectedColor.hex === color.hex && <div className="w-3 h-3 rounded-full bg-white mix-blend-difference"/>}
-                      </label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
+              {product.colors && product.colors.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-medium">Couleur: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></h3>
+                  <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex)!)} className="flex items-center gap-2 mt-2">
+                    {product.colors.map((color) => (
+                      <div key={color.hex}>
+                        <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
+                        <label htmlFor={color.hex} className={cn(
+                          "w-8 h-8 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
+                          selectedColor?.hex === color.hex ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
+                        )} style={{ backgroundColor: color.hex }}>
+                           { selectedColor?.hex === color.hex && <div className="w-3 h-3 rounded-full bg-white mix-blend-difference"/>}
+                        </label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
 
-              <div>
-                <h3 className="text-lg font-medium">Taille</h3>
-                <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 mt-2 flex-wrap">
-                  {product.sizes.map((size) => (
-                     <div key={size}>
-                      <RadioGroupItem value={size} id={size} className="sr-only" />
-                      <label htmlFor={size} className={cn(
-                        "px-4 py-2 rounded-lg border cursor-pointer text-sm font-semibold",
-                        selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary hover:bg-muted'
-                      )}>
-                        {size}
-                      </label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
+              {product.sizes && product.sizes.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-medium">Taille</h3>
+                  <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 mt-2 flex-wrap">
+                    {product.sizes.map((size) => (
+                       <div key={size}>
+                        <RadioGroupItem value={size} id={size} className="sr-only" />
+                        <label htmlFor={size} className={cn(
+                          "px-4 py-2 rounded-lg border cursor-pointer text-sm font-semibold",
+                          selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary hover:bg-muted'
+                        )}>
+                          {size}
+                        </label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
             </div>
 
             <Separator />
@@ -212,7 +245,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                      </div>
                       <div className="space-y-2">
                         <h4 className="font-semibold flex items-center gap-2"><Diamond className="w-4 h-4 text-primary"/> Référence</h4>
-                        <p className="text-sm text-muted-foreground">ACE-{product.id.slice(-6)}</p>
+                        <p className="text-sm text-muted-foreground">ACE-{product.id?.slice(-6)}</p>
                      </div>
                  </CardContent>
              </Card>

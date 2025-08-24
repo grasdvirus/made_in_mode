@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useToast } from '@/hooks/use-toast';
 
 type Product = {
   id: string;
@@ -54,6 +55,7 @@ export default function DiscoverPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('Tout');
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsLoading(true);
@@ -77,6 +79,24 @@ export default function DiscoverPage() {
       setFilteredProducts(products.filter(p => p.category === selectedCategory));
     }
   }, [selectedCategory, products]);
+  
+  const handleFavorite = (e: React.MouseEvent, productName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+        title: "Favoris",
+        description: `${productName} a été ajouté à votre liste de souhaits !`,
+    });
+  };
+
+  const handleAddToCart = (e: React.MouseEvent, productName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+        title: "Panier",
+        description: `${productName} a été ajouté au panier.`,
+    });
+  };
 
   return (
     <div className="space-y-12">
@@ -123,14 +143,14 @@ export default function DiscoverPage() {
                   <CardContent className="p-0 h-full flex flex-col">
                     <div className="relative aspect-[4/5]">
                       <Image 
-                          src={product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/600x800.png'} 
+                          src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x800.png'} 
                           alt={product.name} 
                           fill 
                           className="object-cover transition-transform duration-300 group-hover:scale-105" 
                           data-ai-hint={product.hint} 
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
-                       <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                       <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
                         <Heart className="w-5 h-5" />
                       </Button>
                     </div>
@@ -142,7 +162,7 @@ export default function DiscoverPage() {
                             <span className="text-sm font-medium">{product.rating}</span>
                             <span className="text-sm text-muted-foreground">({product.reviews} avis)</span>
                          </div>
-                         <Button variant="ghost" size="icon" className="rounded-full bg-primary/20 text-primary hover:bg-primary/30">
+                         <Button variant="ghost" size="icon" className="rounded-full bg-primary/20 text-primary hover:bg-primary/30" onClick={(e) => handleAddToCart(e, product.name)}>
                             <ShoppingCart className="w-5 h-5" />
                         </Button>
                       </div>
