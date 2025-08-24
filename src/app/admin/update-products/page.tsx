@@ -40,7 +40,7 @@ export default function AdminProductsPage() {
       name: 'Nouveau Produit',
       category: 'Robes',
       price: 10000,
-      image: 'https://placehold.co/600x400.png',
+      images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png'],
       hint: 'fashion product',
     };
 
@@ -62,7 +62,7 @@ export default function AdminProductsPage() {
     setIsSaving(false);
 
     if (result.success) {
-      setProducts(products.map(p => p.id === productId ? { ...p, ...formData } : p));
+      setProducts(products.map(p => p.id === productId ? { ...p, ...formData, id: p.id } : p));
       toast({ title: "Succès", description: "Produit mis à jour." });
       setOpenAccordion(undefined); // Close accordion on save
     } else {

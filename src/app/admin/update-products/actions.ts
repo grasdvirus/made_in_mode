@@ -9,7 +9,7 @@ import { z } from 'zod';
 const dataFilePath = path.join(process.cwd(), 'public/products.json');
 
 const ProductSchema = z.object({
-  id: z.string().optional(), // ID will be added when creating
+  id: z.string().optional(),
   name: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
   category: z.string().min(1, 'La catégorie est requise'),
@@ -17,7 +17,7 @@ const ProductSchema = z.object({
   originalPrice: z.coerce.number().positive('Le prix original doit être positif').optional(),
   rating: z.coerce.number().min(0).max(5, 'La note doit être entre 0 et 5').optional(),
   reviews: z.coerce.number().int().nonnegative("Le nombre d'avis ne peut pas être négatif").optional(),
-  image: z.string().url("L'URL de l'image est invalide ou l'image n'est pas téléversée").or(z.string().startsWith("data:image/")),
+  images: z.array(z.string().url("L'URL de l'image est invalide ou l'image n'est pas téléversée").or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Vous ne pouvez téléverser que 2 images maximum."),
   hint: z.string().max(40, "L'indice de l'image est trop long").optional().default(''),
   bgColor: z.string().optional().default('bg-gray-200'),
 });
@@ -48,6 +48,7 @@ async function writeProductsToFile(products: Product[]) {
     await fs.writeFile(dataFilePath, jsonData);
     revalidatePath('/discover');
     revalidatePath('/admin/update-products');
+    revalidatePath('/discover/[id]', 'page');
 }
 
 export async function getProducts(): Promise<Product[]> {

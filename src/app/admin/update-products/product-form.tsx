@@ -24,7 +24,7 @@ const ProductFormSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, { message: "Veuillez sélectionner une catégorie." }),
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
-  image: z.string().url({ message: "Veuillez entrer une URL d'image valide ou téléverser une image." }).or(z.string().startsWith("data:image/")),
+  images: z.array(z.string().url().or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Maximum 2 images."),
   hint: z.string().optional().default(''),
 });
 
@@ -44,8 +44,8 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
         const file = event.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit
-            toast({ variant: "destructive", title: "Erreur", description: "Le fichier est trop volumineux. La taille maximale est de 10 Mo." });
+        if (file.size > 1 * 1024 * 1024) { // 1MB limit
+            toast({ variant: "destructive", title: "Erreur", description: "Le fichier est trop volumineux. La taille maximale est de 1 Mo." });
             return;
         }
 
@@ -84,7 +84,6 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
             />
             
             <div className="space-y-2">
-                <Label>Image du produit</Label>
                 <div 
                     className="aspect-square relative w-full bg-secondary/50 rounded-lg flex items-center justify-center border-2 border-dashed border-border cursor-pointer hover:border-primary transition-colors"
                     onClick={() => !uploading && fileInputRef.current?.click()}
@@ -100,7 +99,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
                         <div className="text-center text-muted-foreground p-4">
                             <UploadCloud className="mx-auto h-12 w-12" />
                             <p className="mt-2 text-sm font-semibold">Glissez-déposez ou cliquez</p>
-                            <p className="text-xs">Taille max: 10MB</p>
+                            <p className="text-xs">Taille max: 1MB</p>
                         </div>
                     )}
                 </div>
@@ -117,7 +116,7 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
         name: product.name || '',
         category: product.category || '',
         price: product.price || 0,
-        image: product.image || '',
+        images: product.images || [],
         hint: product.hint || '',
         description: (product as any).description || '',
     },
@@ -127,7 +126,7 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
     onSave(data);
   };
   
-  const currentImageUrl = watch('image');
+  const currentImages = watch('images');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4 border-t border-border/50">
@@ -199,18 +198,20 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
                     <h4 className="font-semibold">Média</h4>
                 </CardHeader>
                  <CardContent>
-                     <Controller
-                        name="image"
-                        control={control}
-                        render={({ field }) => (
-                            <ImageUploader 
-                                value={field.value}
-                                onChange={field.onChange}
-                                disabled={isSaving}
-                            />
-                        )}
-                    />
-                    {errors.image && <p className="text-sm text-destructive mt-2">{errors.image.message}</p>}
+                    <Label>Images du produit</Label>
+                     <div className="grid grid-cols-2 gap-4 mt-2">
+                         <Controller
+                            name="images.0"
+                            control={control}
+                            render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
+                        />
+                         <Controller
+                            name="images.1"
+                            control={control}
+                            render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
+                        />
+                     </div>
+                    {errors.images && <p className="text-sm text-destructive mt-2">{errors.images.message}</p>}
                      <div className="space-y-2 mt-4">
                         <Label htmlFor="hint">Indice pour l'image (max 2 mots)</Label>
                         <Input id="hint" {...register('hint')} placeholder="ex: robe noire" disabled={isSaving}/>

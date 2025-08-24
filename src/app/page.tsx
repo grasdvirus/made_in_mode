@@ -13,64 +13,70 @@ import Link from 'next/link';
 
 const featuredProducts = [
   {
+    id: 'prod1',
     name: 'Robe de Soirée Élégante',
     category: 'Robes',
     price: 75000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'evening dress',
   },
   {
+    id: 'prod2',
     name: 'Sac à Main Cuir Bordeaux',
     category: 'Sacs',
     price: 55000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'leather handbag',
   },
   {
+    id: 'prod3',
     name: 'Escarpins Noirs Classiques',
     category: 'Chaussures',
     price: 62000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'black heels',
   },
   {
+    id: 'prod4',
     name: 'Trench-Coat Beige Iconique',
     category: 'Manteaux',
     price: 120000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'beige trench coat',
   },
    {
+    id: 'prod5',
     name: 'Jupe Plissée Rose Poudré',
     category: 'Jupes',
     price: 42000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'pink skirt',
   },
   {
+    id: 'prod6',
     name: 'Blouse en Soie Ivoire',
     category: 'Hauts',
     price: 48000,
-    image: 'https://placehold.co/600x400.png',
+    images: ['https://placehold.co/600x400.png'],
     hint: 'silk blouse',
   },
 ];
 
 const categories = [
-    { name: 'Nouveautés', image: 'https://placehold.co/200x200.png', hint: 'new fashion' },
-    { name: 'Vêtements', image: 'https://placehold.co/200x200.png', hint: 'clothing rack' },
-    { name: 'Chaussures', image: 'https://placehold.co/200x200.png', hint: 'stylish shoes' },
-    { name: 'Accessoires', image: 'https://placehold.co/200x200.png', hint: 'fashion accessories' },
-    { name: 'Robes', image: 'https://placehold.co/200x200.png', hint: 'elegant dress' },
-    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection' },
-    { name: 'Manteaux', image: 'https://placehold.co/200x200.png', hint: 'winter coat' },
-    { name: 'Bijoux', image: 'https://placehold.co/200x200.png', hint: 'luxury jewelry' }
+    { name: 'Nouveautés', image: 'https://placehold.co/200x200.png', hint: 'new fashion', link: '/discover?category=Tout' },
+    { name: 'Vêtements', image: 'https://placehold.co/200x200.png', hint: 'clothing rack', link: '/discover?category=Tout' },
+    { name: 'Chaussures', image: 'https://placehold.co/200x200.png', hint: 'stylish shoes', link: '/discover?category=Chaussures' },
+    { name: 'Accessoires', image: 'https://placehold.co/200x200.png', hint: 'fashion accessories', link: '/discover?category=Accessoires' },
+    { name: 'Robes', image: 'https://placehold.co/200x200.png', hint: 'elegant dress', link: '/discover?category=Robes' },
+    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection', link: '/discover?category=Sacs' },
+    { name: 'Manteaux', image: 'https://placehold.co/200x200.png', hint: 'winter coat', link: '/discover?category=Manteaux' },
+    { name: 'Bijoux', image: 'https://placehold.co/200x200.png', hint: 'luxury jewelry', link: '/discover?category=Accessoires' }
 ]
 
 const products = [
-    { name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
-    { name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
-    { name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
+    { id: 'p1', name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
+    { id: 'p2', name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
+    { id: 'p3', name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
 ]
 
 const AcePlaceLogo = () => (
@@ -160,12 +166,12 @@ export default function HomePage() {
                   <CarouselContent>
                       {categories.map((category, index) => (
                           <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
-                              <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto">
+                              <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
                                   <div className="relative w-24 h-24">
-                                      <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50" data-ai-hint={category.hint} />
+                                      <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
                                   </div>
-                                  <span className="text-sm font-medium">{category.name}</span>
-                              </div>
+                                  <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
+                              </Link>
                           </CarouselItem>
                       ))}
                   </CarouselContent>
@@ -178,38 +184,40 @@ export default function HomePage() {
           <section className="relative">
             <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
                 <CarouselContent className="ml-4">
-                  {featuredProducts.map((product, index) => (
-                    <CarouselItem key={index} className="pl-0 basis-4/5 sm:basis-1/2">
-                      <div className="px-2">
-                        <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
-                          <CardContent className="p-0">
-                            <div className="relative">
-                              <Image
-                                src={product.image}
-                                alt={product.name}
-                                width={600}
-                                height={400}
-                                className="w-full h-48 object-cover"
-                                data-ai-hint={product.hint}
-                              />
-                              <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
-                                <Heart className="w-5 h-5" />
-                              </Button>
-                              <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
-                                {product.price.toLocaleString('fr-FR')} FCFA
-                              </div>
-                            </div>
-                            <div className="p-4">
-                              <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
-                              <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
-                                <div className="flex items-center gap-1.5">
-                                  <Tag className="w-4 h-4" />
-                                  <span>{product.category}</span>
+                  {featuredProducts.map((product) => (
+                    <CarouselItem key={product.id} className="pl-0 basis-4/5 sm:basis-1/2">
+                      <div className="px-2 h-full">
+                        <Link href={`/discover/${product.id}`} className="block h-full">
+                            <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
+                              <CardContent className="p-0">
+                                <div className="relative">
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={600}
+                                    height={400}
+                                    className="w-full h-48 object-cover"
+                                    data-ai-hint={product.hint}
+                                  />
+                                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
+                                    <Heart className="w-5 h-5" />
+                                  </Button>
+                                  <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
+                                    {product.price.toLocaleString('fr-FR')} FCFA
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                                <div className="p-4">
+                                  <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
+                                  <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                      <Tag className="w-4 h-4" />
+                                      <span>{product.category}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                        </Link>
                       </div>
                     </CarouselItem>
                   ))}
@@ -231,21 +239,23 @@ export default function HomePage() {
 
           {/* Minimalist Products Section */}
           <section className="space-y-4 p-4 md:p-6 pt-0">
-              {products.map((product, index) => (
-                   <Card key={index} className="bg-secondary/50 border-none shadow-md rounded-2xl p-4">
-                      <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 flex-shrink-0">
-                             <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
+              {products.map((product) => (
+                   <Link href={`/discover/${product.id}`} key={product.id} className="block">
+                       <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary">
+                          <div className="flex items-center gap-4">
+                              <div className="relative w-16 h-16 flex-shrink-0">
+                                 <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
+                              </div>
+                              <div className="flex-grow">
+                                  <h3 className="font-bold text-lg">{product.name}</h3>
+                                  <p className="text-muted-foreground text-sm">{product.description}</p>
+                              </div>
+                              <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
+                                  <ArrowRight className="w-5 h-5" />
+                              </Button>
                           </div>
-                          <div className="flex-grow">
-                              <h3 className="font-bold text-lg">{product.name}</h3>
-                              <p className="text-muted-foreground text-sm">{product.description}</p>
-                          </div>
-                          <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30">
-                              <ArrowRight className="w-5 h-5" />
-                          </Button>
-                      </div>
-                  </Card>
+                      </Card>
+                   </Link>
               ))}
           </section>
         </div>

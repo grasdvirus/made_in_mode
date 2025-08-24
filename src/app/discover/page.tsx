@@ -11,13 +11,14 @@ import Link from 'next/link';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 type Product = {
+  id: string;
   name: string;
-  category: string; // Changed from continent
+  category: string;
   price: number;
   originalPrice: number;
   rating: number;
   reviews: number;
-  image: string;
+  images: string[];
   hint: string;
   bgColor: string;
 };
@@ -26,18 +27,21 @@ const categories = ['Tout', 'Robes', 'Hauts', 'Pantalons', 'Chaussures', 'Sacs',
 
 const recommendedProducts = [
     {
+        id: 'rec1',
         name: 'Collection "Nuit Étoilée"',
         description: 'Des pièces scintillantes pour vos soirées.',
         image: 'https://placehold.co/400x200.png',
         hint: 'evening fashion',
     },
     {
+        id: 'rec2',
         name: 'Essentiels du Quotidien',
         description: 'Le confort et le style pour tous les jours.',
         image: 'https://placehold.co/400x200.png',
         hint: 'casual fashion',
     },
     {
+        id: 'rec3',
         name: 'Accessoires Tendance',
         description: 'La touche finale pour un look parfait.',
         image: 'https://placehold.co/400x200.png',
@@ -111,44 +115,45 @@ export default function DiscoverPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product, index) => (
-              <Card 
-                key={`${product.name}-${index}`} 
-                className="rounded-2xl overflow-hidden shadow-lg border-none bg-card/50 backdrop-blur-sm group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2"
-              >
-                <CardContent className="p-0">
-                  <div className="relative aspect-[4/5]">
-                    <Image 
-                        src={product.image} 
-                        alt={product.name} 
-                        fill 
-                        className="object-cover transition-transform duration-300 group-hover:scale-105" 
-                        data-ai-hint={product.hint} 
-                    />
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
-                     <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
-                      <Heart className="w-5 h-5" />
-                    </Button>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <h3 className="font-bold text-lg truncate">{product.name}</h3>
-                    <div className="flex justify-between items-center">
-                       <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <span className="text-sm font-medium">{product.rating}</span>
-                          <span className="text-sm text-muted-foreground">({product.reviews} avis)</span>
-                       </div>
-                       <Button variant="ghost" size="icon" className="rounded-full bg-primary/20 text-primary hover:bg-primary/30">
-                          <ShoppingCart className="w-5 h-5" />
+            filteredProducts.map((product) => (
+              <Link key={product.id} href={`/discover/${product.id}`} className="block">
+                <Card 
+                  className="rounded-2xl overflow-hidden shadow-lg border-none bg-card/50 backdrop-blur-sm group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full"
+                >
+                  <CardContent className="p-0 h-full flex flex-col">
+                    <div className="relative aspect-[4/5]">
+                      <Image 
+                          src={product.images[0] || 'https://placehold.co/600x800.png'} 
+                          alt={product.name} 
+                          fill 
+                          className="object-cover transition-transform duration-300 group-hover:scale-105" 
+                          data-ai-hint={product.hint} 
+                      />
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
+                       <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm">
+                        <Heart className="w-5 h-5" />
                       </Button>
                     </div>
-                     <div className="text-right">
-                        <p className="text-sm text-muted-foreground line-through">FCFA {product.originalPrice.toLocaleString()}</p>
-                        <p className="font-bold text-xl">FCFA {product.price.toLocaleString()}</p>
+                    <div className="p-4 space-y-2 flex flex-col flex-grow">
+                      <h3 className="font-bold text-lg truncate">{product.name}</h3>
+                      <div className="flex justify-between items-center mt-auto">
+                         <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <span className="text-sm font-medium">{product.rating}</span>
+                            <span className="text-sm text-muted-foreground">({product.reviews} avis)</span>
+                         </div>
+                         <Button variant="ghost" size="icon" className="rounded-full bg-primary/20 text-primary hover:bg-primary/30">
+                            <ShoppingCart className="w-5 h-5" />
+                        </Button>
+                      </div>
+                       <div className="text-right">
+                          <p className="text-sm text-muted-foreground line-through">FCFA {product.originalPrice?.toLocaleString()}</p>
+                          <p className="font-bold text-xl">FCFA {product.price.toLocaleString()}</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center p-12 text-center bg-secondary/50 border-dashed rounded-2xl min-h-[300px]">
@@ -165,8 +170,8 @@ export default function DiscoverPage() {
         <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
 
         <div className="hidden md:grid md:grid-cols-3 gap-6">
-            {recommendedProducts.map((product, index) => (
-                <Card key={index} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+            {recommendedProducts.map((product) => (
+                <Card key={product.id} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                         <div className="relative w-full sm:w-32 h-32 sm:h-20 flex-shrink-0">
                            <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
@@ -191,8 +196,8 @@ export default function DiscoverPage() {
           className="w-full md:hidden no-scrollbar"
         >
           <CarouselContent className="-ml-4">
-            {recommendedProducts.map((product, index) => (
-              <CarouselItem key={index} className="pl-4 basis-4/5 sm:basis-2/3">
+            {recommendedProducts.map((product) => (
+              <CarouselItem key={product.id} className="pl-4 basis-4/5 sm:basis-2/3">
                  <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 h-full">
                     <div className="flex items-center gap-4">
                         <div className="relative w-24 h-24 flex-shrink-0">
