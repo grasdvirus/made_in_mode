@@ -21,11 +21,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const ProductFormSchema = z.object({
   name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
-  duration: z.string().min(1, { message: "La durée est requise." }).default(''),
+  category: z.string().min(1, { message: "Veuillez sélectionner une catégorie." }),
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
   image: z.string().url({ message: "Veuillez entrer une URL d'image valide." }),
   hint: z.string().optional().default(''),
-  continent: z.string().min(1, { message: "Veuillez sélectionner un continent." }),
 });
 
 export type ProductFormData = z.infer<typeof ProductFormSchema>;
@@ -40,12 +39,11 @@ export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
   const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: product || {
-      name: 'Nouveau Produit',
-      duration: '1h',
+      name: 'Nouvel Article',
       price: 0,
       image: '',
       hint: '',
-      continent: 'Amérique',
+      category: 'Robes',
     },
   });
 
@@ -57,7 +55,7 @@ export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <h3 className="text-xl font-semibold">{product ? 'Modifier le Produit' : 'Nouveau Produit'}</h3>
+      <h3 className="text-xl font-semibold">{product ? 'Modifier l\'Article' : 'Nouvel Article'}</h3>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Colonne de gauche: Images et détails */}
         <div className="lg:col-span-2 space-y-6">
@@ -134,35 +132,36 @@ export function ProductForm({ product, onSave, isSaving }: ProductFormProps) {
             </Card>
             <Card className="bg-secondary/50 border-border/50">
                 <CardHeader>
-                    <h4 className="font-semibold">Inventaire Simple</h4>
+                    <h4 className="font-semibold">Tarif & Catégorie</h4>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="price">Prix</Label>
+                        <Label htmlFor="price">Prix (FCFA)</Label>
                         <Input id="price" type="number" step="1" {...register('price')} />
                         {errors.price && <p className="text-sm text-destructive">{errors.price.message}</p>}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="continent">Continent</Label>
+                        <Label htmlFor="category">Catégorie</Label>
                         <Controller
-                            name="continent"
+                            name="category"
                             control={control}
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionner un continent" />
+                                        <SelectValue placeholder="Sélectionner une catégorie" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Amérique">Amérique</SelectItem>
-                                        <SelectItem value="Asie">Asie</SelectItem>
-                                        <SelectItem value="Europe">Europe</SelectItem>
-                                        <SelectItem value="Afrique">Afrique</SelectItem>
-                                        <SelectItem value="Océanie">Océanie</SelectItem>
+                                        <SelectItem value="Robes">Robes</SelectItem>
+                                        <SelectItem value="Hauts">Hauts</SelectItem>
+                                        <SelectItem value="Pantalons">Pantalons</SelectItem>
+                                        <SelectItem value="Chaussures">Chaussures</SelectItem>
+                                        <SelectItem value="Sacs">Sacs</SelectItem>
+                                        <SelectItem value="Accessoires">Accessoires</SelectItem>
                                     </SelectContent>
                                 </Select>
                             )}
                         />
-                         {errors.continent && <p className="text-sm text-destructive">{errors.continent.message}</p>}
+                         {errors.category && <p className="text-sm text-destructive">{errors.category.message}</p>}
                     </div>
                 </CardContent>
             </Card>

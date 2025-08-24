@@ -10,7 +10,7 @@ const dataFilePath = path.join(process.cwd(), 'public/products.json');
 
 const ProductSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
-  duration: z.string().min(1, 'La durée est requise'),
+  category: z.string().min(1, 'La catégorie est requise'),
   price: z.coerce.number().positive('Le prix doit être positif'),
   originalPrice: z.coerce.number().positive('Le prix original doit être positif'),
   rating: z.coerce.number().min(0).max(5, 'La note doit être entre 0 et 5'),
@@ -18,7 +18,6 @@ const ProductSchema = z.object({
   image: z.string().url('L\'URL de l\'image est invalide'),
   hint: z.string().max(25, 'L\'indice de l\'image est trop long').optional().default(''),
   bgColor: z.string().optional().default('bg-gray-200'),
-  continent: z.string().min(1, 'Le continent est requis'),
 });
 
 export type Product = z.infer<typeof ProductSchema>;

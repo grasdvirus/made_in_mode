@@ -39,9 +39,9 @@ export default function ProfilePage() {
     };
     
     const paymentHistory = [
-        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA' },
-        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA' },
-        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA' },
+        { id: 'TXN123', date: '2023-10-26', status: 'Réussi', amount: '45000 FCFA', item: 'Robe Florale' },
+        { id: 'TXN124', date: '2023-09-15', status: 'Réussi', amount: '75000 FCFA', item: 'Sac en Cuir' },
+        { id: 'TXN125', date: '2023-08-02', status: 'Refusé', amount: '25000 FCFA', item: 'T-shirt Basique' },
     ];
 
     if (loading) {
@@ -84,9 +84,9 @@ export default function ProfilePage() {
                         <CardDescription>Accédez au panneau de contrôle pour gérer le site.</CardDescription>
                     </CardHeader>
                     <CardFooter>
-                        <Button asChild className="w-full">
+                         <Button asChild className="w-full">
                            <Link href="/admin">Accéder au tableau de bord</Link>
-                        </Button>
+                         </Button>
                     </CardFooter>
                 </Card>
 
@@ -131,7 +131,7 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div>
                             <p className="text-sm font-medium">Méthode d’authentification</p>
-                            <p className="text-sm text-muted-foreground">{user.providerData[0]?.providerId || 'Email/Password'}</p>
+                            <p className="text-sm text-muted-foreground">{user.providerData[0]?.providerId === 'password' ? 'Email & Mot de passe' : 'Google'}</p>
                         </div>
                         <Button className="w-full">Changer mon mot de passe</Button>
                     </CardContent>
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                 {/* Payment History */}
                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><ShoppingBag/> Historique des paiements</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><ShoppingBag/> Historique des commandes</CardTitle>
                         <CardDescription>Consultez vos transactions passées.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -169,8 +169,8 @@ export default function ProfilePage() {
                             {paymentHistory.map(payment => (
                                 <li key={payment.id} className="flex items-center justify-between flex-wrap gap-2">
                                     <div >
-                                        <p className="font-medium">{payment.amount} - {payment.date}</p>
-                                        <p className={`text-sm ${payment.status === 'Réussi' ? 'text-green-500' : 'text-red-500'}`}>{payment.status}</p>
+                                        <p className="font-medium">{payment.item} - {payment.date}</p>
+                                        <p className={`text-sm ${payment.status === 'Réussi' ? 'text-green-500' : 'text-red-500'}`}>{payment.status} - {payment.amount}</p>
                                     </div>
                                     <Button variant="ghost" size="icon">
                                         <FileText className="h-4 w-4" />

@@ -6,65 +6,53 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Heart, Clock, MapPin, X, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Search, Heart, Tag, ArrowRight } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-const yachtData = [
+const featuredProducts = [
   {
-    name: 'Manhattan - Elegant Sea South',
-    location: 'Monaco',
-    duration: '1h 30m',
-    type: 'Private',
-    price: 350,
+    name: 'Robe de Soirée Élégante',
+    category: 'Robes',
+    price: 75000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'luxury yacht',
+    hint: 'evening dress',
   },
   {
-    name: 'Azure Spirit - Ocean Voyager',
-    location: 'St. Tropez',
-    duration: '2h',
-    type: 'Group',
-    price: 150,
+    name: 'Sac à Main Cuir Bordeaux',
+    category: 'Sacs',
+    price: 55000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'modern yacht',
+    hint: 'leather handbag',
   },
   {
-    name: 'Serenity - Coastal Cruiser',
-    location: 'Cannes',
-    duration: '1h',
-    type: 'Private',
-    price: 280,
+    name: 'Escarpins Noirs Classiques',
+    category: 'Chaussures',
+    price: 62000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'sleek yacht',
+    hint: 'black heels',
   },
   {
-    name: 'Neptune’s Chariot',
-    location: 'Nice',
-    duration: '2h 30m',
-    type: 'Private',
-    price: 550,
+    name: 'Trench-Coat Beige Iconique',
+    category: 'Manteaux',
+    price: 120000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'large yacht',
+    hint: 'beige trench coat',
   },
    {
-    name: 'Manhattan - Elegant Sea South 2',
-    location: 'Monaco',
-    duration: '1h 30m',
-    type: 'Private',
-    price: 350,
+    name: 'Jupe Plissée Rose Poudré',
+    category: 'Jupes',
+    price: 42000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'luxury yacht',
+    hint: 'pink skirt',
   },
   {
-    name: 'Azure Spirit - Ocean Voyager 2',
-    location: 'St. Tropez',
-    duration: '2h',
-    type: 'Group',
-    price: 150,
+    name: 'Blouse en Soie Ivoire',
+    category: 'Hauts',
+    price: 48000,
     image: 'https://placehold.co/600x400.png',
-    hint: 'modern yacht',
+    hint: 'silk blouse',
   },
 ];
 
@@ -95,7 +83,7 @@ const AcePlaceLogo = () => (
         </svg>
         <div>
             <h1 className="text-white font-bold text-xl leading-none">ACEPLACE</h1>
-            <p className="text-white/70 text-xs leading-none">YACHTING EXPERIENCE</p>
+            <p className="text-white/70 text-xs leading-none">FEMININE FASHION</p>
         </div>
     </div>
 )
@@ -126,11 +114,11 @@ export default function HomePage() {
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
         <Image
           src="https://placehold.co/1200x800.png"
-          alt="Yachting experience"
+          alt="Boutique de mode"
           layout="fill"
           objectFit="cover"
           className="absolute inset-0 z-0"
-          data-ai-hint="yacht ocean"
+          data-ai-hint="fashion boutique"
         />
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 flex flex-col justify-center items-center h-full text-white p-4">
@@ -138,7 +126,7 @@ export default function HomePage() {
           <div className="relative w-full max-w-sm mt-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70" />
             <Input
-              placeholder="Discover yachts & experiences"
+              placeholder="Rechercher un article, une marque..."
               className="w-full h-12 pl-12 rounded-full bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 focus:border-white"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -186,44 +174,39 @@ export default function HomePage() {
               </Carousel>
           </section>
 
-          {/* Yacht Carousel Section */}
+          {/* Featured Products Carousel Section */}
           <section className="relative">
             <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
                 <CarouselContent className="ml-4">
-                  {yachtData.map((yacht, index) => (
+                  {featuredProducts.map((product, index) => (
                     <CarouselItem key={index} className="pl-0 basis-4/5 sm:basis-1/2">
                       <div className="px-2">
                         <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
                           <CardContent className="p-0">
                             <div className="relative">
                               <Image
-                                src={yacht.image}
-                                alt={yacht.name}
+                                src={product.image}
+                                alt={product.name}
                                 width={600}
                                 height={400}
                                 className="w-full h-48 object-cover"
-                                data-ai-hint={yacht.hint}
+                                data-ai-hint={product.hint}
                               />
                               <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm">
                                 <Heart className="w-5 h-5" />
                               </Button>
                               <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
-                                ${yacht.price}/h
+                                {product.price.toLocaleString('fr-FR')} FCFA
                               </div>
                             </div>
                             <div className="p-4">
-                              <h3 className="font-bold text-lg text-foreground">{yacht.name}</h3>
+                              <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
                               <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
                                 <div className="flex items-center gap-1.5">
-                                  <MapPin className="w-4 h-4" />
-                                  <span>{yacht.location}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                  <Clock className="w-4 h-4" />
-                                  <span>{yacht.duration}</span>
+                                  <Tag className="w-4 h-4" />
+                                  <span>{product.category}</span>
                                 </div>
                               </div>
-                              <p className="text-sm text-primary font-semibold mt-1">{yacht.type}</p>
                             </div>
                           </CardContent>
                         </Card>

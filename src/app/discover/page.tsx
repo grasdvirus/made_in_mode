@@ -12,7 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 type Product = {
   name: string;
-  duration: string;
+  category: string; // Changed from continent
   price: number;
   originalPrice: number;
   rating: number;
@@ -20,29 +20,28 @@ type Product = {
   image: string;
   hint: string;
   bgColor: string;
-  continent: string;
 };
 
-const categories = ['Tout', 'Amérique', 'Asie', 'Europe', 'Afrique', 'Océanie'];
+const categories = ['Tout', 'Robes', 'Hauts', 'Pantalons', 'Chaussures', 'Sacs', 'Accessoires'];
 
 const recommendedProducts = [
     {
-        name: 'Aventure en Patagonie',
-        description: 'Explorez des paysages à couper le souffle.',
+        name: 'Collection "Nuit Étoilée"',
+        description: 'Des pièces scintillantes pour vos soirées.',
         image: 'https://placehold.co/400x200.png',
-        hint: 'patagonia landscape',
+        hint: 'evening fashion',
     },
     {
-        name: 'Escapade à Kyoto',
-        description: 'Découvrez les temples et jardins ancestraux.',
+        name: 'Essentiels du Quotidien',
+        description: 'Le confort et le style pour tous les jours.',
         image: 'https://placehold.co/400x200.png',
-        hint: 'kyoto temple',
+        hint: 'casual fashion',
     },
     {
-        name: 'Safari en Tanzanie',
-        description: 'Vivez la magie de la faune africaine.',
+        name: 'Accessoires Tendance',
+        description: 'La touche finale pour un look parfait.',
         image: 'https://placehold.co/400x200.png',
-        hint: 'tanzania safari',
+        hint: 'fashion accessories',
     }
 ]
 
@@ -71,7 +70,7 @@ export default function DiscoverPage() {
     if (selectedCategory === 'Tout') {
       setFilteredProducts(products);
     } else {
-      setFilteredProducts(products.filter(p => p.continent === selectedCategory));
+      setFilteredProducts(products.filter(p => p.category === selectedCategory));
     }
   }, [selectedCategory, products]);
 
@@ -80,7 +79,7 @@ export default function DiscoverPage() {
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Parcourez nos collections par continent et découvrez des aventures qui correspondent à vos envies.
+          Explorez nos collections et trouvez les pièces qui expriment votre style unique.
         </p>
       </div>
 
@@ -154,7 +153,7 @@ export default function DiscoverPage() {
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center p-12 text-center bg-secondary/50 border-dashed rounded-2xl min-h-[300px]">
                 <Compass className="w-16 h-16 text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold">Aucun voyage trouvé</h3>
+                <h3 className="text-xl font-semibold">Aucun article trouvé</h3>
                 <p className="text-muted-foreground mt-2">Essayez de sélectionner une autre catégorie pour trouver votre bonheur !</p>
             </div>
           )}

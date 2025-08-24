@@ -9,6 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Plus, Minus, X, CreditCard, ShoppingCart, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 type CartItem = {
   id: number;
@@ -85,7 +86,7 @@ export default function CartPage() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const shipping = subtotal > 30000 ? 0 : 5000;
+  const shipping = subtotal > 50000 ? 0 : 5000;
   const total = subtotal + shipping;
 
   return (
@@ -137,7 +138,9 @@ export default function CartPage() {
                 <ShoppingCart className="w-16 h-16 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold">Votre panier est vide</h3>
                 <p className="text-muted-foreground mt-2">Parcourez nos collections pour trouver votre bonheur !</p>
-                <Button className="mt-4">Commencer mes achats</Button>
+                <Button asChild className="mt-4">
+                  <Link href="/discover">Commencer mes achats</Link>
+                </Button>
             </Card>
           )}
         </div>

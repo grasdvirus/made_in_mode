@@ -10,18 +10,18 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Aperçu</CardTitle>
+            <CardTitle>Aperçu des Ventes</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Ici vous pouvez voir un résumé des activités du site.</p>
+            <p>Ici vous pouvez voir un résumé des activités de la boutique.</p>
           </CardContent>
         </Card>
          <Card>
           <CardHeader>
-            <CardTitle>Statistiques</CardTitle>
+            <CardTitle>Statistiques Clients</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Graphiques et données sur les ventes et les utilisateurs.</p>
+            <p>Graphiques et données sur les commandes et les utilisateurs.</p>
           </CardContent>
         </Card>
          <Card>

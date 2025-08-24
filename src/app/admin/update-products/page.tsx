@@ -95,7 +95,6 @@ export default function AdminProductsPage() {
        <div className="flex justify-between items-center">
          <h2 className="text-2xl font-bold">Gestion des Produits</h2>
          <div className="flex gap-2">
-            <Button variant="outline">Nouvelle Catégorie</Button>
             <Button onClick={handleAddNew}><PlusCircle className="mr-2 h-4 w-4"/> Ajouter un produit</Button>
          </div>
        </div>
