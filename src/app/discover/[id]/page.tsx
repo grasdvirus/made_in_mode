@@ -21,6 +21,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { id: productId } = params;
 
   useEffect(() => {
     async function fetchProduct() {
@@ -31,7 +32,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           throw new Error('Failed to fetch products');
         }
         const products: Product[] = await response.json();
-        const foundProduct = products.find(p => p.id === params.id);
+        const foundProduct = products.find(p => p.id === productId);
         
         if (foundProduct) {
           // Ensure product has default values for optional fields
@@ -57,8 +58,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         setIsLoading(false);
       }
     }
-    fetchProduct();
-  }, [params.id, toast]);
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId, toast]);
 
   const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string } | undefined>(undefined);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
