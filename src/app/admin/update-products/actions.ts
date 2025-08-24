@@ -11,6 +11,7 @@ const dataFilePath = path.join(process.cwd(), 'public/products.json');
 const ProductSchema = z.object({
   id: z.string().optional(), // ID will be added when creating
   name: z.string().min(1, 'Le nom est requis'),
+  description: z.string().optional(),
   category: z.string().min(1, 'La catégorie est requise'),
   price: z.coerce.number().positive('Le prix doit être positif'),
   originalPrice: z.coerce.number().positive('Le prix original doit être positif').optional(),
