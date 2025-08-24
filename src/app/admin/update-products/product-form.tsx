@@ -11,12 +11,11 @@ import { Label } from '@/components/ui/label';
 import { type ProductFormData, type Product } from './actions';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { Trash, Image as ImageIcon, UploadCloud } from 'lucide-react';
+import { Trash, UploadCloud } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -25,7 +24,7 @@ const ProductFormSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, { message: "Veuillez sélectionner une catégorie." }),
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
-  image: z.string().url({ message: "Veuillez entrer une URL d'image valide." }),
+  image: z.string().url({ message: "Veuillez entrer une URL d'image valide ou téléverser une image." }).or(z.string().startsWith("data:image/")),
   hint: z.string().optional().default(''),
 });
 
@@ -45,21 +44,30 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
         const file = event.target.files?.[0];
         if (!file) return;
 
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            toast({ variant: "destructive", title: "Erreur", description: "Le fichier est trop volumineux. La taille maximale est de 10 Mo." });
+            return;
+        }
+
         setUploading(true);
         try {
-            const storage = getStorage();
-            const storageRef = ref(storage, `products/${new Date().getTime()}_${file.name}`);
-            
-            const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-
-            onChange(downloadURL);
-            toast({ title: "Succès", description: "Image téléversée avec succès." });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                onChange(base64String);
+                toast({ title: "Succès", description: "Image chargée avec succès." });
+                setUploading(false);
+            };
+            reader.onerror = () => {
+                 console.error("Reader error");
+                 toast({ variant: "destructive", title: "Erreur", description: "Échec de la lecture du fichier." });
+                 setUploading(false);
+            }
+            reader.readAsDataURL(file);
 
         } catch (error) {
             console.error("Upload error:", error);
-            toast({ variant: "destructive", title: "Erreur", description: "Échec du téléversement de l'image." });
-        } finally {
+            toast({ variant: "destructive", title: "Erreur", description: "Échec du chargement de l'image." });
             setUploading(false);
         }
     };
@@ -84,14 +92,15 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
                     {uploading ? (
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                             <div className="h-10"><Loader/></div>
-                            <span>Téléversement...</span>
+                            <span>Chargement...</span>
                         </div>
                     ) : value ? (
-                        <Image src={value} alt="Aperçu du produit" fill className="object-contain rounded-md" />
+                        <Image src={value} alt="Aperçu du produit" fill className="object-contain rounded-md p-2" />
                     ) : (
-                        <div className="text-center text-muted-foreground">
+                        <div className="text-center text-muted-foreground p-4">
                             <UploadCloud className="mx-auto h-12 w-12" />
-                            <p className="mt-2 text-sm">Cliquez pour téléverser</p>
+                            <p className="mt-2 text-sm font-semibold">Glissez-déposez ou cliquez</p>
+                            <p className="text-xs">Taille max: 10MB</p>
                         </div>
                     )}
                 </div>

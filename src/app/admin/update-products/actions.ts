@@ -17,7 +17,7 @@ const ProductSchema = z.object({
   originalPrice: z.coerce.number().positive('Le prix original doit être positif').optional(),
   rating: z.coerce.number().min(0).max(5, 'La note doit être entre 0 et 5').optional(),
   reviews: z.coerce.number().int().nonnegative("Le nombre d'avis ne peut pas être négatif").optional(),
-  image: z.string().url("L'URL de l'image est invalide"),
+  image: z.string().url("L'URL de l'image est invalide ou l'image n'est pas téléversée").or(z.string().startsWith("data:image/")),
   hint: z.string().max(40, "L'indice de l'image est trop long").optional().default(''),
   bgColor: z.string().optional().default('bg-gray-200'),
 });
@@ -31,7 +31,8 @@ async function readProductsFromFile(): Promise<Product[]> {
     try {
         const fileContent = await fs.readFile(dataFilePath, 'utf-8');
         const products = JSON.parse(fileContent);
-        return z.array(ProductSchema).parse(products);
+        // We use passthrough to avoid failing on old data with missing fields.
+        return z.array(ProductSchema.passthrough()).parse(products);
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
             await fs.writeFile(dataFilePath, '[]');
