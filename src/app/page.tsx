@@ -12,74 +12,8 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-
-const featuredProducts = [
-  {
-    id: 'prod1',
-    name: 'Robe de Soirée Élégante',
-    category: 'Robes',
-    price: 75000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'evening dress',
-  },
-  {
-    id: 'prod2',
-    name: 'Sac à Main Cuir Bordeaux',
-    category: 'Sacs',
-    price: 55000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'leather handbag',
-  },
-  {
-    id: 'prod3',
-    name: 'Escarpins Noirs Classiques',
-    category: 'Chaussures',
-    price: 62000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'black heels',
-  },
-  {
-    id: 'prod4',
-    name: 'Trench-Coat Beige Iconique',
-    category: 'Manteaux',
-    price: 120000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'beige trench coat',
-  },
-   {
-    id: 'prod5',
-    name: 'Jupe Plissée Rose Poudré',
-    category: 'Jupes',
-    price: 42000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'pink skirt',
-  },
-  {
-    id: 'prod6',
-    name: 'Blouse en Soie Ivoire',
-    category: 'Hauts',
-    price: 48000,
-    images: ['https://placehold.co/600x400.png'],
-    hint: 'silk blouse',
-  },
-];
-
-const categories = [
-    { name: 'Nouveautés', image: 'https://placehold.co/200x200.png', hint: 'new fashion', link: '/discover?category=Tout' },
-    { name: 'Vêtements', image: 'https://placehold.co/200x200.png', hint: 'clothing rack', link: '/discover?category=Tout' },
-    { name: 'Chaussures', image: 'https://placehold.co/200x200.png', hint: 'stylish shoes', link: '/discover?category=Chaussures' },
-    { name: 'Accessoires', image: 'https://placehold.co/200x200.png', hint: 'fashion accessories', link: '/discover?category=Accessoires' },
-    { name: 'Robes', image: 'https://placehold.co/200x200.png', hint: 'elegant dress', link: '/discover?category=Robes' },
-    { name: 'Sacs', image: 'https://placehold.co/200x200.png', hint: 'handbag collection', link: '/discover?category=Sacs' },
-    { name: 'Manteaux', image: 'https://placehold.co/200x200.png', hint: 'winter coat', link: '/discover?category=Manteaux' },
-    { name: 'Bijoux', image: 'https://placehold.co/200x200.png', hint: 'luxury jewelry', link: '/discover?category=Accessoires' }
-]
-
-const products = [
-    { id: '1', name: 'Veste en cuir', description: 'Style intemporel, qualité exceptionnelle.', image: 'https://placehold.co/100x100.png', hint: 'leather jacket' },
-    { id: '2', name: 'Baskets Urbaines', description: 'Confort et design pour la ville.', image: 'https://placehold.co/100x100.png', hint: 'urban sneakers' },
-    { id: '3', name: 'Sac à main Chic', description: 'L\'accessoire parfait pour toute occasion.', image: 'https://placehold.co/100x100.png', hint: 'chic handbag' }
-]
+import { HomepageData } from './admin/home-settings/actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AcePlaceLogo = () => (
     <div className="flex items-center gap-2">
@@ -103,19 +37,38 @@ export default function HomePage() {
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
   const { toast } = useToast();
+  const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!api) {
-      return
+    async function fetchData() {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/homepage.json');
+            if (!response.ok) throw new Error('Failed to fetch homepage data');
+            const data: HomepageData = await response.json();
+            setHomepageData(data);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de charger le contenu de la page d'accueil." });
+        } finally {
+            setIsLoading(false);
+        }
     }
+    fetchData();
+  }, [toast]);
+  
 
-    setCount(api.scrollSnapList().length)
-    setCurrent(api.selectedScrollSnap() + 1)
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
 
     api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1)
-    })
-  }, [api])
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchValue.trim() !== '') {
@@ -183,16 +136,27 @@ export default function HomePage() {
                   className="w-full no-scrollbar"
               >
                   <CarouselContent>
-                      {categories.map((category, index) => (
-                          <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
-                              <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
-                                  <div className="relative w-24 h-24">
-                                      <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
-                                  </div>
-                                  <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
-                              </Link>
-                          </CarouselItem>
-                      ))}
+                      {isLoading && !homepageData ? (
+                          [...Array(6)].map((_, index) => (
+                             <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                                <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto">
+                                    <Skeleton className="w-24 h-24 rounded-full" />
+                                    <Skeleton className="h-4 w-16" />
+                                </div>
+                            </CarouselItem>
+                          ))
+                      ) : (
+                        homepageData?.categories.map((category, index) => (
+                            <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
+                                <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
+                                    <div className="relative w-24 h-24">
+                                        <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
+                                    </div>
+                                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
+                                </Link>
+                            </CarouselItem>
+                        ))
+                      )}
                   </CarouselContent>
                   <CarouselPrevious className="flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
                   <CarouselNext className="flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
@@ -201,81 +165,102 @@ export default function HomePage() {
 
           {/* Featured Products Carousel Section */}
           <section className="relative">
-            <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
-                <CarouselContent className="ml-4">
-                  {featuredProducts.map((product) => (
-                    <CarouselItem key={product.id} className="pl-0 basis-4/5 sm:basis-1/2">
-                      <div className="px-2 h-full">
-                        <Link href={`/discover/${product.id}`} className="block h-full">
-                            <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
-                              <CardContent className="p-0">
-                                <div className="relative">
-                                  <Image
-                                    src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x400.png'}
-                                    alt={product.name}
-                                    width={600}
-                                    height={400}
-                                    className="w-full h-48 object-cover"
-                                    data-ai-hint={product.hint}
-                                  />
-                                  <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
-                                    <Heart className="w-5 h-5" />
-                                  </Button>
-                                  <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
-                                    {product.price.toLocaleString('fr-FR')} FCFA
-                                  </div>
-                                </div>
-                                <div className="p-4">
-                                  <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
-                                  <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
-                                    <div className="flex items-center gap-1.5">
-                                      <Tag className="w-4 h-4" />
-                                      <span>{product.category}</span>
+             {isLoading && !homepageData ? (
+                <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
+             ) : (
+                <>
+                <Carousel setApi={setApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
+                    <CarouselContent className="ml-4">
+                    {homepageData?.featuredProducts.map((product) => (
+                        <CarouselItem key={product.id} className="pl-0 basis-4/5 sm:basis-1/2">
+                        <div className="px-2 h-full">
+                            <Link href={`/discover/${product.id}`} className="block h-full">
+                                <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
+                                <CardContent className="p-0">
+                                    <div className="relative">
+                                    <Image
+                                        src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x400.png'}
+                                        alt={product.name}
+                                        width={600}
+                                        height={400}
+                                        className="w-full h-48 object-cover"
+                                        data-ai-hint={product.hint}
+                                    />
+                                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
+                                        <Heart className="w-5 h-5" />
+                                    </Button>
+                                    <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
+                                        {product.price.toLocaleString('fr-FR')} FCFA
                                     </div>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                        </Link>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-            </Carousel>
-            <div className="flex justify-start gap-2 pt-4 px-4">
-                  {Array.from({ length: count }).map((_, i) => (
-                      <button
-                          key={i}
-                          onClick={() => api?.scrollTo(i)}
-                          className={cn(
-                              "h-2 w-2 rounded-full transition-all",
-                              i === current -1 ? 'w-4 bg-primary' : 'bg-primary/20'
-                          )}
-                      />
-                  ))}
-              </div>
+                                    </div>
+                                    <div className="p-4">
+                                    <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
+                                    <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
+                                        <div className="flex items-center gap-1.5">
+                                        <Tag className="w-4 h-4" />
+                                        <span>{product.category}</span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </CardContent>
+                                </Card>
+                            </Link>
+                        </div>
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                </Carousel>
+                <div className="flex justify-start gap-2 pt-4 px-4">
+                    {Array.from({ length: count }).map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => api?.scrollTo(i)}
+                            className={cn(
+                                "h-2 w-2 rounded-full transition-all",
+                                i === current -1 ? 'w-4 bg-primary' : 'bg-primary/20'
+                            )}
+                        />
+                    ))}
+                </div>
+                </>
+             )}
           </section>
 
           {/* Minimalist Products Section */}
           <section className="space-y-4 p-4 md:p-6 pt-0">
-              {products.map((product) => (
-                   <Link href={`/discover/${product.id}`} key={product.id} className="block">
-                       <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary">
-                          <div className="flex items-center gap-4">
-                              <div className="relative w-16 h-16 flex-shrink-0">
-                                 <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
-                              </div>
-                              <div className="flex-grow">
-                                  <h3 className="font-bold text-lg">{product.name}</h3>
-                                  <p className="text-muted-foreground text-sm">{product.description}</p>
-                              </div>
-                              <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
-                                  <ArrowRight className="w-5 h-5" />
-                              </Button>
-                          </div>
-                      </Card>
-                   </Link>
-              ))}
+               {isLoading && !homepageData ? (
+                   [...Array(3)].map((_, index) => (
+                       <Card key={index} className="bg-secondary/50 border-none shadow-md rounded-2xl p-4">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="w-16 h-16 rounded-full" />
+                                <div className="flex-grow space-y-2">
+                                    <Skeleton className="h-5 w-3/4" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </div>
+                                 <Skeleton className="w-8 h-8 rounded-full" />
+                            </div>
+                       </Card>
+                   ))
+               ) : (
+                homepageData?.products.map((product) => (
+                    <Link href={`/discover/${product.id}`} key={product.id} className="block">
+                        <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary">
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-16 h-16 flex-shrink-0">
+                                    <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
+                                </div>
+                                <div className="flex-grow">
+                                    <h3 className="font-bold text-lg">{product.name}</h3>
+                                    <p className="text-muted-foreground text-sm">{product.description}</p>
+                                </div>
+                                <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
+                                    <ArrowRight className="w-5 h-5" />
+                                </Button>
+                            </div>
+                        </Card>
+                    </Link>
+                ))
+               )}
           </section>
         </div>
       </main>

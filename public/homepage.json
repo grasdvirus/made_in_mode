@@ -1,0 +1,116 @@
+
+{
+  "categories": [
+    {
+      "name": "Nouveautés",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "new fashion",
+      "link": "/discover?category=Tout"
+    },
+    {
+      "name": "Vêtements",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "clothing rack",
+      "link": "/discover?category=Tout"
+    },
+    {
+      "name": "Chaussures",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "stylish shoes",
+      "link": "/discover?category=Chaussures"
+    },
+    {
+      "name": "Accessoires",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "fashion accessories",
+      "link": "/discover?category=Accessoires"
+    },
+    {
+      "name": "Robes",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "elegant dress",
+      "link": "/discover?category=Robes"
+    },
+    {
+      "name": "Sacs",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "handbag collection",
+      "link": "/discover?category=Sacs"
+    }
+  ],
+  "featuredProducts": [
+    {
+      "id": "1719236173013",
+      "name": "Robe de Soirée Élégante",
+      "category": "Robes",
+      "price": 75000,
+      "images": [
+        "https://placehold.co/600x400.png"
+      ],
+      "hint": "evening dress"
+    },
+    {
+      "id": "1719236209041",
+      "name": "Sac à Main Cuir Bordeaux",
+      "category": "Sacs",
+      "price": 55000,
+      "images": [
+        "https://placehold.co/600x400.png"
+      ],
+      "hint": "leather handbag"
+    },
+    {
+      "id": "1719236224353",
+      "name": "Escarpins Noirs Classiques",
+      "category": "Chaussures",
+      "price": 62000,
+      "images": [
+        "https://placehold.co/600x400.png"
+      ],
+      "hint": "black heels"
+    },
+    {
+      "id": "1719236239161",
+      "name": "Trench-Coat Beige Iconique",
+      "category": "Hauts",
+      "price": 120000,
+      "images": [
+        "https://placehold.co/600x400.png"
+      ],
+      "hint": "beige trench coat"
+    },
+    {
+      "id": "1719236253545",
+      "name": "Jupe Plissée Rose Poudré",
+      "category": "Pantalons",
+      "price": 42000,
+      "images": [
+        "https://placehold.co/600x400.png"
+      ],
+      "hint": "pink skirt"
+    }
+  ],
+  "products": [
+    {
+      "id": "1719236294721",
+      "name": "Veste en cuir",
+      "description": "Style intemporel, qualité exceptionnelle.",
+      "image": "https://placehold.co/100x100.png",
+      "hint": "leather jacket"
+    },
+    {
+      "id": "1719236306361",
+      "name": "Baskets Urbaines",
+      "description": "Confort et design pour la ville.",
+      "image": "https://placehold.co/100x100.png",
+      "hint": "urban sneakers"
+    },
+    {
+      "id": "1719236316521",
+      "name": "Sac à main Chic",
+      "description": "L'accessoire parfait pour toute occasion.",
+      "image": "https://placehold.co/100x100.png",
+      "hint": "chic handbag"
+    }
+  ]
+}
