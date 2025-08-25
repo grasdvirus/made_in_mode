@@ -11,57 +11,10 @@ import { Plus, Minus, X, CreditCard, ShoppingCart, Ticket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-
-type CartItem = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  quantity: number;
-  image: string;
-  hint: string;
-  size: string;
-  color: string;
-};
-
-const initialCartItems: CartItem[] = [
-  {
-    id: 1,
-    name: 'T-shirt Épuré',
-    category: 'Hauts',
-    price: 20000,
-    quantity: 1,
-    image: 'https://placehold.co/200x200.png',
-    hint: 'white t-shirt',
-    size: 'M',
-    color: 'Blanc',
-  },
-  {
-    id: 2,
-    name: 'Jean Slim Urbain',
-    category: 'Pantalons',
-    price: 45000,
-    quantity: 1,
-    image: 'https://placehold.co/200x200.png',
-    hint: 'black jeans',
-    size: '32/32',
-    color: 'Noir délavé',
-  },
-  {
-    id: 3,
-    name: 'Baskets en Cuir',
-    category: 'Chaussures',
-    price: 65000,
-    quantity: 1,
-    image: 'https://placehold.co/200x200.png',
-    hint: 'leather sneakers',
-    size: '42',
-    color: 'Cognac',
-  },
-];
+import { useCart } from '@/hooks/use-cart';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+  const { cartItems, updateQuantity, removeItem, clearCart } = useCart();
   const [animate, setAnimate] = useState(false);
   const { toast } = useToast();
 
@@ -69,34 +22,22 @@ export default function CartPage() {
     // Trigger entrance animation
     setAnimate(true);
   }, []);
-  
-  const updateQuantity = (id: number, delta: number) => {
-    setCartItems(
-      cartItems.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    const itemToRemove = cartItems.find(item => item.id === id);
-    setCartItems(cartItems.filter(item => item.id !== id));
-    if (itemToRemove) {
-      toast({
-        title: "Article Supprimé",
-        description: `${itemToRemove.name} a été retiré de votre panier.`,
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      toast({
+        title: "Panier Vide",
+        description: "Vous ne pouvez pas passer au paiement avec un panier vide.",
+        variant: "destructive",
+      });
+      return;
+    }
     toast({
       title: "Redirection vers le paiement",
       description: "Vous allez être redirigé vers une page de paiement sécurisée.",
     });
+    // In a real app, you would redirect to a checkout page and clear the cart on success.
+    // clearCart(); 
   };
   
   const subtotal = cartItems.reduce(
@@ -118,7 +59,7 @@ export default function CartPage() {
           {cartItems.length > 0 ? (
             cartItems.map((item, index) => (
               <Card
-                key={item.id}
+                key={item.id + item.size + item.color}
                 className={cn(
                     "flex items-center gap-4 p-4 bg-secondary/50 border-none transition-all duration-500 ease-out",
                     animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
@@ -135,15 +76,15 @@ export default function CartPage() {
                   <p className="font-bold text-lg mt-1">FCFA {item.price.toLocaleString('fr-FR')}</p>
                 </div>
                 <div className="flex flex-col items-end justify-between h-full">
-                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8" onClick={() => removeItem(item.id)}>
+                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8" onClick={() => removeItem(item.id, item.size, item.color)}>
                     <X className="w-4 h-4" />
                   </Button>
                   <div className="flex items-center gap-2 border rounded-full p-1">
-                    <Button variant="ghost" size="icon" className="rounded-full h-6 w-6" onClick={() => updateQuantity(item.id, -1)}>
+                    <Button variant="ghost" size="icon" className="rounded-full h-6 w-6" onClick={() => updateQuantity(item.id, item.size, item.color, -1)}>
                       <Minus className="w-4 h-4" />
                     </Button>
                     <span className="w-6 text-center font-medium">{item.quantity}</span>
-                    <Button variant="ghost" size="icon" className="rounded-full h-6 w-6" onClick={() => updateQuantity(item.id, 1)}>
+                    <Button variant="ghost" size="icon" className="rounded-full h-6 w-6" onClick={() => updateQuantity(item.id, item.size, item.color, 1)}>
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>

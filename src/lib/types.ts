@@ -1,4 +1,9 @@
 
+export type Color = {
+  name: string;
+  hex: string;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -10,6 +15,6 @@ export type Product = {
   reviews: number;
   images: string[];
   sizes: string[];
-  colors: { name: string; hex: string }[];
+  colors: Color[];
   hint?: string;
 };

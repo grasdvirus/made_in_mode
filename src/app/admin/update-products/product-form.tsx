@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -11,13 +11,18 @@ import { Label } from '@/components/ui/label';
 import { type ProductFormData, type Product } from './actions';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { Trash, UploadCloud } from 'lucide-react';
+import { Trash, UploadCloud, PlusCircle, Palette } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
+const ColorSchema = z.object({
+  name: z.string().min(1, "Le nom de la couleur est requis."),
+  hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Le code hexadécimal doit être au format #RRGGBB."),
+});
 
 const ProductFormSchema = z.object({
   name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
@@ -26,6 +31,8 @@ const ProductFormSchema = z.object({
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
   images: z.array(z.string().url().or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Maximum 2 images."),
   hint: z.string().optional().default(''),
+  sizes: z.string().min(1, 'Veuillez entrer au moins une taille.').transform(val => val.split(',').map(s => s.trim()).filter(Boolean)),
+  colors: z.array(ColorSchema).min(1, "Veuillez ajouter au moins une couleur."),
 });
 
 type ProductFormProps = {
@@ -111,28 +118,32 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 
 export function ProductForm({ product, onSave, onDelete, isSaving }: ProductFormProps) {
   const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<ProductFormData>({
-    resolver: zodResolver(ProductFormSchema),
+    resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
         name: product.name || '',
         category: product.category || '',
         price: product.price || 0,
         images: product.images || [],
         hint: product.hint || '',
-        description: (product as any).description || '',
+        description: product.description || '',
+        sizes: (product.sizes || ['S', 'M', 'L']).join(', '),
+        colors: product.colors || [{ name: 'Black', hex: '#000000'}],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "colors"
   });
 
   const onSubmit = (data: ProductFormData) => {
     onSave(data);
   };
   
-  const currentImages = watch('images');
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4 border-t border-border/50">
+    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 pt-4 border-t border-border/50">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* Colonne de gauche - Infos principales */}
         <div className="md:col-span-2 space-y-4">
             <Card className="bg-secondary/50 border-border/50">
                 <CardHeader>
@@ -151,12 +162,58 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
                 </CardContent>
             </Card>
 
-            <Card className="bg-secondary/50 border-border/50">
+             <Card className="bg-secondary/50 border-border/50">
+                 <CardHeader>
+                    <h4 className="font-semibold">Options du produit</h4>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="sizes">Tailles disponibles (séparées par une virgule)</Label>
+                        <Input id="sizes" {...register('sizes')} placeholder="ex: S, M, L, XL" disabled={isSaving} />
+                        {errors.sizes && <p className="text-sm text-destructive">{errors.sizes.message}</p>}
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Couleurs disponibles</Label>
+                       {fields.map((field, index) => (
+                        <div key={field.id} className="flex items-end gap-2">
+                           <div className="w-10 h-10 rounded-md border flex-shrink-0" style={{ backgroundColor: watch(`colors.${index}.hex`) || '#ffffff' }}></div>
+                          <div className="flex-grow space-y-1">
+                            <Input
+                              {...register(`colors.${index}.name`)}
+                              placeholder="Nom de la couleur (ex: Noir)"
+                              disabled={isSaving}
+                            />
+                             {errors.colors?.[index]?.name && <p className="text-sm text-destructive">{errors.colors?.[index]?.name?.message}</p>}
+                          </div>
+                          <div className="flex-grow space-y-1">
+                            <Input
+                              {...register(`colors.${index}.hex`)}
+                              placeholder="Code Hex (ex: #000000)"
+                              disabled={isSaving}
+                            />
+                            {errors.colors?.[index]?.hex && <p className="text-sm text-destructive">{errors.colors?.[index]?.hex?.message}</p>}
+                          </div>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} disabled={isSaving}>
+                            <Trash className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      ))}
+                      {errors.colors && !errors.colors.root?.message && <p className="text-sm text-destructive">{errors.colors.message}</p>}
+                       <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', hex: '#ffffff' })}>
+                         <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une couleur
+                       </Button>
+                    </div>
+                </CardContent>
+             </Card>
+
+        </div>
+        
+        <div className="space-y-6">
+             <Card className="bg-secondary/50 border-border/50">
                  <CardHeader>
                     <h4 className="font-semibold">Prix & Catégorie</h4>
                 </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
+                <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="price">Prix (FCFA)</Label>
                             <Input id="price" type="number" step="1" {...register('price')} disabled={isSaving} />
@@ -185,20 +242,14 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
                             />
                             {errors.category && <p className="text-sm text-destructive">{errors.category.message}</p>}
                         </div>
-                    </div>
                 </CardContent>
             </Card>
-
-        </div>
-        
-        {/* Colonne de droite - Image & Mots-clés */}
-        <div className="space-y-6">
             <Card className="bg-secondary/50 border-border/50">
                 <CardHeader>
                     <h4 className="font-semibold">Média</h4>
                 </CardHeader>
                  <CardContent>
-                    <Label>Images du produit</Label>
+                    <Label>Images du produit (2 max)</Label>
                      <div className="grid grid-cols-2 gap-4 mt-2">
                          <Controller
                             name="images.0"
@@ -211,7 +262,7 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
                             render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
                         />
                      </div>
-                    {errors.images && <p className="text-sm text-destructive mt-2">{errors.images.message}</p>}
+                    {errors.images && <p className="text-sm text-destructive mt-2">{typeof errors.images === 'string' ? errors.images : errors.images.message}</p>}
                      <div className="space-y-2 mt-4">
                         <Label htmlFor="hint">Indice pour l'image (max 2 mots)</Label>
                         <Input id="hint" {...register('hint')} placeholder="ex: robe noire" disabled={isSaving}/>

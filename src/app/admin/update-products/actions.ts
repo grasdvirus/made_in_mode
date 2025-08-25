@@ -8,6 +8,11 @@ import { z } from 'zod';
 
 const dataFilePath = path.join(process.cwd(), 'public/products.json');
 
+const ColorSchema = z.object({
+  name: z.string(),
+  hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Le code hexadécimal de la couleur est invalide"),
+});
+
 const ProductSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Le nom est requis'),
@@ -20,6 +25,8 @@ const ProductSchema = z.object({
   images: z.array(z.string().url("L'URL de l'image est invalide ou l'image n'est pas téléversée").or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Vous ne pouvez téléverser que 2 images maximum."),
   hint: z.string().max(40, "L'indice de l'image est trop long").optional().default(''),
   bgColor: z.string().optional().default('bg-gray-200'),
+  sizes: z.array(z.string()).optional().default(['S', 'M', 'L']),
+  colors: z.array(ColorSchema).optional().default([{ name: 'Default', hex: '#000000' }]),
 });
 
 const ProductUpdateSchema = ProductSchema.omit({ id: true });

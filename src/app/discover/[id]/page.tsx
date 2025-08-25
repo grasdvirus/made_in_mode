@@ -15,11 +15,14 @@ import { cn } from '@/lib/utils';
 import { useRouter, useParams } from 'next/navigation';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
+import { useCart } from '@/hooks/use-cart';
 
 export default function ProductDetailPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
+  const { addItem } = useCart();
+
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const productId = params.id as string;
@@ -36,7 +39,6 @@ export default function ProductDetailPage() {
         const foundProduct = products.find(p => p.id === productId);
         
         if (foundProduct) {
-          // Ensure product has default values for optional fields
           const hydratedProduct: Product = {
             ...foundProduct,
             sizes: foundProduct.sizes || ['S', 'M', 'L'],
@@ -69,9 +71,11 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    if (product) {
-      setSelectedColor(product.colors?.[0]);
-      setSelectedSize(product.sizes?.[0]);
+    if (product && product.colors && product.colors.length > 0) {
+      setSelectedColor(product.colors[0]);
+    }
+    if (product && product.sizes && product.sizes.length > 0) {
+      setSelectedSize(product.sizes[0]);
     }
   }, [product]);
   
@@ -93,6 +97,19 @@ export default function ProductDetailPage() {
         });
         return;
     }
+    
+    addItem({
+        id: product.id!,
+        name: product.name,
+        price: product.price,
+        quantity,
+        image: product.images[0],
+        hint: product.hint || '',
+        category: product.category,
+        size: selectedSize,
+        color: selectedColor.name,
+    });
+    
     toast({
       title: "Ajouté au Panier!",
       description: `${quantity} x ${product.name} (${selectedSize}, ${selectedColor.name})`,
@@ -181,7 +198,7 @@ export default function ProductDetailPage() {
               {product.colors && product.colors.length > 0 && (
                 <div>
                   <h3 className="text-lg font-medium">Couleur: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></h3>
-                  <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex)!)} className="flex items-center gap-2 mt-2">
+                  <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors?.find(c => c.hex === hex)!)} className="flex items-center gap-2 mt-2">
                     {product.colors.map((color) => (
                       <div key={color.hex}>
                         <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
