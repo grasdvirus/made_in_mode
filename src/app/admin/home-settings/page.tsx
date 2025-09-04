@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getHomepageData, updateHomepageData, getProductsForSelect, type HomepageData } from "./actions";
+import { getHomepageData, updateHomepageData, getFullProductsForSelect, type HomepageData, type FullProduct } from "./actions";
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
@@ -24,8 +24,8 @@ const CategorySchema = z.object({
   link: z.string().min(1, 'Le lien est requis'),
 });
 
-const ProductSchema = z.object({
-  id: z.string(),
+const MinimalistProductSchema = z.object({
+  id: z.string().min(1, 'Veuillez sélectionner un produit.'),
   name: z.string(),
   description: z.string(),
   image: z.string(),
@@ -44,18 +44,14 @@ const FeaturedProductSchema = z.object({
 const HomepageFormSchema = z.object({
   categories: z.array(CategorySchema),
   featuredProducts: z.array(FeaturedProductSchema),
-  products: z.array(ProductSchema),
+  products: z.array(MinimalistProductSchema),
 });
 
-type SelectProduct = {
-    id: string;
-    name: string;
-};
 
 export default function HomeSettingsPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
-  const [availableProducts, setAvailableProducts] = React.useState<SelectProduct[]>([]);
+  const [availableProducts, setAvailableProducts] = React.useState<FullProduct[]>([]);
   const { toast } = useToast();
 
   const { control, register, handleSubmit, reset, watch, setValue } = useForm<HomepageData>({
@@ -89,7 +85,7 @@ export default function HomeSettingsPage() {
       try {
         const [data, products] = await Promise.all([
           getHomepageData(),
-          getProductsForSelect()
+          getFullProductsForSelect()
         ]);
         reset(data);
         setAvailableProducts(products);
@@ -107,11 +103,22 @@ export default function HomeSettingsPage() {
       const product = availableProducts.find(p => p.id === productId);
       if (product) {
           if (type === 'featured') {
-             const fullProduct = { ...product, category: 'N/A', price: 0, images: [''], hint: ''};
-             setValue(`featuredProducts.${index}`, fullProduct);
+             setValue(`featuredProducts.${index}`, {
+                id: product.id,
+                name: product.name,
+                category: product.category,
+                price: product.price,
+                images: product.images,
+                hint: product.hint || ''
+             });
           } else {
-             const fullProduct = { ...product, description: 'N/A', image: '', hint: ''};
-             setValue(`products.${index}`, fullProduct);
+             setValue(`products.${index}`, {
+                id: product.id,
+                name: product.name,
+                description: product.description || 'Description...',
+                image: product.images[0] || '',
+                hint: product.hint || ''
+             });
           }
       }
   }
@@ -213,7 +220,7 @@ export default function HomeSettingsPage() {
                 </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendFeatured({ id: '', name: 'Nouveau Produit', category: 'Robes', price: 50000, images: ['https://placehold.co/600x400.png'], hint: 'fashion' })}>
+          <Button type="button" variant="outline" onClick={() => appendFeatured({ id: '', name: '', category: '', price: 0, images: [''], hint: '' })}>
             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit en vedette
           </Button>
         </CardContent>
@@ -249,7 +256,7 @@ export default function HomeSettingsPage() {
                 </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendProduct({ id: '', name: 'Nouveau Produit', description: 'Description...', image: 'https://placehold.co/100x100.png', hint: 'fashion' })}>
+          <Button type="button" variant="outline" onClick={() => appendProduct({ id: '', name: '', description: '', image: '', hint: '' })}>
             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit minimaliste
           </Button>
         </CardContent>
