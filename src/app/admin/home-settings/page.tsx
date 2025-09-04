@@ -2,19 +2,20 @@
 'use client';
 
 import * as React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getHomepageData, updateHomepageData, type HomepageData } from "./actions";
+import { getHomepageData, updateHomepageData, getProductsForSelect, type HomepageData } from "./actions";
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
 import { PlusCircle, Trash } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const CategorySchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
@@ -32,7 +33,7 @@ const ProductSchema = z.object({
 });
 
 const FeaturedProductSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, 'Veuillez sélectionner un produit.'),
   name: z.string(),
   category: z.string(),
   price: z.number(),
@@ -46,13 +47,18 @@ const HomepageFormSchema = z.object({
   products: z.array(ProductSchema),
 });
 
+type SelectProduct = {
+    id: string;
+    name: string;
+};
 
 export default function HomeSettingsPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [availableProducts, setAvailableProducts] = React.useState<SelectProduct[]>([]);
   const { toast } = useToast();
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm<HomepageData>({
+  const { control, register, handleSubmit, reset, watch, setValue } = useForm<HomepageData>({
     resolver: zodResolver(HomepageFormSchema),
     defaultValues: {
       categories: [],
@@ -81,10 +87,14 @@ export default function HomeSettingsPage() {
     async function loadData() {
       setIsLoading(true);
       try {
-        const data = await getHomepageData();
+        const [data, products] = await Promise.all([
+          getHomepageData(),
+          getProductsForSelect()
+        ]);
         reset(data);
+        setAvailableProducts(products);
       } catch (error) {
-        console.error("Failed to fetch homepage data", error);
+        console.error("Failed to fetch page data", error);
         toast({ variant: "destructive", title: "Erreur", description: "Impossible de charger les données." });
       } finally {
         setIsLoading(false);
@@ -92,6 +102,20 @@ export default function HomeSettingsPage() {
     }
     loadData();
   }, [reset, toast]);
+  
+  const handleSelectProduct = (index: number, productId: string, type: 'featured' | 'minimalist') => {
+      const product = availableProducts.find(p => p.id === productId);
+      if (product) {
+          if (type === 'featured') {
+             const fullProduct = { ...product, category: 'N/A', price: 0, images: [''], hint: ''};
+             setValue(`featuredProducts.${index}`, fullProduct);
+          } else {
+             const fullProduct = { ...product, description: 'N/A', image: '', hint: ''};
+             setValue(`products.${index}`, fullProduct);
+          }
+      }
+  }
+
 
   const onSubmit = async (data: HomepageData) => {
     setIsSaving(true);
@@ -170,27 +194,20 @@ export default function HomeSettingsPage() {
         <CardContent className="space-y-4">
           {featuredFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <Label>ID Produit</Label>
-                        <Input {...register(`featuredProducts.${index}.id`)} placeholder="Doit correspondre à un ID de la page produits" />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Nom</Label>
-                        <Input {...register(`featuredProducts.${index}.name`)} />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Catégorie</Label>
-                        <Input {...register(`featuredProducts.${index}.category`)} />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Prix</Label>
-                        <Input type="number" {...register(`featuredProducts.${index}.price`, { valueAsNumber: true })} />
-                    </div>
-                     <div className="md:col-span-2 space-y-1">
-                        <Label>URL Image</Label>
-                        <Input {...register(`featuredProducts.${index}.images.0`)} />
-                    </div>
+                 <div className="space-y-1">
+                    <Label>Produit</Label>
+                    <Select onValueChange={(value) => handleSelectProduct(index, value, 'featured')} value={watch(`featuredProducts.${index}.id`)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un produit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="" disabled>-- Sélectionner --</SelectItem>
+                            {availableProducts.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">Les détails (prix, image, etc.) sont tirés du produit sélectionné.</p>
                 </div>
                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeFeatured(index)}>
                     <Trash className="h-4 w-4" />
@@ -214,27 +231,20 @@ export default function HomeSettingsPage() {
         <CardContent className="space-y-4">
           {productFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <Label>ID Produit</Label>
-                        <Input {...register(`products.${index}.id`)} placeholder="Doit correspondre à un ID de la page produits" />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Nom</Label>
-                        <Input {...register(`products.${index}.name`)} />
-                    </div>
-                     <div className="md:col-span-2 space-y-1">
-                        <Label>Description</Label>
-                        <Input {...register(`products.${index}.description`)} />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>URL de l'image</Label>
-                        <Input {...register(`products.${index}.image`)} />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Indice IA</Label>
-                        <Input {...register(`products.${index}.hint`)} />
-                    </div>
+                <div className="space-y-1">
+                    <Label>Produit</Label>
+                     <Select onValueChange={(value) => handleSelectProduct(index, value, 'minimalist')} value={watch(`products.${index}.id`)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un produit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="" disabled>-- Sélectionner --</SelectItem>
+                            {availableProducts.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">Les détails (description, image, etc.) sont tirés du produit sélectionné.</p>
                 </div>
                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeProduct(index)}>
                     <Trash className="h-4 w-4" />
@@ -255,5 +265,3 @@ export default function HomeSettingsPage() {
     </form>
   );
 }
-
-    

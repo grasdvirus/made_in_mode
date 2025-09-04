@@ -29,17 +29,18 @@ const ProductFormSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, { message: "Veuillez sélectionner une catégorie." }),
   price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
-  images: z.array(z.string().url().or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Maximum 2 images."),
+  images: z.array(z.string().url("L'URL de l'image est invalide ou l'image n'est pas téléversée").or(z.string().startsWith("data:image/"))).min(1, "Au moins une image est requise.").max(2, "Maximum 2 images."),
   hint: z.string().optional().default(''),
   sizes: z.string().min(1, 'Veuillez entrer au moins une taille.').transform(val => val.split(',').map(s => s.trim()).filter(Boolean)),
   colors: z.array(ColorSchema).min(1, "Veuillez ajouter au moins une couleur."),
 });
 
 type ProductFormProps = {
-  product: Product;
+  product?: Product;
   onSave: (data: ProductFormData) => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   isSaving: boolean;
+  isAddForm?: boolean;
 };
 
 const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange: (url: string) => void, disabled: boolean }) => {
@@ -105,7 +106,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
                     ) : (
                         <div className="text-center text-muted-foreground p-4">
                             <UploadCloud className="mx-auto h-12 w-12" />
-                            <p className="mt-2 text-sm font-semibold">Glissez-déposez ou cliquez</p>
+                            <p className="mt-2 text-sm font-semibold">Cliquez pour téléverser</p>
                             <p className="text-xs">Taille max: 1MB</p>
                         </div>
                     )}
@@ -116,18 +117,18 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 };
 
 
-export function ProductForm({ product, onSave, onDelete, isSaving }: ProductFormProps) {
-  const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<ProductFormData>({
+export function ProductForm({ product, onSave, onDelete, isSaving, isAddForm = false }: ProductFormProps) {
+  const { register, handleSubmit, formState: { errors }, control, watch, reset } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
-        name: product.name || '',
-        category: product.category || '',
-        price: product.price || 0,
-        images: product.images || [],
-        hint: product.hint || '',
-        description: product.description || '',
-        sizes: (product.sizes || ['S', 'M', 'L']).join(', '),
-        colors: product.colors || [{ name: 'Black', hex: '#000000'}],
+        name: product?.name || '',
+        category: product?.category || 'Robes',
+        price: product?.price || 0,
+        images: product?.images || ['', ''],
+        hint: product?.hint || '',
+        description: product?.description || '',
+        sizes: (product?.sizes || ['S', 'M', 'L']).join(', '),
+        colors: product?.colors || [{ name: 'Black', hex: '#000000'}],
     },
   });
 
@@ -138,6 +139,9 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
 
   const onSubmit = (data: ProductFormData) => {
     onSave(data);
+    if(isAddForm) {
+        reset(); // Reset form after successful addition
+    }
   };
   
   return (
@@ -274,12 +278,16 @@ export function ProductForm({ product, onSave, onDelete, isSaving }: ProductForm
       </div>
       
       <div className="flex justify-between items-center pt-4">
-        <Button type="button" variant="destructive" size="sm" onClick={onDelete} disabled={isSaving}>
-          <Trash className="mr-2 h-4 w-4" />
-          Supprimer
-        </Button>
+        {isAddForm ? (
+             <div></div>
+        ) : (
+             <Button type="button" variant="destructive" size="sm" onClick={onDelete} disabled={isSaving}>
+                <Trash className="mr-2 h-4 w-4" />
+                Supprimer
+             </Button>
+        )}
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? <div className="h-6"><Loader /></div> : 'Enregistrer les modifications'}
+          {isSaving ? <div className="h-6"><Loader /></div> : (isAddForm ? 'Ajouter le produit' : 'Enregistrer les modifications')}
         </Button>
       </div>
     </form>

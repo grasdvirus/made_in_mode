@@ -8,14 +8,17 @@ import { ProductForm } from './product-form';
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { PlusCircle, Trash, GripVertical } from 'lucide-react';
+import { PlusCircle, Trash, GripVertical, ChevronsUpDown } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
   const [openAccordion, setOpenAccordion] = React.useState<string | undefined>();
+  const [isAddFormVisible, setIsAddFormVisible] = React.useState(false);
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -34,29 +37,22 @@ export default function AdminProductsPage() {
     loadProducts();
   }, [toast]);
 
-  const handleAddNew = async () => {
+  const handleAddProduct = async (formData: ProductFormData) => {
     setIsSaving(true);
-    const newProductData: ProductFormData = {
-      name: 'Nouveau Produit',
-      category: 'Robes',
-      price: 10000,
-      images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png'],
-      hint: 'fashion product',
-    };
-
-    const result = await addProduct(newProductData);
+    const result = await addProduct(formData);
     setIsSaving(false);
 
     if (result.success && result.product) {
       setProducts([result.product, ...products]);
-      setOpenAccordion(result.product.id);
-      toast({ title: "Succès", description: "Nouveau produit ajouté. Vous pouvez maintenant le modifier." });
+      setIsAddFormVisible(false);
+      toast({ title: "Succès", description: "Nouveau produit ajouté." });
+      setOpenAccordion(result.product.id); // Open the new product for inspection
     } else {
       toast({ variant: "destructive", title: "Erreur", description: result.message });
     }
   };
 
-  const handleSaveProduct = async (productId: string, formData: ProductFormData) => {
+  const handleEditProduct = async (productId: string, formData: ProductFormData) => {
     setIsSaving(true);
     const result = await editProduct(productId, formData);
     setIsSaving(false);
@@ -94,16 +90,43 @@ export default function AdminProductsPage() {
       </div>
     );
   }
+  
+  const defaultNewProduct: Product = {
+      id: '', name: 'Nouveau Produit', category: 'Robes', price: 10000,
+      images: ['', ''], hint: 'fashion product',
+      originalPrice: 12000, rating: 0, reviews: 0,
+      description: '', sizes: ['S','M','L'], colors: [{name: 'Black', hex: '#000000'}]
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Gestion des Produits</h2>
-        <Button onClick={handleAddNew} disabled={isSaving}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit
+         <Button onClick={() => setIsAddFormVisible(!isAddFormVisible)} variant={isAddFormVisible ? "destructive" : "default"}>
+          <PlusCircle className="mr-2 h-4 w-4" /> {isAddFormVisible ? "Annuler" : "Ajouter un produit"}
         </Button>
       </div>
 
+       {isAddFormVisible && (
+         <Card className="bg-secondary/30 border border-primary/50">
+           <CardHeader>
+                <CardTitle>Ajouter un nouveau produit</CardTitle>
+                <CardDescription>Remplissez les informations ci-dessous pour créer un nouveau produit.</CardDescription>
+           </CardHeader>
+           <CardContent>
+            <ProductForm
+                product={defaultNewProduct}
+                onSave={(formData) => handleAddProduct(formData)}
+                isSaving={isSaving}
+                isAddForm
+              />
+           </CardContent>
+         </Card>
+       )}
+
+      <Separator />
+
+      <h3 className="text-xl font-semibold">Liste des produits ({products.length})</h3>
       <Accordion 
         type="single" 
         collapsible 
@@ -111,10 +134,11 @@ export default function AdminProductsPage() {
         value={openAccordion}
         onValueChange={setOpenAccordion}
       >
-        {products.map((product) => (
+        {products.map((product, index) => (
           <AccordionItem value={product.id!} key={product.id} className="bg-secondary/50 border-border/50 rounded-lg px-4">
             <AccordionTrigger className="hover:no-underline">
               <div className="flex items-center gap-4 w-full">
+                <span className="text-sm font-bold text-primary w-6 text-center">{index + 1}.</span>
                 <GripVertical className="h-5 w-5 text-muted-foreground" />
                 <span className="font-semibold">{product.name}</span>
                 <span className="text-sm text-muted-foreground ml-auto">{product.category} - {product.price} FCFA</span>
@@ -123,7 +147,7 @@ export default function AdminProductsPage() {
             <AccordionContent>
               <ProductForm
                 product={product}
-                onSave={(formData) => handleSaveProduct(product.id!, formData)}
+                onSave={(formData) => handleEditProduct(product.id!, formData)}
                 onDelete={() => handleDeleteProduct(product.id!)}
                 isSaving={isSaving}
               />
