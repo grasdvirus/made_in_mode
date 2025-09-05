@@ -33,6 +33,32 @@ const AcePlaceLogo = () => (
 
 type EnrichedCategory = HomepageData['categories'][0] & { dynamicImage?: string };
 
+// Server action to get homepage data
+async function getHomepageServerData() {
+    try {
+        const [homepageRes, productsRes] = await Promise.all([
+            fetch(`${process.env.NEXT_PUBLIC_URL}/api/homepage`),
+            fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`)
+        ]);
+        
+        if (!homepageRes.ok) throw new Error(`Failed to fetch homepage data: ${homepageRes.statusText}`);
+        if (!productsRes.ok) throw new Error(`Failed to fetch products data: ${productsRes.statusText}`);
+
+        const data: HomepageData = await homepageRes.json();
+        const products: Product[] = await productsRes.json();
+        
+        return { data, products };
+    } catch (error) {
+        console.error("Error in getHomepageServerData:", error);
+        // In case of error, return default structure to avoid breaking the client
+        return { 
+            data: { categories: [], featuredProducts: [], products: [], recommendedProducts: [], heroImage: 'https://picsum.photos/1200/800' },
+            products: []
+        };
+    }
+}
+
+
 export default function HomePage() {
   const router = useRouter();
   const [searchValue, setSearchValue] = React.useState('');
@@ -48,23 +74,20 @@ export default function HomePage() {
     async function fetchData() {
         setIsLoading(true);
         try {
-            const [homepageRes, productsRes] = await Promise.all([
-                fetch('/homepage.json'),
-                fetch('/products.json')
-            ]);
-            
-            if (!homepageRes.ok) throw new Error('Failed to fetch homepage data');
-            if (!productsRes.ok) throw new Error('Failed to fetch products data');
+            // Using a simple fetch for client-side rendering. For server-side, this would be different.
+            const homepageRes = await fetch('/homepage.json');
+            const productsRes = await fetch('/products.json');
 
+            if (!homepageRes.ok || !productsRes.ok) {
+                throw new Error("Failed to fetch initial data");
+            }
+            
             const data: HomepageData = await homepageRes.json();
             const products: Product[] = await productsRes.json();
             
             setHomepageData(data);
 
-            // Enrich categories with dynamic images from the latest product in that category
             const categoryMap = new Map<string, string>();
-            // The product list is already sorted with the newest first from the admin panel.
-            // So we just need to iterate and grab the first image we find for each category.
             for (const product of products) {
                 if (product.category && !categoryMap.has(product.category) && product.images && product.images[0]) {
                     categoryMap.set(product.category, product.images[0]);
@@ -79,7 +102,7 @@ export default function HomePage() {
 
         } catch (error) {
             console.error(error);
-            setHomepageData({ categories: [], featuredProducts: [], products: [], recommendedProducts: [], heroImage: 'https://picsum.photos/1200/800' }); // Set default empty data on error
+            setHomepageData({ categories: [], featuredProducts: [], products: [], recommendedProducts: [], heroImage: 'https://picsum.photos/1200/800' });
             toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de charger le contenu de la page d'accueil." });
         } finally {
             setIsLoading(false);
@@ -117,7 +140,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-background min-h-screen -mx-4 -mt-8">
-      {/* Header with Background Image */}
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
          {isLoading ? (
             <Skeleton className="absolute inset-0 z-0" />
@@ -158,10 +180,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main>
         <div className="space-y-2">
-          {/* Categories Section */}
           <section className="p-4 pb-0">
                <Carousel
                   opts={{
@@ -198,7 +218,6 @@ export default function HomePage() {
               </Carousel>
           </section>
 
-          {/* Featured Products Carousel Section */}
           <section className="relative pt-2">
              {isLoading && !homepageData ? (
                 <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
@@ -261,7 +280,6 @@ export default function HomePage() {
              )}
           </section>
 
-          {/* Minimalist Products Section */}
           <section className="space-y-2 p-4 pt-2">
                {isLoading && !homepageData ? (
                    [...Array(3)].map((_, index) => (

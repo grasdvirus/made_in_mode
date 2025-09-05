@@ -6,8 +6,10 @@ import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-const homepageDataFilePath = path.join(process.cwd(), 'public/homepage.json');
-const productsDataFilePath = path.join(process.cwd(), 'public/products.json');
+const dataDir = path.join(process.cwd(), 'src/data');
+const homepageDataFilePath = path.join(dataDir, 'homepage.json');
+const productsDataFilePath = path.join(dataDir, 'products.json');
+
 
 const CategorySchema = z.object({
   name: z.string(),
@@ -63,8 +65,17 @@ const FullProductSchema = z.object({
 export type HomepageData = z.infer<typeof HomepageDataSchema>;
 export type FullProduct = z.infer<typeof FullProductSchema>;
 
+async function ensureDataDirExists() {
+    try {
+        await fs.access(dataDir);
+    } catch (e) {
+        await fs.mkdir(dataDir, { recursive: true });
+    }
+}
+
 
 async function readHomepageData(): Promise<HomepageData> {
+    await ensureDataDirExists();
     try {
         const fileContent = await fs.readFile(homepageDataFilePath, 'utf-8');
         const data = HomepageDataSchema.parse(JSON.parse(fileContent));
@@ -72,6 +83,17 @@ async function readHomepageData(): Promise<HomepageData> {
         data.recommendedProducts = data.recommendedProducts || [];
         return data;
     } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            const defaultData = {
+                heroImage: 'https://picsum.photos/1200/800',
+                categories: [],
+                featuredProducts: [],
+                products: [],
+                recommendedProducts: [],
+            };
+            await writeHomepageData(defaultData);
+            return defaultData;
+        }
         console.error('Failed to read or parse homepage data:', error);
         return {
             heroImage: 'https://picsum.photos/1200/800',
@@ -84,6 +106,7 @@ async function readHomepageData(): Promise<HomepageData> {
 }
 
 async function writeHomepageData(data: HomepageData) {
+    await ensureDataDirExists();
     const jsonData = JSON.stringify(data, null, 2);
     await fs.writeFile(homepageDataFilePath, jsonData);
     revalidatePath('/');
@@ -121,6 +144,7 @@ export async function updateHomepageData(data: HomepageData): Promise<{ success:
 
 
 export async function getFullProductsForSelect(): Promise<FullProduct[]> {
+    await ensureDataDirExists();
     try {
         const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
         const products: FullProduct[] = JSON.parse(fileContent);
@@ -133,6 +157,9 @@ export async function getFullProductsForSelect(): Promise<FullProduct[]> {
         }));
     } catch (error) {
          console.error('Failed to read products for select:', error);
+         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return []; // File doesn't exist yet, return empty array
+        }
         return [];
     }
 }

@@ -6,7 +6,9 @@ import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-const aboutDataFilePath = path.join(process.cwd(), 'public/about.json');
+const dataDir = path.join(process.cwd(), 'src/data');
+const aboutDataFilePath = path.join(dataDir, 'about.json');
+
 
 // This type is now defined here and exported for use in the component.
 // The Zod schema itself is NOT exported.
@@ -63,6 +65,13 @@ const defaultData: AboutPageData = {
     contactButtonText: "Découvrir la collection",
 };
 
+async function ensureDataDirExists() {
+    try {
+        await fs.access(dataDir);
+    } catch (e) {
+        await fs.mkdir(dataDir, { recursive: true });
+    }
+}
 
 async function readAboutData(): Promise<AboutPageData> {
     const AboutPageDataSchema = z.object({
@@ -90,14 +99,14 @@ async function readAboutData(): Promise<AboutPageData> {
         contactPhone: z.string(),
         contactButtonText: z.string(),
     });
+    await ensureDataDirExists();
     try {
         await fs.access(aboutDataFilePath);
         const fileContent = await fs.readFile(aboutDataFilePath, 'utf-8');
         return AboutPageDataSchema.parse(JSON.parse(fileContent));
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-            // No need to call writeAboutData here, as that would cause an infinite loop
-            // if writing fails. Just return the default data.
+            await writeAboutData(defaultData);
             return defaultData;
         }
         console.error('Failed to read or parse about page data:', error);
@@ -106,6 +115,7 @@ async function readAboutData(): Promise<AboutPageData> {
 }
 
 async function writeAboutData(data: AboutPageData) {
+    await ensureDataDirExists();
     const jsonData = JSON.stringify(data, null, 2);
     await fs.writeFile(aboutDataFilePath, jsonData);
     revalidatePath('/about');

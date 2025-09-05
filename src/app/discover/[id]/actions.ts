@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import fs from 'fs/promises';
@@ -8,9 +7,10 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { type Product } from '@/lib/types';
 
+const dataDir = path.join(process.cwd(), 'src/data');
+const reviewsDataFilePath = path.join(dataDir, 'reviews.json');
+const productsDataFilePath = path.join(dataDir, 'products.json');
 
-const reviewsDataFilePath = path.join(process.cwd(), 'public/reviews.json');
-const productsDataFilePath = path.join(process.cwd(), 'public/products.json');
 
 const ReviewSchema = z.object({
   id: z.string(),
@@ -25,7 +25,16 @@ export type Review = z.infer<typeof ReviewSchema>;
 
 type ReviewSubmission = Omit<Review, 'id' | 'date'>;
 
+async function ensureDataDirExists() {
+    try {
+        await fs.access(dataDir);
+    } catch (e) {
+        await fs.mkdir(dataDir, { recursive: true });
+    }
+}
+
 async function readReviews(): Promise<Review[]> {
+    await ensureDataDirExists();
     try {
         await fs.access(reviewsDataFilePath);
         const fileContent = await fs.readFile(reviewsDataFilePath, 'utf-8');
@@ -42,6 +51,7 @@ async function readReviews(): Promise<Review[]> {
 }
 
 async function writeReviews(reviews: Review[]) {
+    await ensureDataDirExists();
     await fs.writeFile(reviewsDataFilePath, JSON.stringify(reviews, null, 2));
     reviews.forEach(review => {
         revalidatePath(`/discover/${review.productId}`);
@@ -80,6 +90,7 @@ export async function addReview(reviewData: ReviewSubmission): Promise<{ success
 }
 
 export async function getProductById(productId: string): Promise<Product | null> {
+    await ensureDataDirExists();
     try {
         const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
         const products: Product[] = JSON.parse(fileContent);
@@ -87,6 +98,9 @@ export async function getProductById(productId: string): Promise<Product | null>
         return product || null;
     } catch (error) {
         console.error(`Failed to read or find product with ID ${productId}:`, error);
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return null; // File doesn't exist yet
+        }
         return null;
     }
 }

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, Target, Users, Mail, Phone } from 'lucide-react';
 import Footer from '@/components/footer';
-import { type AboutPageData } from '../admin/about-settings/actions';
+import { type AboutPageData, getAboutPageData } from '../admin/about-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function AboutPageContent() {
@@ -18,9 +18,7 @@ function AboutPageContent() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch('/about.json');
-        if (!response.ok) throw new Error('Failed to fetch about page data');
-        const jsonData = await response.json();
+        const jsonData = await getAboutPageData();
         setData(jsonData);
       } catch (error) {
         console.error(error);

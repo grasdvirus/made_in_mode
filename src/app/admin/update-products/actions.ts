@@ -6,8 +6,10 @@ import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-const productsDataFilePath = path.join(process.cwd(), 'public/products.json');
-const homepageDataFilePath = path.join(process.cwd(), 'public/homepage.json');
+const dataDir = path.join(process.cwd(), 'src/data');
+const productsDataFilePath = path.join(dataDir, 'products.json');
+const homepageDataFilePath = path.join(dataDir, 'homepage.json');
+
 
 const ColorSchema = z.object({
   name: z.string(),
@@ -34,8 +36,17 @@ const ProductUpdateSchema = ProductSchema.omit({ id: true });
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductFormData = z.infer<typeof ProductUpdateSchema>;
 
+async function ensureDataDirExists() {
+    try {
+        await fs.access(dataDir);
+    } catch (e) {
+        await fs.mkdir(dataDir, { recursive: true });
+    }
+}
+
 
 async function readProductsFromFile(): Promise<Product[]> {
+    await ensureDataDirExists();
     try {
         const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
         const products = JSON.parse(fileContent);
@@ -52,6 +63,7 @@ async function readProductsFromFile(): Promise<Product[]> {
 }
 
 async function writeProductsToFile(products: Product[]) {
+    await ensureDataDirExists();
     const jsonData = JSON.stringify(products, null, 2);
     await fs.writeFile(productsDataFilePath, jsonData);
     revalidatePath('/discover');
@@ -131,6 +143,7 @@ export async function deleteProduct(productId: string): Promise<{ success: boole
 }
 
 export async function getCategoriesForSelect(): Promise<string[]> {
+    await ensureDataDirExists();
     try {
         const fileContent = await fs.readFile(homepageDataFilePath, 'utf-8');
         const data = JSON.parse(fileContent);

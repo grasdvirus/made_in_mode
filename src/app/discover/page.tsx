@@ -113,7 +113,7 @@ function DiscoverContent() {
       </Carousel>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {[...Array(8)].map((_, i) => (
              <div key={i} className="bg-card/50 animate-pulse">
                 <Skeleton className="aspect-[4/5] rounded-lg" />
@@ -154,8 +154,7 @@ function DiscoverContent() {
         </div>
       )}
       
-      {/* Recommended Section */}
-       <section className="space-y-2 pt-4">
+      <section className="space-y-2 pt-4">
         <h2 className="text-2xl font-bold text-center">Nos Recommandations</h2>
         
          {isLoading ? (
