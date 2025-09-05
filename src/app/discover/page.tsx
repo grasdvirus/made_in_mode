@@ -1,19 +1,21 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Compass, Loader2 } from 'lucide-react';
+import { Compass, Loader2, Star, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
+import { Card, CardContent } from '@/components/ui/card';
 
 function DiscoverContent() {
   const searchParams = useSearchParams();
@@ -26,18 +28,40 @@ function DiscoverContent() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+   const [featuredApi, setFeaturedApi] = React.useState<CarouselApi>()
+  const [featuredCurrent, setFeaturedCurrent] = React.useState(0)
+  const [featuredCount, setFeaturedCount] = React.useState(0)
+
+  useEffect(() => {
+    if (!featuredApi) return;
+    setFeaturedCount(featuredApi.scrollSnapList().length);
+    setFeaturedCurrent(featuredApi.selectedScrollSnap() + 1);
+    featuredApi.on("select", () => {
+      setFeaturedCurrent(featuredApi.selectedScrollSnap() + 1);
+    });
+  }, [featuredApi]);
+
+  const handleFavorite = (e: React.MouseEvent, productName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+        title: "Favoris",
+        description: `${productName} a été ajouté à votre liste de souhaits !`,
+    });
+  };
+
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
+        // This is not a reliable way to fetch data in production,
+        // using server actions would be better. For the purpose of this demo, we'll keep it.
         const [productsRes, homepageRes] = await Promise.all([
-          fetch('/products.json'),
-          fetch('/homepage.json')
+          fetch('/products.json').then(res => res.json()),
+          fetch('/homepage.json').then(res => res.json())
         ]);
-        const productsData: Product[] = await productsRes.json();
-        const homepageContent: HomepageData = await homepageRes.json();
         
-        setProducts(productsData);
+        setProducts(productsRes);
         setHomepageData(homepageContent);
       } catch (err) {
         console.error("Failed to load page data", err);
@@ -46,7 +70,23 @@ function DiscoverContent() {
         setIsLoading(false);
       }
     }
-    fetchData();
+     async function loadData() {
+        setIsLoading(true);
+        try {
+            const [data, productsData] = await Promise.all([
+                getHomepageData(),
+                getProductsForHomepage()
+            ]);
+            setHomepageData(data);
+            setProducts(productsData);
+        } catch (err) {
+            console.error("Failed to load page data", err);
+            toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger le contenu.' });
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    loadData();
   }, [toast]);
   
   const categories = useMemo(() => {
@@ -111,6 +151,53 @@ function DiscoverContent() {
            <CarouselPrevious className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2 rounded-full" />
            <CarouselNext className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2 rounded-full" />
       </Carousel>
+      
+       {/* Featured Products Section */}
+       <section className="relative pt-2">
+         <h2 className="text-2xl font-bold text-center mb-2">Produits en Vedette</h2>
+         {isLoading ? (
+            <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
+         ) : (
+            <Carousel setApi={setFeaturedApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
+                <CarouselContent className="ml-4">
+                {homepageData?.featuredProducts.map((product) => (
+                    <CarouselItem key={product.id} className="pl-0 basis-4/5 sm:basis-1/2">
+                    <div className="px-2 h-full">
+                        <Link href={`/discover/${product.id}`} className="block h-full">
+                            <Card className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-105 duration-300 h-full">
+                            <CardContent className="p-0">
+                                <div className="relative">
+                                <Image
+                                    src={(product.images && product.images.length > 0) ? product.images[0] : 'https://picsum.photos/600/400'}
+                                    alt={product.name}
+                                    width={600}
+                                    height={400}
+                                    className="w-full h-48 object-cover"
+                                    data-ai-hint={product.hint}
+                                />
+                                <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
+                                    <Heart className="w-5 h-5" />
+                                </Button>
+                                <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full">
+                                    {product.price.toLocaleString('fr-FR')} FCFA
+                                </div>
+                                </div>
+                                <div className="p-3">
+                                <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
+                                <div className="flex items-center text-muted-foreground text-sm mt-1 gap-4">
+                                     <span className="text-sm text-muted-foreground">{product.category}</span>
+                                </div>
+                                </div>
+                            </CardContent>
+                            </Card>
+                        </Link>
+                    </div>
+                    </CarouselItem>
+                ))}
+                </CarouselContent>
+            </Carousel>
+         )}
+      </section>
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -203,3 +290,5 @@ export default function DiscoverPage() {
         </Suspense>
     )
 }
+
+    

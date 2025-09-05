@@ -23,7 +23,7 @@ const MinimalistProductSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
-  image: z.string(),
+  image: z.string().url().or(z.string().startsWith("data:image/")),
   hint: z.string(),
 });
 
@@ -32,7 +32,7 @@ const FeaturedProductSchema = z.object({
   name: z.string(),
   category: z.string(),
   price: z.number(),
-  images: z.array(z.string()),
+  images: z.array(z.string().url().or(z.string().startsWith("data:image/"))),
   hint: z.string(),
 });
 
@@ -40,7 +40,7 @@ const RecommendedProductSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
-  image: z.string(),
+  image: z.string().url().or(z.string().startsWith("data:image/")),
   hint: z.string(),
 });
 
@@ -57,7 +57,7 @@ const FullProductSchema = z.object({
     name: z.string(),
     category: z.string(),
     price: z.number(),
-    images: z.array(z.string()),
+    images: z.array(z.string().url().or(z.string().startsWith("data:image/"))),
     hint: z.string().optional(),
     description: z.string().optional(),
 });
@@ -184,3 +184,5 @@ export async function getProductsForHomepage(): Promise<Product[]> {
         return [];
     }
 }
+
+    
