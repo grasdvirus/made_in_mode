@@ -33,31 +33,6 @@ const AcePlaceLogo = () => (
 
 type EnrichedCategory = HomepageData['categories'][0] & { dynamicImage?: string };
 
-// Server action to get homepage data
-async function getHomepageServerData() {
-    try {
-        const [homepageRes, productsRes] = await Promise.all([
-            fetch(`${process.env.NEXT_PUBLIC_URL}/api/homepage`),
-            fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`)
-        ]);
-        
-        if (!homepageRes.ok) throw new Error(`Failed to fetch homepage data: ${homepageRes.statusText}`);
-        if (!productsRes.ok) throw new Error(`Failed to fetch products data: ${productsRes.statusText}`);
-
-        const data: HomepageData = await homepageRes.json();
-        const products: Product[] = await productsRes.json();
-        
-        return { data, products };
-    } catch (error) {
-        console.error("Error in getHomepageServerData:", error);
-        // In case of error, return default structure to avoid breaking the client
-        return { 
-            data: { categories: [], featuredProducts: [], products: [], recommendedProducts: [], heroImage: 'https://picsum.photos/1200/800' },
-            products: []
-        };
-    }
-}
-
 
 export default function HomePage() {
   const router = useRouter();
@@ -74,9 +49,8 @@ export default function HomePage() {
     async function fetchData() {
         setIsLoading(true);
         try {
-            // Using a simple fetch for client-side rendering. For server-side, this would be different.
-            const homepageRes = await fetch('/homepage.json');
-            const productsRes = await fetch('/products.json');
+            const homepageRes = await fetch('/api/homepage');
+            const productsRes = await fetch('/api/products');
 
             if (!homepageRes.ok || !productsRes.ok) {
                 throw new Error("Failed to fetch initial data");
