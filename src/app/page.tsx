@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { HomepageData } from './admin/home-settings/actions';
+import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const AcePlaceLogo = () => (
@@ -30,6 +31,8 @@ const AcePlaceLogo = () => (
     </div>
 )
 
+type EnrichedCategory = HomepageData['categories'][0] & { dynamicImage?: string };
+
 export default function HomePage() {
   const router = useRouter();
   const [searchValue, setSearchValue] = React.useState('');
@@ -38,16 +41,40 @@ export default function HomePage() {
   const [count, setCount] = React.useState(0)
   const { toast } = useToast();
   const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
+  const [enrichedCategories, setEnrichedCategories] = useState<EnrichedCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
         setIsLoading(true);
         try {
-            const response = await fetch('/homepage.json');
-            if (!response.ok) throw new Error('Failed to fetch homepage data');
-            const data: HomepageData = await response.json();
+            const [homepageRes, productsRes] = await Promise.all([
+                fetch('/homepage.json'),
+                fetch('/products.json')
+            ]);
+            
+            if (!homepageRes.ok) throw new Error('Failed to fetch homepage data');
+            if (!productsRes.ok) throw new Error('Failed to fetch products data');
+
+            const data: HomepageData = await homepageRes.json();
+            const products: Product[] = await productsRes.json();
+            
             setHomepageData(data);
+
+            // Enrich categories with dynamic images
+            const categoryMap = new Map<string, string>();
+            for (const product of products) {
+                if (product.category && !categoryMap.has(product.category) && product.images && product.images[0]) {
+                    categoryMap.set(product.category, product.images[0]);
+                }
+            }
+
+            const dynamicCategories = data.categories.map(cat => ({
+                ...cat,
+                dynamicImage: categoryMap.get(cat.name) || cat.image,
+            }));
+            setEnrichedCategories(dynamicCategories);
+
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de charger le contenu de la page d'accueil." });
@@ -136,7 +163,7 @@ export default function HomePage() {
                   className="w-full no-scrollbar"
               >
                   <CarouselContent>
-                      {isLoading && !homepageData ? (
+                      {isLoading ? (
                           [...Array(6)].map((_, index) => (
                              <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
                                 <div className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto">
@@ -146,11 +173,11 @@ export default function HomePage() {
                             </CarouselItem>
                           ))
                       ) : (
-                        homepageData?.categories.map((category, index) => (
+                        enrichedCategories.map((category, index) => (
                             <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
                                 <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
                                     <div className="relative w-24 h-24">
-                                        <Image src={category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
+                                        <Image src={category.dynamicImage || category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
                                     </div>
                                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
                                 </Link>
