@@ -10,6 +10,7 @@ import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
 import ScrollToTopButton from '@/components/scroll-to-top-button';
 import { CartProvider } from '@/hooks/use-cart';
+import { cn } from '@/lib/utils';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -33,7 +34,6 @@ export default function RootLayout({
   const pathname = usePathname();
   const CurrentHeader = getHeader(pathname);
   
-  const mainMarginTop = (pathname === '/discover') ? 'mt-32' : 'mt-8';
   const showFooterNav = !pathname.startsWith('/login') && !pathname.startsWith('/admin');
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
@@ -53,7 +53,12 @@ export default function RootLayout({
         <CartProvider>
           <div className="flex flex-col min-h-screen">
             {CurrentHeader}
-            <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-24 md:pb-8' : ''}`}>
+            <main className={cn(
+              'flex-1 w-full max-w-7xl mx-auto px-4',
+              pathname === '/' ? '' : 'mt-8', // Consistent default margin
+              pathname === '/discover' && 'mt-32', // Specific margin for discover
+              showFooterNav ? 'pb-24 md:pb-8' : ''
+            )}>
               {children}
             </main>
             {showFooterNav && (
