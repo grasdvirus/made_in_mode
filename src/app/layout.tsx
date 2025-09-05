@@ -55,8 +55,8 @@ export default function RootLayout({
             {CurrentHeader}
             <main className={cn(
               'flex-1 w-full max-w-7xl mx-auto px-4',
-              pathname === '/' ? '' : 'mt-8', // Consistent default margin
-              pathname === '/discover' && 'mt-32', // Specific margin for discover
+              pathname === '/' ? '' : 'mt-8',
+              pathname === '/discover' && 'mt-32',
               showFooterNav ? 'pb-24 md:pb-8' : ''
             )}>
               {children}
