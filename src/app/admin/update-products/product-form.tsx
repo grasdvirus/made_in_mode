@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Image from 'next/image';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const ColorSchema = z.object({
   name: z.string().min(1, "Le nom de la couleur est requis."),
@@ -33,6 +34,21 @@ const ProductFormSchema = z.object({
   sizes: z.string().min(1, 'Veuillez entrer au moins une taille.').transform(val => val.split(',').map(s => s.trim()).filter(Boolean)),
   colors: z.array(ColorSchema).min(1, "Veuillez ajouter au moins une couleur."),
 });
+
+const PREDEFINED_COLORS: z.infer<typeof ColorSchema>[] = [
+    { name: 'Noir', hex: '#000000' },
+    { name: 'Blanc', hex: '#FFFFFF' },
+    { name: 'Gris', hex: '#808080' },
+    { name: 'Rouge', hex: '#FF0000' },
+    { name: 'Vert', hex: '#008000' },
+    { name: 'Bleu', hex: '#0000FF' },
+    { name: 'Jaune', hex: '#FFFF00' },
+    { name: 'Rose', hex: '#FFC0CB' },
+    { name: 'Violet', hex: '#800080' },
+    { name: 'Orange', hex: '#FFA500' },
+    { name: 'Marron', hex: '#A52A2A' },
+    { name: 'Beige', hex: '#F5F5DC' },
+];
 
 type ProductFormProps = {
   product?: Product;
@@ -117,7 +133,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 
 
 export function ProductForm({ product, onSave, isSaving, isAddForm = false, availableCategories = [] }: ProductFormProps) {
-  const { register, handleSubmit, formState: { errors }, control, watch, reset } = useForm<ProductFormData>({
+  const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
         name: product?.name || '',
@@ -127,7 +143,7 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
         hint: product?.hint || '',
         description: product?.description || '',
         sizes: (product?.sizes || ['S', 'M', 'L']).join(', '),
-        colors: product?.colors || [{ name: 'Black', hex: '#000000'}],
+        colors: product?.colors || [{ name: 'Noir', hex: '#000000'}],
     },
   });
 
@@ -135,6 +151,18 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
     control,
     name: "colors"
   });
+
+  const currentColors = watch('colors');
+
+  const handleColorToggle = (color: z.infer<typeof ColorSchema>) => {
+    const colorIndex = currentColors.findIndex(c => c.hex.toLowerCase() === color.hex.toLowerCase());
+    if (colorIndex > -1) {
+        remove(colorIndex);
+    } else {
+        append(color);
+    }
+  };
+
 
   const onSubmit = (data: ProductFormData) => {
     onSave(data);
@@ -177,34 +205,30 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
                     </div>
                     <div className="space-y-4">
                       <Label>Couleurs disponibles</Label>
-                       {fields.map((field, index) => (
-                        <div key={field.id} className="flex items-end gap-2">
-                           <div className="w-10 h-10 rounded-md border flex-shrink-0" style={{ backgroundColor: watch(`colors.${index}.hex`) || '#ffffff' }}></div>
-                          <div className="flex-grow space-y-1">
-                            <Input
-                              {...register(`colors.${index}.name`)}
-                              placeholder="Nom de la couleur (ex: Noir)"
-                              disabled={isSaving}
-                            />
-                             {errors.colors?.[index]?.name && <p className="text-sm text-destructive">{errors.colors?.[index]?.name?.message}</p>}
-                          </div>
-                          <div className="flex-grow space-y-1">
-                            <Input
-                              {...register(`colors.${index}.hex`)}
-                              placeholder="Code Hex (ex: #000000)"
-                              disabled={isSaving}
-                            />
-                            {errors.colors?.[index]?.hex && <p className="text-sm text-destructive">{errors.colors?.[index]?.hex?.message}</p>}
-                          </div>
-                          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} disabled={isSaving}>
-                            <Trash className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      ))}
-                      {errors.colors && !errors.colors.root?.message && <p className="text-sm text-destructive">{errors.colors.message}</p>}
-                       <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', hex: '#ffffff' })}>
-                         <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une couleur
-                       </Button>
+                       <div className="flex flex-wrap gap-3 p-2 bg-background/50 rounded-lg">
+                           {PREDEFINED_COLORS.map(color => {
+                               const isSelected = currentColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase());
+                               return (
+                                   <button
+                                       type="button"
+                                       key={color.hex}
+                                       onClick={() => handleColorToggle(color)}
+                                       className={cn(
+                                           "p-2 rounded-lg border-2 transition-all duration-200",
+                                           isSelected ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted-foreground'
+                                       )}
+                                       title={color.name}
+                                       disabled={isSaving}
+                                   >
+                                       <div
+                                           className="w-8 h-8 rounded-md border"
+                                           style={{ backgroundColor: color.hex }}
+                                       ></div>
+                                   </button>
+                               )
+                           })}
+                       </div>
+                      {errors.colors && <p className="text-sm text-destructive mt-2">{errors.colors.message}</p>}
                     </div>
                 </CardContent>
              </Card>
