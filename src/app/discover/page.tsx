@@ -97,8 +97,8 @@ export default function DiscoverPage() {
       </Carousel>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {[...Array(6)].map((_, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          {[...Array(8)].map((_, i) => (
              <div key={i} className="bg-card/50 animate-pulse">
                 <Skeleton className="aspect-[4/5] rounded-lg" />
                 <Skeleton className="h-4 w-3/4 mt-2" />
@@ -107,7 +107,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <Link key={product.id} href={`/discover/${product.id}`} className="block group">
@@ -118,7 +118,7 @@ export default function DiscoverPage() {
                         fill 
                         className="object-cover transition-transform duration-300 group-hover:scale-105" 
                         data-ai-hint={product.hint}
-                        sizes="(max-width: 768px) 50vw, 33vw" 
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
