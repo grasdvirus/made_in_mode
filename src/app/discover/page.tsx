@@ -117,7 +117,7 @@ export default function DiscoverPage() {
       </Carousel>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[...Array(6)].map((_, i) => (
              <Card key={i} className="rounded-2xl overflow-hidden bg-card/50 animate-pulse">
                 <div className="aspect-[4/5] bg-muted/50"></div>
@@ -129,7 +129,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <Link key={product.id} href={`/discover/${product.id}`} className="block">
@@ -144,7 +144,7 @@ export default function DiscoverPage() {
                           fill 
                           className="object-cover transition-transform duration-300 group-hover:scale-105" 
                           data-ai-hint={product.hint}
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
+                          sizes="(max-width: 1024px) 50vw, 33vw" 
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
                        <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
@@ -224,3 +224,5 @@ export default function DiscoverPage() {
     </div>
   );
 }
+
+    

@@ -11,6 +11,12 @@
       "image": "https://placehold.co/200x200.png",
       "hint": "nouvelle categorie",
       "link": "/discover"
+    },
+    {
+      "name": "créateur",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "nouvelle categorie",
+      "link": "/discover"
     }
   ],
   "featuredProducts": [
