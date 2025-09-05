@@ -41,7 +41,7 @@ export default function CartPage() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const shipping = subtotal > 50000 ? 0 : 5000;
+  const shipping = subtotal > 50000 || subtotal === 0 ? 0 : 5000;
   const total = subtotal + shipping;
 
   return (
@@ -128,7 +128,7 @@ export default function CartPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg group" onClick={handleCheckout}>
+              <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg group" onClick={handleCheckout} disabled={cartItems.length === 0}>
                 Passer au paiement <CreditCard className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </CardFooter>

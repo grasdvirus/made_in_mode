@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (cartItems.length === 0 && !isSubmitting) {
       toast({
         title: 'Panier vide',
         description: 'Votre panier est vide. Vous allez être redirigé.',
@@ -46,10 +46,10 @@ export default function CheckoutPage() {
       });
       router.push('/cart');
     }
-  }, [cartItems, router, toast]);
+  }, [cartItems, router, toast, isSubmitting]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = subtotal > 50000 ? 0 : 5000;
+  const shipping = subtotal > 50000 || subtotal === 0 ? 0 : 5000;
   const total = subtotal + shipping;
 
   const onSubmit: SubmitHandler<CheckoutFormValues> = async (data) => {
@@ -63,11 +63,11 @@ export default function CheckoutPage() {
     const result = await submitOrder(orderData);
     
     if (result.success) {
+      clearCart();
       toast({
         title: 'Commande Soumise !',
         description: 'Merci pour votre confiance. Nous allons vérifier votre paiement et traiter votre commande.',
       });
-      clearCart();
       router.push('/');
     } else {
       toast({
@@ -160,7 +160,7 @@ export default function CheckoutPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {cartItems.map(item => (
-                            <div key={item.id} className="flex items-center justify-between gap-4">
+                            <div key={item.id + item.size + item.color} className="flex items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="relative w-16 h-16 rounded-md overflow-hidden">
                                         <Image src={item.image} alt={item.name} fill className="object-cover" />
