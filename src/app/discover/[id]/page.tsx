@@ -3,11 +3,11 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Star, ChevronLeft, ShoppingBag, Bookmark } from 'lucide-react';
+import { Star, ChevronLeft, ShoppingBag, Send, Palette, Ruler } from 'lucide-react';
 import { type Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useRouter, useParams } from 'next/navigation';
@@ -15,6 +15,9 @@ import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
 import { useCart } from '@/hooks/use-cart';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -29,30 +32,27 @@ export default function ProductDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
-  const [api, setApi] = useState<any>()
+  const [selectedColor, setSelectedColor] = useState<Product['colors'][0] | undefined>(undefined);
+  const [reviewRating, setReviewRating] = useState(0);
+
+  const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    if (!api) {
-      return
-    }
-    setCount(api.scrollSnapList().length)
-    setCurrent(api.selectedScrollSnap() + 1)
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1)
-    })
-  }, [api])
-
+    if (!api) return;
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+    api.on("select", () => setCurrent(api.selectedScrollSnap() + 1));
+  }, [api]);
 
   useEffect(() => {
     async function fetchProduct() {
       setIsLoading(true);
       try {
         const response = await fetch('/products.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
+        if (!response.ok) throw new Error('Failed to fetch products');
+        
         const products: Product[] = await response.json();
         const foundProduct = products.find(p => p.id === productId);
         
@@ -68,13 +68,11 @@ export default function ProductDetailPage() {
             description: foundProduct.description || 'Aucune description disponible.'
           };
           setProduct(hydratedProduct);
-           if (hydratedProduct.sizes && hydratedProduct.sizes.length > 0) {
-            setSelectedSize(hydratedProduct.sizes[0]);
-          }
+          if (hydratedProduct.sizes?.length > 0) setSelectedSize(hydratedProduct.sizes[0]);
+          if (hydratedProduct.colors?.length > 0) setSelectedColor(hydratedProduct.colors[0]);
         } else {
           setProduct(null);
         }
-
       } catch (error) {
         console.error("Failed to fetch product", error);
         toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger les détails du produit.' });
@@ -82,9 +80,7 @@ export default function ProductDetailPage() {
         setIsLoading(false);
       }
     }
-    if (productId) {
-      fetchProduct();
-    }
+    if (productId) fetchProduct();
   }, [productId, toast]);
   
   const handleFavorite = (e: React.MouseEvent) => {
@@ -93,37 +89,35 @@ export default function ProductDetailPage() {
     setIsFavorited(!isFavorited);
     toast({
         title: !isFavorited ? "Ajouté aux favoris!" : "Retiré des favoris",
-        description: `${product?.name} a été ${!isFavorited ? 'ajouté à' : 'retiré de'} votre liste de souhaits !`,
     });
   };
 
   const handleAddToCart = () => {
-    if (!product || !selectedSize) {
-        toast({
-            variant: "destructive",
-            title: "Sélection requise",
-            description: "Veuillez sélectionner une taille.",
-        });
+    if (!product || !selectedSize || !selectedColor) {
+        toast({ variant: "destructive", title: "Sélection requise", description: "Veuillez sélectionner une taille et une couleur." });
         return;
     }
     
     addItem({
-        id: product.id!,
-        name: product.name,
-        price: product.price,
-        quantity: 1, // Quantity is fixed to 1 in this design
-        image: product.images[0],
-        hint: product.hint || '',
-        category: product.category,
-        size: selectedSize,
-        color: product.colors[0].name, // Color is not selectable in this design
+        id: product.id!, name: product.name, price: product.price, quantity: 1,
+        image: product.images[0], hint: product.hint || '', category: product.category,
+        size: selectedSize, color: selectedColor.name,
     });
     
-    toast({
-      title: "Ajouté au Panier!",
-      description: `1 x ${product.name} (${selectedSize})`,
-    });
+    toast({ title: "Ajouté au Panier!", description: `1 x ${product.name} (${selectedSize}, ${selectedColor.name})` });
   };
+  
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if(reviewRating === 0) {
+        toast({ variant: 'destructive', title: 'Note requise', description: 'Veuillez sélectionner au moins une étoile.'});
+        return;
+    }
+    toast({ title: 'Avis Soumis!', description: 'Merci pour votre retour !'});
+    setReviewRating(0);
+    const form = e.target as HTMLFormElement;
+    (form.elements.namedItem('review-message') as HTMLTextAreaElement).value = '';
+  }
 
   if (isLoading) {
     return <div className="flex flex-col items-center justify-center min-h-[80vh] bg-background"><Loader /><p className="mt-4 text-lg">Chargement du produit...</p></div>
@@ -134,8 +128,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen flex flex-col -mx-4 -my-8">
-        {/* Header */}
+    <div className="bg-background text-foreground min-h-screen flex flex-col -mx-4 -mt-8">
         <header className="flex items-center justify-between p-4 z-10 w-full max-w-4xl mx-auto">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-card text-card-foreground rounded-full shadow-md">
                 <ChevronLeft className="h-6 w-6" />
@@ -147,19 +140,15 @@ export default function ProductDetailPage() {
         </header>
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 pb-32">
-            {/* Image Carousel */}
             <section className="mb-4">
                 <Carousel setApi={setApi} className="w-full">
                     <CarouselContent>
                     {product.images.map((image, index) => (
                         <CarouselItem key={index}>
-                            <Card className="bg-card aspect-square overflow-hidden rounded-3xl border-none">
+                            <Card className="bg-secondary aspect-square overflow-hidden rounded-3xl border-none">
                                 <Image
-                                src={image}
-                                alt={`${product.name} - vue ${index + 1}`}
-                                fill
-                                className="object-contain p-4"
-                                sizes="(max-width: 768px) 100vw, 50vw"
+                                src={image} alt={`${product.name} - vue ${index + 1}`} fill
+                                className="object-contain p-4" sizes="(max-width: 768px) 100vw, 50vw"
                                 data-ai-hint={product.hint}
                                 />
                             </Card>
@@ -169,53 +158,61 @@ export default function ProductDetailPage() {
                 </Carousel>
                  <div className="flex justify-center gap-2 pt-4">
                     {Array.from({ length: count }).map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => api?.scrollTo(i)}
-                            className={cn(
-                                "h-2 w-2 rounded-full transition-all duration-300",
-                                i === current - 1 ? 'w-4 bg-primary' : 'bg-muted-foreground/50'
-                            )}
-                        />
+                        <button key={i} onClick={() => api?.scrollTo(i)}
+                            className={cn("h-2 w-2 rounded-full transition-all duration-300", i === current - 1 ? 'w-4 bg-primary' : 'bg-muted-foreground/50')} />
                     ))}
                 </div>
             </section>
 
-            {/* Product Info */}
-            <section className="space-y-4">
-                <div className="flex justify-between items-center">
+            <section className="space-y-6">
+                <div className="flex justify-between items-start">
                     <div>
                         <p className="text-muted-foreground">{product.category}</p>
                         <h1 className="text-3xl font-bold">{product.name}</h1>
                     </div>
-                    <div className="text-right">
-                         <div className="flex items-center gap-1">
+                    <div className="text-right shrink-0">
+                         <p className="text-2xl font-bold text-primary">FCFA {product.price.toLocaleString()}</p>
+                         <div className="flex items-center justify-end gap-1">
                             <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                             <p className="font-bold">({product.rating.toFixed(1)})</p>
                         </div>
-                        <p className="text-2xl font-bold text-primary">FCFA {product.price.toLocaleString()}</p>
                     </div>
                 </div>
 
-                {/* Size Selector */}
-                 <div>
-                  <h3 className="text-lg font-medium mb-2">Taille</h3>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {product.sizes.map((size) => (
-                       <div key={size}>
-                        <input type="radio" id={size} name="size" value={size} className="sr-only" onChange={() => setSelectedSize(size)} checked={selectedSize === size} />
-                        <label htmlFor={size} className={cn(
-                          "px-6 py-3 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
-                          selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-card hover:border-primary/50'
-                        )}>
-                          {size}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-lg font-medium mb-2 flex items-center gap-2"><Palette/> Couleur</Label>
+                      <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-2">
+                        {product.colors.map((color) => (
+                            <RadioGroupItem key={color.hex} value={color.hex} id={color.hex} className="sr-only" />
+                        ))}
+                         {product.colors.map((color) => (
+                            <Label key={color.hex} htmlFor={color.hex} className={cn(
+                                "w-10 h-10 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
+                                selectedColor?.hex === color.hex ? 'border-primary scale-110' : 'border-card hover:border-muted-foreground'
+                            )} style={{ backgroundColor: color.hex }} title={color.name}>
+                                { selectedColor?.hex === color.hex && <div className="w-4 h-4 rounded-full bg-white mix-blend-difference"/>}
+                            </Label>
+                        ))}
+                      </RadioGroup>
+                    </div>
+
+                    <div>
+                      <Label className="text-lg font-medium mb-2 flex items-center gap-2"><Ruler/> Taille</Label>
+                      <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 flex-wrap mt-2">
+                        {product.sizes.map((size) => (
+                           <div key={size}>
+                            <RadioGroupItem id={size} value={size} className="sr-only" />
+                            <Label htmlFor={size} className={cn(
+                              "px-6 py-3 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
+                              selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-card hover:border-primary/50'
+                            )}>{size}</Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
                 </div>
 
-                 {/* Accordions */}
                 <Accordion type="single" collapsible className="w-full space-y-3">
                     <AccordionItem value="description" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Description</AccordionTrigger>
@@ -225,17 +222,37 @@ export default function ProductDetailPage() {
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Livraison & Retours</AccordionTrigger>
                         <AccordionContent className="px-4 text-muted-foreground">Livraison gratuite pour les commandes de plus de 50 000 FCFA. Retours acceptés sous 7 jours.</AccordionContent>
                     </AccordionItem>
+                    <AccordionItem value="review" className="bg-card border-none rounded-xl">
+                        <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Laissez votre avis</AccordionTrigger>
+                        <AccordionContent className="px-4">
+                            <form onSubmit={handleReviewSubmit} className="space-y-4">
+                                <div>
+                                    <Label>Votre note</Label>
+                                    <div className="flex items-center gap-1 mt-1">
+                                        {[1, 2, 3, 4, 5].map(star => (
+                                            <Star key={star} className={cn("w-6 h-6 cursor-pointer transition-all", reviewRating >= star ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/50")}
+                                            onClick={() => setReviewRating(star)} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <Textarea name="review-message" placeholder="Partagez votre expérience..." className="bg-secondary border-border" />
+                                <Button type="submit" size="sm">
+                                    <Send className="w-4 h-4 mr-2"/>
+                                    Envoyer mon avis
+                                </Button>
+                            </form>
+                        </AccordionContent>
+                    </AccordionItem>
                 </Accordion>
             </section>
         </main>
         
-        {/* Footer Action Bar */}
-        <footer className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-lg border-t border-border">
+        <footer className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur-lg border-t border-border">
              <div className="max-w-4xl mx-auto p-4 flex items-center justify-between gap-4">
                 <Button variant="outline" size="lg" onClick={handleFavorite} className="bg-card border-card h-14 w-16">
-                    <Bookmark className={cn("h-7 w-7 transition-colors", isFavorited ? "fill-primary text-primary" : "text-muted-foreground")} />
+                    <svg viewBox="0 0 24 24" className={cn("h-7 w-7 transition-colors", isFavorited ? "text-primary" : "text-muted-foreground")}><path fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.682l1.318-1.364a4.5 4.5 0 016.364 6.364L12 20l-7.682-7.682a4.5 4.5 0 010-6.364z"></path></svg>
                 </Button>
-                <Button size="lg" onClick={handleAddToCart} className="w-full text-lg h-14 rounded-2xl">
+                <Button size="lg" onClick={handleAddToCart} className="flex-grow text-lg h-14 rounded-2xl">
                     Ajouter au Panier
                 </Button>
             </div>
@@ -244,4 +261,3 @@ export default function ProductDetailPage() {
   );
 }
 
-    
