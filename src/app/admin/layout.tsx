@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
-import { Home, ShoppingCart, Users, Settings, LayoutDashboard, Package } from 'lucide-react';
+import { Home, ShoppingCart, Users, Settings, LayoutDashboard, Package, Info } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -81,6 +81,14 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                     <SidebarMenuButton isActive={pathname.startsWith('/admin/home-settings')}>
                         <LayoutDashboard />
                         Réglages Accueil
+                    </SidebarMenuButton>
+                </Link>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <Link href="/admin/about-settings">
+                    <SidebarMenuButton isActive={pathname.startsWith('/admin/about-settings')}>
+                        <Info />
+                        Réglages À Propos
                     </SidebarMenuButton>
                 </Link>
             </SidebarMenuItem>

@@ -72,8 +72,8 @@ function DiscoverContent() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-1 -mt-24">
-      <div className="text-center space-y-2">
+    <div className="space-y-4">
+      <div className="text-center space-y-2 pt-24">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Explorez nos collections et trouvez les pièces qui expriment votre style unique.
