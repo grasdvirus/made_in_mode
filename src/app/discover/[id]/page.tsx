@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,7 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { addReview, getReviews, type Review } from './actions';
+import { addReview, getReviews, type Review, getProductById } from './actions';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
 
@@ -44,17 +45,13 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     async function fetchProductAndReviews() {
+      if (!productId) return;
       setIsLoading(true);
       try {
-        const [productResponse, reviewsResponse] = await Promise.all([
-          fetch('/products.json'),
+        const [foundProduct, reviewsResponse] = await Promise.all([
+          getProductById(productId),
           getReviews(productId)
         ]);
-
-        if (!productResponse.ok) throw new Error('Failed to fetch products');
-        
-        const products: Product[] = await productResponse.json();
-        const foundProduct = products.find(p => p.id === productId);
         
         if (foundProduct) {
           const hydratedProduct: Product = {
@@ -63,7 +60,7 @@ export default function ProductDetailPage() {
             colors: foundProduct.colors || [],
             originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
             rating: foundProduct.rating || 4.5,
-            reviews: reviewsResponse.length, // Update reviews count from fetched reviews
+            reviews: reviewsResponse.length,
             category: foundProduct.category || 'Non classé',
             description: foundProduct.description || 'Aucune description disponible.'
           };
@@ -81,7 +78,7 @@ export default function ProductDetailPage() {
         setIsLoading(false);
       }
     }
-    if (productId) fetchProductAndReviews();
+    fetchProductAndReviews();
   }, [productId, toast]);
   
   const handleFavorite = (e: React.MouseEvent) => {
@@ -152,7 +149,7 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    return <div className="text-center py-20 bg-background">Produit non trouvé.</div>;
+    return <div className="flex items-center justify-center h-screen"><div className="text-center text-xl text-muted-foreground">Produit non trouvé.</div></div>;
   }
 
   return (

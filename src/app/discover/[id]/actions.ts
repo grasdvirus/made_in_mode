@@ -1,12 +1,16 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
 import path from 'path';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
+import { type Product } from '@/lib/types';
+
 
 const reviewsDataFilePath = path.join(process.cwd(), 'public/reviews.json');
+const productsDataFilePath = path.join(process.cwd(), 'public/products.json');
 
 const ReviewSchema = z.object({
   id: z.string(),
@@ -73,4 +77,16 @@ export async function addReview(reviewData: ReviewSubmission): Promise<{ success
     }
     return { success: false, message: 'Une erreur est survenue.' };
   }
+}
+
+export async function getProductById(productId: string): Promise<Product | null> {
+    try {
+        const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
+        const products: Product[] = JSON.parse(fileContent);
+        const product = products.find(p => p.id === productId);
+        return product || null;
+    } catch (error) {
+        console.error(`Failed to read or find product with ID ${productId}:`, error);
+        return null;
+    }
 }
