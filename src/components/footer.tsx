@@ -29,7 +29,7 @@ export default function Footer() {
              <div className="space-y-4">
                 <h4 className="font-semibold">Aide & Information</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><a href="#" className="hover:text-primary">FAQ</a></li>
+                    <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
                     <li><a href="#" className="hover:text-primary">Suivi de commande</a></li>
                     <li><a href="#" className="hover:text-primary">Politique de retour</a></li>
                     <li><a href="#" className="hover:text-primary">Conditions Générales</a></li>
