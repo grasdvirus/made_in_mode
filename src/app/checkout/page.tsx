@@ -28,7 +28,7 @@ const CheckoutFormSchema = z.object({
 type CheckoutFormValues = z.infer<typeof CheckoutFormSchema>;
 
 export default function CheckoutPage() {
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, isLoading: isCartLoading } = useCart();
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (cartItems.length === 0 && !isSubmitting) {
+    if (!isCartLoading && cartItems.length === 0 && !isSubmitting) {
       toast({
         title: 'Panier vide',
         description: 'Votre panier est vide. Vous allez être redirigé.',
@@ -46,7 +46,7 @@ export default function CheckoutPage() {
       });
       router.push('/cart');
     }
-  }, [cartItems, router, toast, isSubmitting]);
+  }, [cartItems, isCartLoading, router, toast, isSubmitting]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = subtotal > 50000 || subtotal === 0 ? 0 : 5000;
@@ -79,7 +79,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (cartItems.length === 0) {
+  if (isCartLoading || cartItems.length === 0) {
     return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin h-8 w-8" /></div>;
   }
   
@@ -211,3 +211,5 @@ export default function CheckoutPage() {
     </form>
   );
 }
+
+    

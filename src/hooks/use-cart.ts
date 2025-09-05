@@ -20,9 +20,11 @@ const CART_STORAGE_KEY = 'aceplace-cart';
 
 export function useCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsLoading(true);
     try {
       const storedCart = localStorage.getItem(CART_STORAGE_KEY);
       if (storedCart) {
@@ -30,8 +32,9 @@ export function useCart() {
       }
     } catch (error) {
       console.error('Failed to parse cart from localStorage', error);
-      // If parsing fails, start with an empty cart
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
+    } finally {
+        setIsLoading(false);
     }
   }, []);
 
@@ -94,5 +97,7 @@ export function useCart() {
     saveCart([]);
   };
 
-  return { cartItems, addItem, removeItem, updateQuantity, clearCart };
+  return { cartItems, addItem, removeItem, updateQuantity, clearCart, isLoading };
 }
+
+    
