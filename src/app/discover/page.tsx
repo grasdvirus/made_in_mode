@@ -3,12 +3,10 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, Compass, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
@@ -59,24 +57,6 @@ export default function DiscoverPage() {
     }
   }, [selectedCategory, products]);
   
-  const handleFavorite = (e: React.MouseEvent, productName: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toast({
-        title: "Favoris",
-        description: `${productName} a été ajouté à votre liste de souhaits !`,
-    });
-  };
-
-  const handleAddToCart = (e: React.MouseEvent, productName: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toast({
-        title: "Panier",
-        description: `Veuillez sélectionner taille/couleur sur la page du produit.`,
-    });
-  };
-
   return (
     <div className="space-y-12">
       <div className="text-center space-y-2">
@@ -119,57 +99,33 @@ export default function DiscoverPage() {
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[...Array(6)].map((_, i) => (
-             <Card key={i} className="rounded-2xl overflow-hidden bg-card/50 animate-pulse">
-                <div className="aspect-[4/5] bg-muted/50"></div>
-                <div className="p-4 space-y-2">
-                    <div className="h-4 bg-muted/50 rounded w-3/4"></div>
-                    <div className="h-4 bg-muted/50 rounded w-1/2"></div>
-                </div>
-             </Card>
+             <div key={i} className="bg-card/50 animate-pulse">
+                <Skeleton className="aspect-[4/5] rounded-lg" />
+                <Skeleton className="h-4 w-3/4 mt-2" />
+                <Skeleton className="h-4 w-1/2 mt-1" />
+             </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
-              <Link key={product.id} href={`/discover/${product.id}`} className="block">
-                <Card 
-                  className="rounded-2xl overflow-hidden shadow-lg border-none bg-card/50 backdrop-blur-sm group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full"
-                >
-                  <CardContent className="p-0 h-full flex flex-col">
-                    <div className="relative aspect-[4/5]">
-                      <Image 
-                          src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x800.png'} 
-                          alt={product.name} 
-                          fill 
-                          className="object-cover transition-transform duration-300 group-hover:scale-105" 
-                          data-ai-hint={product.hint}
-                          sizes="(max-width: 1024px) 50vw, 33vw" 
-                      />
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
-                       <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
-                        <Heart className="w-5 h-5" />
-                      </Button>
+              <Link key={product.id} href={`/discover/${product.id}`} className="block group">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg">
+                    <Image 
+                        src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x800.png'} 
+                        alt={product.name} 
+                        fill 
+                        className="object-cover transition-transform duration-300 group-hover:scale-105" 
+                        data-ai-hint={product.hint}
+                        sizes="(max-width: 768px) 50vw, 33vw" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h3 className="font-semibold uppercase tracking-wide truncate">{product.name}</h3>
+                        <p className="font-medium">{product.price.toLocaleString('fr-FR')} FCFA</p>
                     </div>
-                    <div className="p-4 space-y-2 flex flex-col flex-grow">
-                      <h3 className="font-bold text-lg truncate">{product.name}</h3>
-                      <div className="flex justify-between items-center mt-auto">
-                         <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-sm font-medium">{product.rating}</span>
-                            <span className="text-sm text-muted-foreground">({product.reviews} avis)</span>
-                         </div>
-                         <Button variant="ghost" size="icon" className="rounded-full bg-primary/20 text-primary hover:bg-primary/30" onClick={(e) => handleAddToCart(e, product.name)}>
-                            <ShoppingCart className="w-5 h-5" />
-                        </Button>
-                      </div>
-                       <div className="text-right">
-                          <p className="text-sm text-muted-foreground line-through">FCFA {product.originalPrice?.toLocaleString()}</p>
-                          <p className="font-bold text-xl">FCFA {product.price.toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                </div>
               </Link>
             ))
           ) : (
@@ -189,7 +145,7 @@ export default function DiscoverPage() {
          {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(3)].map((_, i) => (
-                    <Card key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
+                    <div key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
                         <div className="flex items-center gap-4">
                             <Skeleton className="w-24 h-24 rounded-lg" />
                             <div className="flex-grow space-y-2">
@@ -197,14 +153,14 @@ export default function DiscoverPage() {
                                 <Skeleton className="h-4 w-1/2" />
                             </div>
                         </div>
-                    </Card>
+                    </div>
                 ))}
             </div>
         ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {homepageData?.recommendedProducts?.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
-                        <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">
+                        <div className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">
                             <div className="flex items-center gap-4">
                                 <div className="relative w-24 h-24 flex-shrink-0">
                                 <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
@@ -214,7 +170,7 @@ export default function DiscoverPage() {
                                 <p className="text-muted-foreground text-sm line-clamp-2">{product.description}</p>
                                 </div>
                             </div>
-                        </Card>
+                        </div>
                     </Link>
                 ))}
             </div>
