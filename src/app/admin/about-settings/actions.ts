@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const aboutDataFilePath = path.join(process.cwd(), 'public/about.json');
 
-export const AboutPageDataSchema = z.object({
+const AboutPageDataSchema = z.object({
   heroImage: z.string().url(),
   heroTitle: z.string(),
   heroSubtitle: z.string(),

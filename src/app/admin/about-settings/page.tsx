@@ -10,11 +10,39 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAboutPageData, updateAboutPageData, AboutPageDataSchema, type AboutPageData } from "./actions";
+import { getAboutPageData, updateAboutPageData, type AboutPageData } from "./actions";
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
 import { Separator } from '@/components/ui/separator';
+
+// Schema for client-side validation
+const AboutFormSchema = z.object({
+  heroImage: z.string().url("URL invalide"),
+  heroTitle: z.string().min(1, "Titre requis"),
+  heroSubtitle: z.string().min(1, "Sous-titre requis"),
+  storyTitle: z.string().min(1, "Titre requis"),
+  storyParagraph1: z.string().min(1, "Paragraphe requis"),
+  storyParagraph2: z.string().min(1, "Paragraphe requis"),
+  storyImage: z.string().url("URL invalide"),
+  commitmentsTitle: z.string().min(1, "Titre requis"),
+  commitment1Title: z.string().min(1, "Titre requis"),
+  commitment1Text: z.string().min(1, "Texte requis"),
+  commitment2Title: z.string().min(1, "Titre requis"),
+  commitment2Text: z.string().min(1, "Texte requis"),
+  commitment3Title: z.string().min(1, "Titre requis"),
+  commitment3Text: z.string().min(1, "Texte requis"),
+  teamTitle: z.string().min(1, "Titre requis"),
+  teamParagraph1: z.string().min(1, "Paragraphe requis"),
+  teamParagraph2: z.string().min(1, "Paragraphe requis"),
+  teamImage: z.string().url("URL invalide"),
+  contactTitle: z.string().min(1, "Titre requis"),
+  contactSubtitle: z.string().min(1, "Sous-titre requis"),
+  contactEmail: z.string().email("Email invalide"),
+  contactPhone: z.string().min(1, "Téléphone requis"),
+  contactButtonText: z.string().min(1, "Texte du bouton requis"),
+});
+
 
 export default function AboutSettingsPage() {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -22,7 +50,7 @@ export default function AboutSettingsPage() {
   const { toast } = useToast();
 
   const { control, register, handleSubmit, reset } = useForm<AboutPageData>({
-    resolver: zodResolver(AboutPageDataSchema),
+    resolver: zodResolver(AboutFormSchema),
     defaultValues: {
         heroImage: '',
         heroTitle: '',
