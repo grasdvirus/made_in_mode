@@ -69,7 +69,7 @@ export default function ProfilePage() {
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
     return (
-        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
+        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                     <ChevronLeft className="h-6 w-6" />
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{displayEmail}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 
                 <Card className="lg:col-span-3 bg-secondary border-primary/50">
                     <CardHeader>
@@ -194,7 +194,7 @@ export default function ProfilePage() {
                 </Card>
 
                 {/* Support & Actions */}
-                <div className="lg:col-span-3 space-y-6">
+                <div className="lg:col-span-3 space-y-4">
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><LifeBuoy /> Support</CardTitle>

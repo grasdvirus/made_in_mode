@@ -151,8 +151,8 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen flex flex-col -mx-4 -mt-8">
-        <header className="flex items-center justify-between p-4 z-10 w-full max-w-4xl mx-auto pt-8">
+    <div className="bg-background text-foreground min-h-screen flex flex-col -mx-4">
+        <header className="flex items-center justify-between p-4 z-10 w-full max-w-4xl mx-auto pt-6">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-card text-card-foreground rounded-full shadow-md">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -164,10 +164,10 @@ export default function ProductDetailPage() {
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 pb-32">
              <section className="mb-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2">
                     {product.images.map((image, index) => (
                         <div key={index} className="aspect-square relative">
-                             <Card className="bg-secondary h-full w-full overflow-hidden rounded-3xl border-none">
+                             <Card className="bg-secondary h-full w-full overflow-hidden rounded-2xl border-none">
                                 <Image
                                 src={image} alt={`${product.name} - vue ${index + 1}`} fill
                                 className="object-contain p-2" sizes="(max-width: 768px) 50vw, 50vw"
@@ -179,11 +179,11 @@ export default function ProductDetailPage() {
                 </div>
             </section>
 
-            <section className="space-y-4">
+            <section className="space-y-3">
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-muted-foreground">{product.category}</p>
-                        <h1 className="text-3xl font-bold">{product.name}</h1>
+                        <h1 className="text-2xl font-bold">{product.name}</h1>
                     </div>
                     <div className="text-right shrink-0">
                          <p className="text-2xl font-bold text-primary">FCFA {product.price.toLocaleString()}</p>
@@ -195,10 +195,10 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     <div>
-                      <Label className="text-base font-medium mb-2 flex items-center gap-2"><Palette/> Couleur</Label>
-                      <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-2">
+                      <Label className="text-base font-medium flex items-center gap-2"><Palette/> Couleur</Label>
+                      <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-1">
                          {product.colors.map((color) => (
                            <div key={color.hex}>
                             <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
@@ -214,13 +214,13 @@ export default function ProductDetailPage() {
                     </div>
 
                     <div>
-                      <Label className="text-base font-medium mb-2 flex items-center gap-2"><Ruler/> Taille</Label>
-                      <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 flex-wrap mt-2">
+                      <Label className="text-base font-medium flex items-center gap-2"><Ruler/> Taille</Label>
+                      <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 flex-wrap mt-1">
                         {product.sizes.map((size) => (
                            <div key={size}>
                             <RadioGroupItem id={size} value={size} className="sr-only" />
                             <Label htmlFor={size} className={cn(
-                              "px-5 py-2.5 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
+                              "px-4 py-2 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
                               selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-card hover:border-primary/50'
                             )}>{size}</Label>
                           </div>
@@ -229,7 +229,7 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
-                <Accordion type="single" collapsible className="w-full space-y-3" defaultValue='description'>
+                <Accordion type="single" collapsible className="w-full space-y-2" defaultValue='description'>
                     <AccordionItem value="description" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Description</AccordionTrigger>
                         <AccordionContent className="px-4 text-muted-foreground">{product.description}</AccordionContent>
@@ -240,10 +240,10 @@ export default function ProductDetailPage() {
                     </AccordionItem>
                      <AccordionItem value="reviews" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Avis des clients ({reviews.length})</AccordionTrigger>
-                        <AccordionContent className="px-4 space-y-4">
-                            <div className="space-y-4">
+                        <AccordionContent className="px-4 space-y-3">
+                            <div className="space-y-3">
                                {reviews.slice(0, displayedReviews).map(review => (
-                                   <div key={review.id} className="border-b border-border pb-3 last:border-none last:pb-0">
+                                   <div key={review.id} className="border-b border-border pb-2 last:border-none last:pb-0">
                                        <div className="flex items-center justify-between mb-1">
                                            <p className="font-semibold">{review.author}</p>
                                             <div className="flex items-center gap-1">
@@ -253,7 +253,7 @@ export default function ProductDetailPage() {
                                             </div>
                                        </div>
                                        <p className="text-muted-foreground text-sm">{review.text}</p>
-                                       <p className="text-xs text-muted-foreground/70 mt-2">{new Date(review.date).toLocaleDateString()}</p>
+                                       <p className="text-xs text-muted-foreground/70 mt-1">{new Date(review.date).toLocaleDateString()}</p>
                                    </div>
                                ))}
                                {reviews.length > displayedReviews && (
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
                     <AccordionItem value="add-review" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Laissez votre avis</AccordionTrigger>
                         <AccordionContent className="px-4">
-                            <form onSubmit={handleReviewSubmit} className="space-y-4">
+                            <form onSubmit={handleReviewSubmit} className="space-y-3">
                                 <div>
                                     <Label>Votre note</Label>
                                     <div className="flex items-center gap-1 mt-1">

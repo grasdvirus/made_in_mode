@@ -58,7 +58,7 @@ export default function DiscoverPage() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-8 mt-32">
+    <div className="space-y-4">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -97,7 +97,7 @@ export default function DiscoverPage() {
       </Carousel>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
              <div key={i} className="bg-card/50 animate-pulse">
                 <Skeleton className="aspect-[4/5] rounded-lg" />
@@ -107,7 +107,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <Link key={product.id} href={`/discover/${product.id}`} className="block group">
@@ -121,7 +121,7 @@ export default function DiscoverPage() {
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
                         <h3 className="font-semibold uppercase tracking-wide truncate">{product.name}</h3>
                         <p className="font-medium">{product.price.toLocaleString('fr-FR')} FCFA</p>
                     </div>
@@ -139,11 +139,11 @@ export default function DiscoverPage() {
       )}
       
       {/* Recommended Section */}
-       <section className="space-y-6">
-        <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
+       <section className="space-y-4 pt-4">
+        <h2 className="text-2xl font-bold text-center">Nos Recommandations</h2>
         
          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(3)].map((_, i) => (
                     <div key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
                         <div className="flex items-center gap-4">
@@ -157,12 +157,12 @@ export default function DiscoverPage() {
                 ))}
             </div>
         ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {homepageData?.recommendedProducts?.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
-                        <div className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">
+                        <div className="bg-secondary/50 border-none shadow-lg rounded-2xl p-3 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">
                             <div className="flex items-center gap-4">
-                                <div className="relative w-24 h-24 flex-shrink-0">
+                                <div className="relative w-20 h-20 flex-shrink-0">
                                 <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
                                 </div>
                                 <div className="flex-grow">

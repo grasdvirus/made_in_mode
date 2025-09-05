@@ -133,7 +133,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 
 
 export function ProductForm({ product, onSave, isSaving, isAddForm = false, availableCategories = [] }: ProductFormProps) {
-  const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<ProductFormData>({
+  const { register, handleSubmit, formState: { errors }, control, watch, setValue, reset } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
         name: product?.name || '',
@@ -172,8 +172,8 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
   };
   
   return (
-    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 pt-4 border-t border-border/50">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4 pt-4 border-t border-border/50">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         <div className="md:col-span-2 space-y-4">
             <Card className="bg-secondary/50 border-border/50">
@@ -197,7 +197,7 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
                  <CardHeader>
                     <h4 className="font-semibold">Options du produit</h4>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="sizes">Tailles disponibles (séparées par une virgule)</Label>
                         <Input id="sizes" {...register('sizes')} placeholder="ex: S, M, L, XL" disabled={isSaving} />
@@ -205,7 +205,7 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
                     </div>
                     <div className="space-y-4">
                       <Label>Couleurs disponibles</Label>
-                       <div className="flex flex-wrap gap-3 p-2 bg-background/50 rounded-lg">
+                       <div className="flex flex-wrap gap-2 p-2 bg-background/50 rounded-lg">
                            {PREDEFINED_COLORS.map(color => {
                                const isSelected = currentColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase());
                                return (
@@ -214,14 +214,14 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
                                        key={color.hex}
                                        onClick={() => handleColorToggle(color)}
                                        className={cn(
-                                           "p-2 rounded-lg border-2 transition-all duration-200",
+                                           "p-1 rounded-lg border-2 transition-all duration-200",
                                            isSelected ? 'border-primary ring-2 ring-primary' : 'border-transparent hover:border-muted-foreground'
                                        )}
                                        title={color.name}
                                        disabled={isSaving}
                                    >
                                        <div
-                                           className="w-8 h-8 rounded-md border"
+                                           className="w-6 h-6 rounded-md border"
                                            style={{ backgroundColor: color.hex }}
                                        ></div>
                                    </button>
@@ -235,7 +235,7 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
 
         </div>
         
-        <div className="space-y-6">
+        <div className="space-y-4">
              <Card className="bg-secondary/50 border-border/50">
                  <CardHeader>
                     <h4 className="font-semibold">Prix & Catégorie</h4>
@@ -278,7 +278,7 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false, avai
                 </CardHeader>
                  <CardContent>
                     <Label>Images du produit (2 max)</Label>
-                     <div className="grid grid-cols-2 gap-4 mt-2">
+                     <div className="grid grid-cols-2 gap-2 mt-2">
                          <Controller
                             name="images.0"
                             control={control}

@@ -111,7 +111,7 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Gestion des Produits</h2>
          <Button onClick={() => setIsAddFormVisible(!isAddFormVisible)} variant={isAddFormVisible ? "destructive" : "default"}>

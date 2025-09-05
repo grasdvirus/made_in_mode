@@ -116,7 +116,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-background min-h-screen -mx-4 -mt-8">
+    <div className="bg-background min-h-screen -mx-4">
       {/* Header with Background Image */}
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
         <Image
@@ -155,9 +155,9 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Categories Section */}
-          <section className="p-4 md:p-6 pb-0">
+          <section className="p-4 pb-0">
                <Carousel
                   opts={{
                       align: "start",
@@ -194,7 +194,7 @@ export default function HomePage() {
           </section>
 
           {/* Featured Products Carousel Section */}
-          <section className="relative">
+          <section className="relative pt-4">
              {isLoading && !homepageData ? (
                 <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
              ) : (
@@ -225,7 +225,7 @@ export default function HomePage() {
                                     </div>
                                     <div className="p-4">
                                     <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
-                                    <div className="flex items-center text-muted-foreground text-sm mt-2 gap-4">
+                                    <div className="flex items-center text-muted-foreground text-sm mt-1 gap-4">
                                         <div className="flex items-center gap-1.5">
                                         <Tag className="w-4 h-4" />
                                         <span>{product.category}</span>
@@ -240,7 +240,7 @@ export default function HomePage() {
                     ))}
                     </CarouselContent>
                 </Carousel>
-                <div className="flex justify-start gap-2 pt-4 px-4">
+                <div className="flex justify-start gap-2 pt-2 px-4">
                     {Array.from({ length: count }).map((_, i) => (
                         <button
                             key={i}
@@ -257,7 +257,7 @@ export default function HomePage() {
           </section>
 
           {/* Minimalist Products Section */}
-          <section className="space-y-4 p-4 md:p-6 pt-0">
+          <section className="space-y-3 p-4 pt-2">
                {isLoading && !homepageData ? (
                    [...Array(3)].map((_, index) => (
                        <Card key={index} className="bg-secondary/50 border-none shadow-md rounded-2xl p-4">
@@ -274,14 +274,14 @@ export default function HomePage() {
                ) : (
                 homepageData?.products.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
-                        <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary hover:shadow-xl">
+                        <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-3 group transition-all duration-300 hover:bg-secondary hover:shadow-xl">
                             <div className="flex items-center gap-4">
                                 <div className="relative w-16 h-16 flex-shrink-0">
                                     <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
                                 </div>
                                 <div className="flex-grow">
                                     <h3 className="font-bold text-lg">{product.name}</h3>
-                                    <p className="text-muted-foreground text-sm">{product.description}</p>
+                                    <p className="text-muted-foreground text-sm line-clamp-1">{product.description}</p>
                                 </div>
                                 <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
                                     <ArrowRight className="w-5 h-5" />

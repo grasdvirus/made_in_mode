@@ -155,7 +155,7 @@ export default function HomeSettingsPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="flex justify-between items-start">
         <div>
             <h2 className="text-2xl font-bold">Réglages Page d'Accueil & Découvrir</h2>
@@ -172,7 +172,7 @@ export default function HomeSettingsPage() {
           <CardTitle>Section Catégories (Accueil & Découvrir)</CardTitle>
           <CardDescription>Gérez les catégories affichées. L'image est définie automatiquement par le dernier produit de la catégorie.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {categoryFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,7 +208,7 @@ export default function HomeSettingsPage() {
           <CardTitle>Section "Produits en Vedette" (Accueil)</CardTitle>
           <CardDescription>Gérez les produits qui apparaissent dans le carrousel principal.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {featuredFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
                  <div className="space-y-1">
@@ -244,7 +244,7 @@ export default function HomeSettingsPage() {
           <CardTitle>Section "Produits Minimalistes" (Accueil)</CardTitle>
           <CardDescription>Gérez la liste de produits qui apparaît en bas de la page d'accueil.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {productFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
                 <div className="space-y-1">
@@ -280,7 +280,7 @@ export default function HomeSettingsPage() {
           <CardTitle>Section "Nos Recommandations" (Découvrir)</CardTitle>
           <CardDescription>Gérez la liste de produits qui apparaît en bas de la page découvrir.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {recommendedFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
                 <div className="space-y-1">
