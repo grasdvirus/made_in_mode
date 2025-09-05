@@ -1,5 +1,12 @@
 {
-  "categories": [],
+  "categories": [
+    {
+      "name": "robes",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "nouvelle categorie",
+      "link": "/discover"
+    }
+  ],
   "featuredProducts": [
     {
       "id": "1757030702674",

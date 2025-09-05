@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { AdminAuthProvider, useAdminAuth } from '@/context/admin-auth-context';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
+import ScrollToTopButton from '@/components/scroll-to-top-button';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAdminAuth();
@@ -107,6 +108,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <main className="p-4">
             {children}
         </main>
+        <ScrollToTopButton />
       </SidebarInset>
     </SidebarProvider>
   );

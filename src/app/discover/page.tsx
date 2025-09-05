@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star, Compass, ShoppingCart, ArrowRight } from 'lucide-react';
@@ -13,8 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const categories = ['Tout', 'Robes', 'Hauts', 'Pantalons', 'Chaussures', 'Sacs', 'Accessoires'];
 
 export default function DiscoverPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,6 +45,11 @@ export default function DiscoverPage() {
     }
     fetchData();
   }, [toast]);
+  
+  const categories = useMemo(() => {
+    if (!homepageData) return ['Tout'];
+    return ['Tout', ...homepageData.categories.map(c => c.name)];
+  }, [homepageData]);
 
   useEffect(() => {
     if (selectedCategory === 'Tout') {
@@ -91,17 +94,25 @@ export default function DiscoverPage() {
           className="w-full no-scrollbar horizontal-scroll-fade"
       >
           <CarouselContent className="-ml-2 md:-ml-4">
-              {categories.map((category) => (
-                <CarouselItem key={category} className="pl-2 md:pl-4 basis-auto">
-                  <Button
-                    variant={selectedCategory === category ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category)}
-                    className="rounded-full px-6"
-                  >
-                    {category}
-                  </Button>
-                </CarouselItem>
-              ))}
+              {isLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <CarouselItem key={i} className="pl-2 md:pl-4 basis-auto">
+                     <Skeleton className="h-10 w-24 rounded-full" />
+                  </CarouselItem>
+                ))
+              ) : (
+                categories.map((category) => (
+                  <CarouselItem key={category} className="pl-2 md:pl-4 basis-auto">
+                    <Button
+                      variant={selectedCategory === category ? 'default' : 'outline'}
+                      onClick={() => setSelectedCategory(category)}
+                      className="rounded-full px-6"
+                    >
+                      {category}
+                    </Button>
+                  </CarouselItem>
+                ))
+              )}
           </CarouselContent>
       </Carousel>
 
