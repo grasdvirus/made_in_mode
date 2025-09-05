@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import Loader from '@/components/ui/loader';
+import '@/components/ui/loader.css';
 
 function DiscoverContent() {
   const searchParams = useSearchParams();
@@ -70,7 +72,7 @@ function DiscoverContent() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-2 -mt-24">
+    <div className="space-y-1 -mt-24">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
