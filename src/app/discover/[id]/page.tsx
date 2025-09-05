@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Star, Minus, Plus, ChevronLeft, Shirt, Diamond, Ruler, Heart } from 'lucide-react';
+import { Star, Minus, Plus, ChevronLeft, Heart } from 'lucide-react';
 import { type Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,6 +30,7 @@ export default function ProductDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [likes, setLikes] = useState(0);
   const [reviews, setReviews] = useState(0);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -49,13 +50,14 @@ export default function ProductDetailPage() {
             colors: foundProduct.colors || [{ name: 'Default', hex: '#000000' }],
             originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
             rating: foundProduct.rating || 4.5,
-            reviews: foundProduct.reviews || Math.floor(Math.random() * 50) + 5, // Random initial reviews
+            reviews: foundProduct.reviews || Math.floor(Math.random() * 50) + 5,
             category: foundProduct.category || 'Non classé',
             description: foundProduct.description || 'Aucune description disponible.'
           };
           setProduct(hydratedProduct);
           setReviews(hydratedProduct.reviews);
-          setLikes(Math.floor(Math.random() * 200) + 20); // Random initial likes
+          setLikes(Math.floor(Math.random() * 200) + 20);
+          setRating(hydratedProduct.rating);
         } else {
           setProduct(null);
         }
@@ -199,7 +201,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-0.5 cursor-pointer" onClick={handleReview} title="Donner un avis">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={cn("w-5 h-5", i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20')} />
+                    <Star key={i} className={cn("w-5 h-5 transition-colors", i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20 hover:text-yellow-400/50')} />
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground">({reviews} avis)</p>
@@ -273,7 +275,7 @@ export default function ProductDetailPage() {
             
              <Card className="bg-secondary/50 border-border/50">
                  <CardContent className="p-4">
-                    <p className="text-muted-foreground text-sm">{product.description}</p>
+                    <p className="text-muted-foreground text-sm font-semibold">{product.description}</p>
                  </CardContent>
              </Card>
 
@@ -282,5 +284,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-    
