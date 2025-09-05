@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from "@/components/ui/button";
@@ -15,16 +15,17 @@ import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
 import { Separator } from '@/components/ui/separator';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 // Schema for client-side validation
 const AboutFormSchema = z.object({
-  heroImage: z.string().url("URL invalide"),
+  heroImage: z.string().url("URL invalide").or(z.string().startsWith("data:image/")),
   heroTitle: z.string().min(1, "Titre requis"),
   heroSubtitle: z.string().min(1, "Sous-titre requis"),
   storyTitle: z.string().min(1, "Titre requis"),
   storyParagraph1: z.string().min(1, "Paragraphe requis"),
   storyParagraph2: z.string().min(1, "Paragraphe requis"),
-  storyImage: z.string().url("URL invalide"),
+  storyImage: z.string().url("URL invalide").or(z.string().startsWith("data:image/")),
   commitmentsTitle: z.string().min(1, "Titre requis"),
   commitment1Title: z.string().min(1, "Titre requis"),
   commitment1Text: z.string().min(1, "Texte requis"),
@@ -35,7 +36,7 @@ const AboutFormSchema = z.object({
   teamTitle: z.string().min(1, "Titre requis"),
   teamParagraph1: z.string().min(1, "Paragraphe requis"),
   teamParagraph2: z.string().min(1, "Paragraphe requis"),
-  teamImage: z.string().url("URL invalide"),
+  teamImage: z.string().url("URL invalide").or(z.string().startsWith("data:image/")),
   contactTitle: z.string().min(1, "Titre requis"),
   contactSubtitle: z.string().min(1, "Sous-titre requis"),
   contactEmail: z.string().email("Email invalide"),
@@ -111,7 +112,7 @@ export default function AboutSettingsPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="flex justify-between items-start">
         <div>
             <h2 className="text-2xl font-bold">Réglages Page "À Propos"</h2>
@@ -122,12 +123,19 @@ export default function AboutSettingsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 space-y-4">
           <Card>
             <CardHeader><CardTitle>Section Hero</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-1"><Label>Image de fond</Label><Input {...register('heroImage')} placeholder="https://..." /></div>
+               <div className="space-y-1">
+                  <Label>Image de fond</Label>
+                  <Controller
+                      name="heroImage"
+                      control={control}
+                      render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
+                  />
+                </div>
               <div className="space-y-1"><Label>Titre principal</Label><Input {...register('heroTitle')} /></div>
               <div className="space-y-1"><Label>Sous-titre</Label><Textarea {...register('heroSubtitle')} /></div>
             </CardContent>
@@ -139,7 +147,14 @@ export default function AboutSettingsPage() {
               <div className="space-y-1"><Label>Titre de la section</Label><Input {...register('storyTitle')} /></div>
               <div className="space-y-1"><Label>Paragraphe 1</Label><Textarea {...register('storyParagraph1')} rows={4} /></div>
               <div className="space-y-1"><Label>Paragraphe 2</Label><Textarea {...register('storyParagraph2')} rows={4} /></div>
-              <div className="space-y-1"><Label>Image de l'histoire</Label><Input {...register('storyImage')} placeholder="https://..." /></div>
+               <div className="space-y-1">
+                  <Label>Image de l'histoire</Label>
+                  <Controller
+                      name="storyImage"
+                      control={control}
+                      render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
+                  />
+                </div>
             </CardContent>
           </Card>
 
@@ -149,12 +164,19 @@ export default function AboutSettingsPage() {
               <div className="space-y-1"><Label>Titre de la section</Label><Input {...register('teamTitle')} /></div>
               <div className="space-y-1"><Label>Paragraphe 1</Label><Textarea {...register('teamParagraph1')} rows={3} /></div>
               <div className="space-y-1"><Label>Paragraphe 2</Label><Textarea {...register('teamParagraph2')} rows={3} /></div>
-              <div className="space-y-1"><Label>Image de l'équipe</Label><Input {...register('teamImage')} placeholder="https://..." /></div>
+              <div className="space-y-1">
+                  <Label>Image de l'équipe</Label>
+                   <Controller
+                      name="teamImage"
+                      control={control}
+                      render={({ field }) => <ImageUploader value={field.value} onChange={field.onChange} disabled={isSaving} />}
+                  />
+                </div>
             </CardContent>
           </Card>
 
         </div>
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-4">
           <Card>
             <CardHeader><CardTitle>Section "Nos Engagements"</CardTitle></CardHeader>
             <CardContent className="space-y-4">

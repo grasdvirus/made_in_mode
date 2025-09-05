@@ -8,33 +8,34 @@ import { z } from 'zod';
 
 const aboutDataFilePath = path.join(process.cwd(), 'public/about.json');
 
-const AboutPageDataSchema = z.object({
-  heroImage: z.string().url(),
-  heroTitle: z.string(),
-  heroSubtitle: z.string(),
-  storyTitle: z.string(),
-  storyParagraph1: z.string(),
-  storyParagraph2: z.string(),
-  storyImage: z.string().url(),
-  commitmentsTitle: z.string(),
-  commitment1Title: z.string(),
-  commitment1Text: z.string(),
-  commitment2Title: z.string(),
-  commitment2Text: z.string(),
-  commitment3Title: z.string(),
-  commitment3Text: z.string(),
-  teamTitle: z.string(),
-  teamParagraph1: z.string(),
-  teamParagraph2: z.string(),
-  teamImage: z.string().url(),
-  contactTitle: z.string(),
-  contactSubtitle: z.string(),
-  contactEmail: z.string().email(),
-  contactPhone: z.string(),
-  contactButtonText: z.string(),
-});
+// This type is now defined here and exported for use in the component.
+// The Zod schema itself is NOT exported.
+export type AboutPageData = {
+  heroImage: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  storyTitle: string;
+  storyParagraph1: string;
+  storyParagraph2: string;
+  storyImage: string;
+  commitmentsTitle: string;
+  commitment1Title: string;
+  commitment1Text: string;
+  commitment2Title: string;
+  commitment2Text: string;
+  commitment3Title: string;
+  commitment3Text: string;
+  teamTitle: string;
+  teamParagraph1: string;
+  teamParagraph2: string;
+  teamImage: string;
+  contactTitle: string;
+  contactSubtitle: string;
+  contactEmail: string;
+  contactPhone: string;
+  contactButtonText: string;
+};
 
-export type AboutPageData = z.infer<typeof AboutPageDataSchema>;
 
 const defaultData: AboutPageData = {
     heroImage: "https://picsum.photos/1200/800",
@@ -64,13 +65,39 @@ const defaultData: AboutPageData = {
 
 
 async function readAboutData(): Promise<AboutPageData> {
+    const AboutPageDataSchema = z.object({
+        heroImage: z.string().url().or(z.string().startsWith("data:image/")),
+        heroTitle: z.string(),
+        heroSubtitle: z.string(),
+        storyTitle: z.string(),
+        storyParagraph1: z.string(),
+        storyParagraph2: z.string(),
+        storyImage: z.string().url().or(z.string().startsWith("data:image/")),
+        commitmentsTitle: z.string(),
+        commitment1Title: z.string(),
+        commitment1Text: z.string(),
+        commitment2Title: z.string(),
+        commitment2Text: z.string(),
+        commitment3Title: z.string(),
+        commitment3Text: z.string(),
+        teamTitle: z.string(),
+        teamParagraph1: z.string(),
+        teamParagraph2: z.string(),
+        teamImage: z.string().url().or(z.string().startsWith("data:image/")),
+        contactTitle: z.string(),
+        contactSubtitle: z.string(),
+        contactEmail: z.string().email(),
+        contactPhone: z.string(),
+        contactButtonText: z.string(),
+    });
     try {
         await fs.access(aboutDataFilePath);
         const fileContent = await fs.readFile(aboutDataFilePath, 'utf-8');
         return AboutPageDataSchema.parse(JSON.parse(fileContent));
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-            await writeAboutData(defaultData); // Create file if it doesn't exist
+            // No need to call writeAboutData here, as that would cause an infinite loop
+            // if writing fails. Just return the default data.
             return defaultData;
         }
         console.error('Failed to read or parse about page data:', error);
@@ -90,6 +117,31 @@ export async function getAboutPageData(): Promise<AboutPageData> {
 }
 
 export async function updateAboutPageData(data: AboutPageData): Promise<{ success: boolean; message: string }> {
+     const AboutPageDataSchema = z.object({
+        heroImage: z.string().url("URL de l'image du héros invalide").or(z.string().startsWith("data:image/")),
+        heroTitle: z.string(),
+        heroSubtitle: z.string(),
+        storyTitle: z.string(),
+        storyParagraph1: z.string(),
+        storyParagraph2: z.string(),
+        storyImage: z.string().url("URL de l'image de l'histoire invalide").or(z.string().startsWith("data:image/")),
+        commitmentsTitle: z.string(),
+        commitment1Title: z.string(),
+        commitment1Text: z.string(),
+        commitment2Title: z.string(),
+        commitment2Text: z.string(),
+        commitment3Title: z.string(),
+        commitment3Text: z.string(),
+        teamTitle: z.string(),
+        teamParagraph1: z.string(),
+        teamParagraph2: z.string(),
+        teamImage: z.string().url("URL de l'image de l'équipe invalide").or(z.string().startsWith("data:image/")),
+        contactTitle: z.string(),
+        contactSubtitle: z.string(),
+        contactEmail: z.string().email(),
+        contactPhone: z.string(),
+        contactButtonText: z.string(),
+    });
     try {
         const validatedData = AboutPageDataSchema.parse(data);
         await writeAboutData(validatedData);

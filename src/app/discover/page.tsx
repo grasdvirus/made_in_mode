@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Compass } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
@@ -73,7 +73,7 @@ function DiscoverContent() {
   
   return (
     <div className="space-y-4">
-      <div className="text-center space-y-2 pt-24">
+      <div className="text-center space-y-1 pt-24">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Explorez nos collections et trouvez les pièces qui expriment votre style unique.
@@ -108,6 +108,8 @@ function DiscoverContent() {
                 ))
               )}
           </CarouselContent>
+           <CarouselPrevious className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2 rounded-full" />
+           <CarouselNext className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2 rounded-full" />
       </Carousel>
 
       {isLoading ? (

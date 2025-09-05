@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from "@/components/ui/button";
@@ -16,31 +16,8 @@ import '@/components/ui/loader.css';
 import { PlusCircle, Trash, Image as ImageIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
-const CategorySchema = z.object({
-  name: z.string().min(1, 'Le nom est requis'),
-  // image is now optional as it will be handled dynamically or have a default
-  image: z.string().url('URL d\'image invalide').optional(),
-  hint: z.string(),
-  link: z.string().min(1, 'Le lien est requis'),
-});
-
-const MinimalistProductSchema = z.object({
-  id: z.string().min(1, 'Veuillez sélectionner un produit.'),
-  name: z.string(),
-  description: z.string(),
-  image: z.string(),
-  hint: z.string(),
-});
-
-const FeaturedProductSchema = z.object({
-  id: z.string().min(1, 'Veuillez sélectionner un produit.'),
-  name: z.string(),
-  category: z.string(),
-  price: z.number(),
-  images: z.array(z.string()),
-  hint: z.string(),
-});
 
 const RecommendedProductSchema = z.object({
   id: z.string().min(1, 'Veuillez sélectionner un produit.'),
@@ -52,16 +29,29 @@ const RecommendedProductSchema = z.object({
 
 // Remove 'image' from the form schema as it's not user-editable anymore
 const HomepageFormSchema = z.object({
-  heroImage: z.string().url("L'URL de l'image est invalide.").optional(),
+  heroImage: z.string().url("L'URL de l'image est invalide.").or(z.string().startsWith("data:image/")).optional(),
   categories: z.array(z.object({
     name: z.string().min(1, 'Le nom est requis'),
     hint: z.string(),
     link: z.string().min(1, 'Le lien est requis'),
     image: z.string().optional(), // Keep for data structure, but not in form
   })),
-  featuredProducts: z.array(FeaturedProductSchema),
-  products: z.array(MinimalistProductSchema),
-  recommendedProducts: z.array(RecommendedProductSchema),
+  featuredProducts: z.array(z.object({
+      id: z.string().min(1, 'Veuillez sélectionner un produit.'),
+      name: z.string(),
+      category: z.string(),
+      price: z.number(),
+      images: z.array(z.string()),
+      hint: z.string(),
+  })),
+  products: z.array(z.object({
+      id: z.string().min(1, 'Veuillez sélectionner un produit.'),
+      name: z.string(),
+      description: z.string(),
+      image: z.string(),
+      hint: z.string(),
+  })),
+  recommendedProducts: z.array(RecommendedProductSchema).optional(),
 });
 
 
@@ -157,7 +147,7 @@ export default function HomeSettingsPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
       <div className="flex justify-between items-start">
         <div>
             <h2 className="text-2xl font-bold">Réglages Page d'Accueil & Découvrir</h2>
@@ -176,10 +166,13 @@ export default function HomeSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
            <div className="space-y-1">
-                <Label>URL de l'image</Label>
-                <Input {...register('heroImage')} placeholder="https://..." />
+                <Label>Image (Ratio recommandé 16:9)</Label>
+                <Controller
+                    name="heroImage"
+                    control={control}
+                    render={({ field }) => <ImageUploader value={field.value || ''} onChange={field.onChange} disabled={isSaving} />}
+                />
             </div>
-            <p className="text-xs text-muted-foreground">Utilisez une image de haute qualité avec un ratio d'environ 16:9 (ex: 1200x800 pixels).</p>
         </CardContent>
       </Card>
 
