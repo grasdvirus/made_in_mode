@@ -26,6 +26,9 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const productId = params.id as string;
+  
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [reviews, setReviews] = useState(0);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -50,6 +53,7 @@ export default function ProductDetailPage() {
             description: foundProduct.description || 'Aucune description disponible.'
           };
           setProduct(hydratedProduct);
+          setReviews(hydratedProduct.reviews);
         } else {
           setProduct(null);
         }
@@ -82,9 +86,18 @@ export default function ProductDetailPage() {
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsFavorited(!isFavorited);
     toast({
         title: "Favoris",
-        description: `${product?.name} a été ajouté à votre liste de souhaits !`,
+        description: `${product?.name} a été ${!isFavorited ? 'ajouté à' : 'retiré de'} votre liste de souhaits !`,
+    });
+  };
+  
+  const handleReview = () => {
+    setReviews(r => r + 1);
+    toast({
+        title: "Avis Envoyé!",
+        description: "Merci d'avoir partagé votre avis sur ce produit.",
     });
   };
 
@@ -132,7 +145,7 @@ export default function ProductDetailPage() {
             </Button>
             <h1 className="text-xl font-bold truncate px-4">{product.name}</h1>
             <Button variant="ghost" size="icon" onClick={handleFavorite} className="bg-secondary text-foreground rounded-full">
-                <Heart className="h-6 w-6" />
+                <Heart className={cn("h-6 w-6", isFavorited ? "fill-red-500 text-red-500" : "")} />
             </Button>
         </div>
 
@@ -178,12 +191,12 @@ export default function ProductDetailPage() {
               <p className="text-sm text-primary font-semibold">{product.category}</p>
               <h1 className="text-3xl font-bold lg:text-4xl">{product.name}</h1>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-0.5 cursor-pointer" onClick={handleReview}>
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className={cn("w-5 h-5", i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20')} />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground">({product.reviews} avis)</p>
+                <p className="text-sm text-muted-foreground">({reviews} avis)</p>
               </div>
             </div>
             

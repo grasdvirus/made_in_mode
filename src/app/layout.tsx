@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Inter, Poppins } from 'next/font/google';
@@ -10,7 +9,7 @@ import Header from '@/components/header';
 import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
 import ScrollToTopButton from '@/components/scroll-to-top-button';
-
+import { CartProvider } from '@/hooks/use-cart';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -51,19 +50,21 @@ export default function RootLayout({
   return (
     <html lang="fr" className="dark scroll-smooth">
       <body className={`${poppins.variable} font-sans antialiased bg-background text-foreground scroll-hover select-none`}>
-        <div className="flex flex-col min-h-screen">
-          {CurrentHeader}
-          <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-20 md:pb-8' : ''}`}>
-            {children}
-          </main>
-          {showFooterNav && (
-            <>
-              <GlassFooterNav />
-            </>
-          )}
-          <Toaster />
-          <ScrollToTopButton />
-        </div>
+        <CartProvider>
+          <div className="flex flex-col min-h-screen">
+            {CurrentHeader}
+            <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-20 md:pb-8' : ''}`}>
+              {children}
+            </main>
+            {showFooterNav && (
+              <>
+                <GlassFooterNav />
+              </>
+            )}
+            <Toaster />
+            <ScrollToTopButton />
+          </div>
+        </CartProvider>
       </body>
     </html>
   );

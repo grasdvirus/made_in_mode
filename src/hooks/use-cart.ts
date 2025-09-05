@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 import { useToast } from './use-toast';
 
 export type CartItem = {
@@ -16,9 +16,20 @@ export type CartItem = {
   color: string;
 };
 
+type CartContextType = {
+  cartItems: CartItem[];
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string, size: string, color: string) => void;
+  updateQuantity: (id: string, size: string, color: string, delta: number) => void;
+  clearCart: () => void;
+  isLoading: boolean;
+};
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
 const CART_STORAGE_KEY = 'aceplace-cart';
 
-export function useCart() {
+export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -97,7 +108,22 @@ export function useCart() {
     saveCart([]);
   };
 
-  return { cartItems, addItem, removeItem, updateQuantity, clearCart, isLoading };
+  const value = {
+    cartItems,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    isLoading
+  };
+
+  return React.createElement(CartContext.Provider, { value: value }, children);
 }
 
-    
+export function useCart() {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+}
