@@ -10,67 +10,43 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
-
-type Product = {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  originalPrice: number;
-  rating: number;
-  reviews: number;
-  images: string[];
-  hint: string;
-  bgColor: string;
-};
+import type { Product } from '@/lib/types';
+import type { HomepageData } from '../admin/home-settings/actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const categories = ['Tout', 'Robes', 'Hauts', 'Pantalons', 'Chaussures', 'Sacs', 'Accessoires'];
 
-const recommendedProducts = [
-    {
-        id: 'rec1',
-        name: 'Collection "Nuit Étoilée"',
-        description: 'Des pièces scintillantes pour vos soirées.',
-        image: 'https://placehold.co/400x200.png',
-        hint: 'evening fashion',
-    },
-    {
-        id: 'rec2',
-        name: 'Essentiels du Quotidien',
-        description: 'Le confort et le style pour tous les jours.',
-        image: 'https://placehold.co/400x200.png',
-        hint: 'casual fashion',
-    },
-    {
-        id: 'rec3',
-        name: 'Accessoires Tendance',
-        description: 'La touche finale pour un look parfait.',
-        image: 'https://placehold.co/400x200.png',
-        hint: 'fashion accessories',
-    }
-]
-
 export default function DiscoverPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('Tout');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch('/products.json')
-      .then((res) => res.json())
-      .then((data: Product[]) => {
-        setProducts(data);
-        setFilteredProducts(data);
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const [productsRes, homepageRes] = await Promise.all([
+          fetch('/products.json'),
+          fetch('/homepage.json')
+        ]);
+        const productsData: Product[] = await productsRes.json();
+        const homepageContent: HomepageData = await homepageRes.json();
+        
+        setProducts(productsData);
+        setFilteredProducts(productsData);
+        setHomepageData(homepageContent);
+      } catch (err) {
+        console.error("Failed to load page data", err);
+        toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger le contenu.' });
+      } finally {
         setIsLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to load products", err);
-        setIsLoading(false);
-      });
-  }, []);
+      }
+    }
+    fetchData();
+  }, [toast]);
 
   useEffect(() => {
     if (selectedCategory === 'Tout') {
@@ -94,7 +70,7 @@ export default function DiscoverPage() {
     e.stopPropagation();
     toast({
         title: "Panier",
-        description: `${productName} a été ajouté au panier.`,
+        description: `Veuillez sélectionner taille/couleur sur la page du produit.`,
     });
   };
 
@@ -107,21 +83,30 @@ export default function DiscoverPage() {
         </p>
       </div>
 
-      <div className="flex justify-center flex-wrap gap-2 md:gap-4">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? 'default' : 'outline'}
-            onClick={() => setSelectedCategory(category)}
-            className="rounded-full px-6 transition-all duration-300"
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
+       <Carousel
+          opts={{
+              align: "start",
+              dragFree: true,
+          }}
+          className="w-full no-scrollbar horizontal-scroll-fade"
+      >
+          <CarouselContent className="-ml-2 md:-ml-4">
+              {categories.map((category) => (
+                <CarouselItem key={category} className="pl-2 md:pl-4 basis-auto">
+                  <Button
+                    variant={selectedCategory === category ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory(category)}
+                    className="rounded-full px-6"
+                  >
+                    {category}
+                  </Button>
+                </CarouselItem>
+              ))}
+          </CarouselContent>
+      </Carousel>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
           {[...Array(6)].map((_, i) => (
              <Card key={i} className="rounded-2xl overflow-hidden bg-card/50 animate-pulse">
                 <div className="aspect-[4/5] bg-muted/50"></div>
@@ -133,7 +118,7 @@ export default function DiscoverPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <Link key={product.id} href={`/discover/${product.id}`} className="block">
@@ -147,7 +132,8 @@ export default function DiscoverPage() {
                           alt={product.name} 
                           fill 
                           className="object-cover transition-transform duration-300 group-hover:scale-105" 
-                          data-ai-hint={product.hint} 
+                          data-ai-hint={product.hint}
+                          sizes="(max-width: 640px) 100vw, 50vw" 
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 via-transparent to-black/10" />
                        <Button variant="ghost" size="icon" className="absolute top-3 right-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm" onClick={(e) => handleFavorite(e, product.name)}>
@@ -186,59 +172,43 @@ export default function DiscoverPage() {
       )}
       
       {/* Recommended Section */}
-      <div className="space-y-6">
+       <section className="space-y-6">
         <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
-
-        <div className="hidden md:grid md:grid-cols-3 gap-6">
-            {recommendedProducts.map((product) => (
-                <Card key={product.id} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <div className="relative w-full sm:w-32 h-32 sm:h-20 flex-shrink-0">
-                           <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
-                        </div>
-                        <div className="flex-grow text-center sm:text-left">
-                            <h3 className="font-bold text-lg">{product.name}</h3>
-                            <p className="text-muted-foreground text-sm">{product.description}</p>
-                        </div>
-                        <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-transform group-hover:translate-x-1">
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </Card>
-            ))}
-        </div>
         
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full md:hidden no-scrollbar"
-        >
-          <CarouselContent className="-ml-4">
-            {recommendedProducts.map((product) => (
-              <CarouselItem key={product.id} className="pl-4 basis-4/5 sm:basis-2/3">
-                 <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 h-full">
-                    <div className="flex items-center gap-4">
-                        <div className="relative w-24 h-24 flex-shrink-0">
-                           <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
+         {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                    <Card key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="w-24 h-24 rounded-lg" />
+                            <div className="flex-grow space-y-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                            </div>
                         </div>
-                        <div className="flex-grow text-left">
-                            <h3 className="font-bold text-lg">{product.name}</h3>
-                            <p className="text-muted-foreground text-sm">{product.description}</p>
-                        </div>
-                        <Button variant="ghost" size="icon" className="bg-primary/20 text-primary rounded-full hover:bg-primary/30">
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
-          <CarouselNext className="flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
-        </Carousel>
-      </div>
+                    </Card>
+                ))}
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {homepageData?.recommendedProducts?.map((product) => (
+                    <Link href={`/discover/${product.id}`} key={product.id} className="block">
+                        <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-24 h-24 flex-shrink-0">
+                                <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
+                                </div>
+                                <div className="flex-grow">
+                                <h3 className="font-bold text-lg">{product.name}</h3>
+                                <p className="text-muted-foreground text-sm line-clamp-2">{product.description}</p>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
+        )}
+      </section>
 
     </div>
   );

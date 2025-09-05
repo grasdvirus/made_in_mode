@@ -33,10 +33,19 @@ const FeaturedProductSchema = z.object({
   hint: z.string(),
 });
 
+const RecommendedProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  image: z.string(),
+  hint: z.string(),
+});
+
 const HomepageDataSchema = z.object({
   categories: z.array(CategorySchema),
   featuredProducts: z.array(FeaturedProductSchema),
   products: z.array(MinimalistProductSchema),
+  recommendedProducts: z.array(RecommendedProductSchema).optional(),
 });
 
 const FullProductSchema = z.object({
@@ -57,13 +66,17 @@ export type FullProduct = z.infer<typeof FullProductSchema>;
 async function readHomepageData(): Promise<HomepageData> {
     try {
         const fileContent = await fs.readFile(homepageDataFilePath, 'utf-8');
-        return HomepageDataSchema.parse(JSON.parse(fileContent));
+        const data = HomepageDataSchema.parse(JSON.parse(fileContent));
+        // Ensure recommendedProducts is an array
+        data.recommendedProducts = data.recommendedProducts || [];
+        return data;
     } catch (error) {
         console.error('Failed to read or parse homepage data:', error);
         return {
             categories: [],
             featuredProducts: [],
             products: [],
+            recommendedProducts: [],
         };
     }
 }
@@ -72,6 +85,7 @@ async function writeHomepageData(data: HomepageData) {
     const jsonData = JSON.stringify(data, null, 2);
     await fs.writeFile(homepageDataFilePath, jsonData);
     revalidatePath('/');
+    revalidatePath('/discover');
     revalidatePath('/admin/home-settings');
 }
 

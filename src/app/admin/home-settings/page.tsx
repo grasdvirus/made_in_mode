@@ -41,10 +41,19 @@ const FeaturedProductSchema = z.object({
   hint: z.string(),
 });
 
+const RecommendedProductSchema = z.object({
+  id: z.string().min(1, 'Veuillez sélectionner un produit.'),
+  name: z.string(),
+  description: z.string(),
+  image: z.string(),
+  hint: z.string(),
+});
+
 const HomepageFormSchema = z.object({
   categories: z.array(CategorySchema),
   featuredProducts: z.array(FeaturedProductSchema),
   products: z.array(MinimalistProductSchema),
+  recommendedProducts: z.array(RecommendedProductSchema),
 });
 
 
@@ -60,22 +69,21 @@ export default function HomeSettingsPage() {
       categories: [],
       featuredProducts: [],
       products: [],
+      recommendedProducts: [],
     },
   });
 
   const { fields: categoryFields, append: appendCategory, remove: removeCategory } = useFieldArray({
-    control,
-    name: "categories",
+    control, name: "categories",
   });
-  
   const { fields: featuredFields, append: appendFeatured, remove: removeFeatured } = useFieldArray({
-    control,
-    name: "featuredProducts",
+    control, name: "featuredProducts",
   });
-  
   const { fields: productFields, append: appendProduct, remove: removeProduct } = useFieldArray({
-    control,
-    name: "products",
+    control, name: "products",
+  });
+  const { fields: recommendedFields, append: appendRecommended, remove: removeRecommended } = useFieldArray({
+    control, name: "recommendedProducts",
   });
 
 
@@ -99,26 +107,25 @@ export default function HomeSettingsPage() {
     loadData();
   }, [reset, toast]);
   
-  const handleSelectProduct = (index: number, productId: string, type: 'featured' | 'minimalist') => {
+  const handleSelectProduct = (index: number, productId: string, type: 'featured' | 'minimalist' | 'recommended') => {
       const product = availableProducts.find(p => p.id === productId);
       if (product) {
-          if (type === 'featured') {
-             setValue(`featuredProducts.${index}`, {
-                id: product.id,
-                name: product.name,
-                category: product.category,
-                price: product.price,
-                images: product.images,
-                hint: product.hint || ''
-             });
-          } else {
-             setValue(`products.${index}`, {
-                id: product.id,
-                name: product.name,
-                description: product.description || 'Description...',
-                image: product.images[0] || '',
-                hint: product.hint || ''
-             });
+          switch (type) {
+              case 'featured':
+                 setValue(`featuredProducts.${index}`, {
+                    id: product.id, name: product.name, category: product.category, price: product.price, images: product.images, hint: product.hint || ''
+                 });
+                 break;
+              case 'minimalist':
+                 setValue(`products.${index}`, {
+                    id: product.id, name: product.name, description: product.description || 'Description...', image: product.images[0] || '', hint: product.hint || ''
+                 });
+                 break;
+              case 'recommended':
+                 setValue(`recommendedProducts.${index}`, {
+                    id: product.id, name: product.name, description: product.description || 'Description...', image: product.images[0] || '', hint: product.hint || ''
+                 });
+                 break;
           }
       }
   }
@@ -144,8 +151,8 @@ export default function HomeSettingsPage() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="flex justify-between items-start">
         <div>
-            <h2 className="text-2xl font-bold">Réglages de la Page d'Accueil</h2>
-            <p className="text-muted-foreground">Modifiez ici le contenu des différentes sections de votre page d'accueil.</p>
+            <h2 className="text-2xl font-bold">Réglages Page d'Accueil & Découvrir</h2>
+            <p className="text-muted-foreground">Modifiez ici le contenu des différentes sections de vos pages.</p>
         </div>
         <Button type="submit" disabled={isSaving}>
           {isSaving ? <div className="h-6"><Loader /></div> : 'Enregistrer les modifications'}
@@ -155,7 +162,7 @@ export default function HomeSettingsPage() {
       {/* Categories Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Section Catégories</CardTitle>
+          <CardTitle>Section Catégories (Accueil & Découvrir)</CardTitle>
           <CardDescription>Gérez les catégories affichées en haut de la page d'accueil.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -195,7 +202,7 @@ export default function HomeSettingsPage() {
       {/* Featured Products Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Section "Produits en Vedette"</CardTitle>
+          <CardTitle>Section "Produits en Vedette" (Accueil)</CardTitle>
           <CardDescription>Gérez les produits qui apparaissent dans le carrousel principal.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -213,7 +220,7 @@ export default function HomeSettingsPage() {
                             ))}
                         </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">Les détails (prix, image, etc.) sont tirés du produit sélectionné.</p>
+                    <p className="text-xs text-muted-foreground">Les détails sont tirés du produit sélectionné.</p>
                 </div>
                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeFeatured(index)}>
                     <Trash className="h-4 w-4" />
@@ -231,8 +238,8 @@ export default function HomeSettingsPage() {
       {/* Minimalist Products Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Section "Produits Minimalistes"</CardTitle>
-          <CardDescription>Gérez la liste de produits qui apparaît en bas de la page.</CardDescription>
+          <CardTitle>Section "Produits Minimalistes" (Accueil)</CardTitle>
+          <CardDescription>Gérez la liste de produits qui apparaît en bas de la page d'accueil.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {productFields.map((field, index) => (
@@ -249,7 +256,7 @@ export default function HomeSettingsPage() {
                             ))}
                         </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">Les détails (description, image, etc.) sont tirés du produit sélectionné.</p>
+                    <p className="text-xs text-muted-foreground">Les détails sont tirés du produit sélectionné.</p>
                 </div>
                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeProduct(index)}>
                     <Trash className="h-4 w-4" />
@@ -258,6 +265,42 @@ export default function HomeSettingsPage() {
           ))}
           <Button type="button" variant="outline" onClick={() => appendProduct({ id: '', name: '', description: '', image: '', hint: '' })}>
             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit minimaliste
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
+      {/* Recommended Products Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Section "Nos Recommandations" (Découvrir)</CardTitle>
+          <CardDescription>Gérez la liste de produits qui apparaît en bas de la page découvrir.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {recommendedFields.map((field, index) => (
+            <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
+                <div className="space-y-1">
+                    <Label>Produit</Label>
+                     <Select onValueChange={(value) => handleSelectProduct(index, value, 'recommended')} value={watch(`recommendedProducts.${index}.id`)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un produit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableProducts.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">Les détails sont tirés du produit sélectionné.</p>
+                </div>
+                 <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeRecommended(index)}>
+                    <Trash className="h-4 w-4" />
+                </Button>
+            </div>
+          ))}
+          <Button type="button" variant="outline" onClick={() => appendRecommended({ id: '', name: '', description: '', image: '', hint: '' })}>
+            <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un produit recommandé
           </Button>
         </CardContent>
       </Card>

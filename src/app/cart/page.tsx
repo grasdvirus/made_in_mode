@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeItem, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeItem } = useCart();
   const [animate, setAnimate] = useState(false);
   const { toast } = useToast();
 
@@ -36,8 +36,7 @@ export default function CartPage() {
       title: "Redirection vers le paiement",
       description: "Vous allez être redirigé vers une page de paiement sécurisée.",
     });
-    // In a real app, you would redirect to a checkout page and clear the cart on success.
-    // clearCart(); 
+    // In a real app, you would redirect to a checkout page.
   };
   
   const subtotal = cartItems.reduce(
@@ -66,11 +65,13 @@ export default function CartPage() {
                 )}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="relative w-24 h-24 rounded-lg overflow-hidden">
+                <Link href={`/discover/${item.id}`} className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                   <Image src={item.image} alt={item.name} fill className="object-cover" data-ai-hint={item.hint}/>
-                </div>
+                </Link>
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{item.name}</h3>
+                   <Link href={`/discover/${item.id}`}>
+                      <h3 className="font-semibold hover:underline">{item.name}</h3>
+                   </Link>
                   <p className="text-sm text-muted-foreground">{item.category}</p>
                    <p className="text-sm text-muted-foreground">Taille: {item.size} / Couleur: {item.color}</p>
                   <p className="font-bold text-lg mt-1">FCFA {item.price.toLocaleString('fr-FR')}</p>
