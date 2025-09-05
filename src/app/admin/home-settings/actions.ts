@@ -42,6 +42,7 @@ const RecommendedProductSchema = z.object({
 });
 
 const HomepageDataSchema = z.object({
+  heroImage: z.string().url().optional().default('https://picsum.photos/1200/800'),
   categories: z.array(CategorySchema),
   featuredProducts: z.array(FeaturedProductSchema),
   products: z.array(MinimalistProductSchema),
@@ -73,6 +74,7 @@ async function readHomepageData(): Promise<HomepageData> {
     } catch (error) {
         console.error('Failed to read or parse homepage data:', error);
         return {
+            heroImage: 'https://picsum.photos/1200/800',
             categories: [],
             featuredProducts: [],
             products: [],

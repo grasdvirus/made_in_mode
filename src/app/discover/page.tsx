@@ -1,7 +1,8 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Compass } from 'lucide-react';
 import Image from 'next/image';
@@ -12,7 +13,10 @@ import type { Product } from '@/lib/types';
 import type { HomepageData } from '../admin/home-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function DiscoverPage() {
+function DiscoverContent() {
+  const searchParams = useSearchParams();
+  const categoryQuery = searchParams.get('category');
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -32,7 +36,6 @@ export default function DiscoverPage() {
         const homepageContent: HomepageData = await homepageRes.json();
         
         setProducts(productsData);
-        setFilteredProducts(productsData);
         setHomepageData(homepageContent);
       } catch (err) {
         console.error("Failed to load page data", err);
@@ -50,6 +53,15 @@ export default function DiscoverPage() {
   }, [homepageData]);
 
   useEffect(() => {
+    if (categoryQuery) {
+        setSelectedCategory(categoryQuery);
+    } else {
+        setSelectedCategory('Tout');
+    }
+  }, [categoryQuery]);
+
+
+  useEffect(() => {
     if (selectedCategory === 'Tout') {
       setFilteredProducts(products);
     } else {
@@ -58,7 +70,7 @@ export default function DiscoverPage() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 -mt-24">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -139,7 +151,7 @@ export default function DiscoverPage() {
       )}
       
       {/* Recommended Section */}
-       <section className="space-y-4 pt-4">
+       <section className="space-y-2 pt-4">
         <h2 className="text-2xl font-bold text-center">Nos Recommandations</h2>
         
          {isLoading ? (
@@ -179,4 +191,12 @@ export default function DiscoverPage() {
 
     </div>
   );
+}
+
+export default function DiscoverPage() {
+    return (
+        <Suspense fallback={<div className="flex justify-center items-center h-[60vh]"><Loader /></div>}>
+            <DiscoverContent />
+        </Suspense>
+    )
 }

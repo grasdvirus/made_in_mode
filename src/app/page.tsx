@@ -79,7 +79,7 @@ export default function HomePage() {
 
         } catch (error) {
             console.error(error);
-            setHomepageData({ categories: [], featuredProducts: [], products: [], recommendedProducts: [] }); // Set default empty data on error
+            setHomepageData({ categories: [], featuredProducts: [], products: [], recommendedProducts: [], heroImage: 'https://picsum.photos/1200/800' }); // Set default empty data on error
             toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de charger le contenu de la page d'accueil." });
         } finally {
             setIsLoading(false);
@@ -116,17 +116,22 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-background min-h-screen -mx-4">
+    <div className="bg-background min-h-screen -mx-4 -mt-8">
       {/* Header with Background Image */}
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
-        <Image
-          src="https://picsum.photos/1200/800"
-          alt="Boutique de mode"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0"
-          data-ai-hint="fashion boutique"
-        />
+         {isLoading ? (
+            <Skeleton className="absolute inset-0 z-0" />
+         ) : (
+            <Image
+                src={homepageData?.heroImage || "https://picsum.photos/1200/800"}
+                alt="Boutique de mode"
+                layout="fill"
+                objectFit="cover"
+                className="absolute inset-0 z-0"
+                data-ai-hint="fashion boutique"
+                priority
+            />
+         )}
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 flex flex-col justify-center items-center h-full text-white p-4">
           <AcePlaceLogo />
@@ -155,7 +160,7 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main>
-        <div className="space-y-4">
+        <div className="space-y-1">
           {/* Categories Section */}
           <section className="p-4 pb-0">
                <Carousel
@@ -178,7 +183,7 @@ export default function HomePage() {
                       ) : (
                         enrichedCategories.map((category, index) => (
                             <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
-                                <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
+                                <Link href={`/discover?category=${encodeURIComponent(category.name)}`} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
                                     <div className="relative w-24 h-24">
                                         <Image src={category.dynamicImage || 'https://picsum.photos/100/100'} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
                                     </div>
@@ -188,13 +193,13 @@ export default function HomePage() {
                         ))
                       )}
                   </CarouselContent>
-                  <CarouselPrevious className="flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
-                  <CarouselNext className="flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
+                  <CarouselPrevious className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -left-2" />
+                  <CarouselNext className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/80 -right-2" />
               </Carousel>
           </section>
 
           {/* Featured Products Carousel Section */}
-          <section className="relative pt-4">
+          <section className="relative pt-2">
              {isLoading && !homepageData ? (
                 <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
              ) : (
@@ -223,7 +228,7 @@ export default function HomePage() {
                                         {product.price.toLocaleString('fr-FR')} FCFA
                                     </div>
                                     </div>
-                                    <div className="p-4">
+                                    <div className="p-3">
                                     <h3 className="font-bold text-lg text-foreground">{product.name}</h3>
                                     <div className="flex items-center text-muted-foreground text-sm mt-1 gap-4">
                                         <div className="flex items-center gap-1.5">
@@ -257,12 +262,12 @@ export default function HomePage() {
           </section>
 
           {/* Minimalist Products Section */}
-          <section className="space-y-3 p-4 pt-2">
+          <section className="space-y-2 p-4 pt-2">
                {isLoading && !homepageData ? (
                    [...Array(3)].map((_, index) => (
                        <Card key={index} className="bg-secondary/50 border-none shadow-md rounded-2xl p-4">
                             <div className="flex items-center gap-4">
-                                <Skeleton className="w-16 h-16 rounded-full" />
+                                <Skeleton className="w-16 h-16 rounded-lg" />
                                 <div className="flex-grow space-y-2">
                                     <Skeleton className="h-5 w-3/4" />
                                     <Skeleton className="h-4 w-1/2" />
@@ -277,7 +282,7 @@ export default function HomePage() {
                         <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-3 group transition-all duration-300 hover:bg-secondary hover:shadow-xl">
                             <div className="flex items-center gap-4">
                                 <div className="relative w-16 h-16 flex-shrink-0">
-                                    <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
+                                    <Image src={product.image} alt={product.name} fill className="rounded-lg object-cover" data-ai-hint={product.hint} />
                                 </div>
                                 <div className="flex-grow">
                                     <h3 className="font-bold text-lg">{product.name}</h3>

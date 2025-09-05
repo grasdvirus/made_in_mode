@@ -13,7 +13,7 @@ import { getHomepageData, updateHomepageData, getFullProductsForSelect, type Hom
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { PlusCircle, Trash } from 'lucide-react';
+import { PlusCircle, Trash, Image as ImageIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -52,6 +52,7 @@ const RecommendedProductSchema = z.object({
 
 // Remove 'image' from the form schema as it's not user-editable anymore
 const HomepageFormSchema = z.object({
+  heroImage: z.string().url("L'URL de l'image est invalide.").optional(),
   categories: z.array(z.object({
     name: z.string().min(1, 'Le nom est requis'),
     hint: z.string(),
@@ -73,6 +74,7 @@ export default function HomeSettingsPage() {
   const { control, register, handleSubmit, reset, watch, setValue } = useForm<HomepageData>({
     resolver: zodResolver(HomepageFormSchema),
     defaultValues: {
+      heroImage: '',
       categories: [],
       featuredProducts: [],
       products: [],
@@ -166,6 +168,23 @@ export default function HomeSettingsPage() {
         </Button>
       </div>
 
+       {/* Hero Image Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><ImageIcon/> Image d'En-tête (Hero)</CardTitle>
+          <CardDescription>Changez l'image principale de la page d'accueil.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+           <div className="space-y-1">
+                <Label>URL de l'image</Label>
+                <Input {...register('heroImage')} placeholder="https://..." />
+            </div>
+            <p className="text-xs text-muted-foreground">Utilisez une image de haute qualité avec un ratio d'environ 16:9 (ex: 1200x800 pixels).</p>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
       {/* Categories Section */}
       <Card>
         <CardHeader>
@@ -182,7 +201,7 @@ export default function HomeSettingsPage() {
                     </div>
                      <div className="space-y-1">
                         <Label>Lien de Destination</Label>
-                        <Input {...register(`categories.${index}.link`)} placeholder="ex: /discover?category=Robes" />
+                        <Input {...register(`categories.${index}.link`)} placeholder="ex: /discover?category=Robes" readOnly />
                     </div>
                      <div className="space-y-1 col-span-full">
                         <Label>Indice IA (pour l'image dynamique)</Label>
@@ -194,7 +213,10 @@ export default function HomeSettingsPage() {
                 </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendCategory({ name: '', link: '/discover', hint: 'nouvelle categorie', image: 'https://placehold.co/200x200.png' })}>
+          <Button type="button" variant="outline" onClick={() => {
+             const newCategoryName = `Nouvelle Catégorie ${categoryFields.length + 1}`;
+             appendCategory({ name: newCategoryName, link: `/discover?category=${encodeURIComponent(newCategoryName)}`, hint: 'nouvelle categorie', image: 'https://placehold.co/200x200.png' })
+            }}>
             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une catégorie
           </Button>
         </CardContent>

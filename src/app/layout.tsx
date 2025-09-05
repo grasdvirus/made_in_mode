@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
-import HeaderParallax from '@/components/header-parallax';
 import GlassFooterNav from '@/components/glass-footer-nav';
 import ScrollToTopButton from '@/components/scroll-to-top-button';
 import { CartProvider } from '@/hooks/use-cart';
 import { cn } from '@/lib/utils';
+import React from 'react';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -19,7 +19,7 @@ const poppins = Poppins({
 });
 
 function getHeader(pathname: string) {
-    if (pathname === '/' || pathname.startsWith('/admin') || pathname.startsWith('/login')) return null;
+    if (pathname === '/' || pathname.startsWith('/admin') || pathname.startsWith('/login') || pathname.startsWith('/discover/')) return null;
     if (pathname === '/discover') return <Header />;
     if (pathname === '/cart') return null;
     if (pathname === '/profile') return null;
@@ -57,7 +57,7 @@ export default function RootLayout({
               'flex-1 w-full max-w-7xl mx-auto px-4',
                pathname.startsWith('/discover/') ? '' : 'mt-8',
                pathname === '/discover' && 'mt-32',
-               showFooterNav ? 'pb-24 md:pb-8' : ''
+               showFooterNav ? 'pb-32' : '' // Increased padding bottom
             )}>
               {children}
             </main>

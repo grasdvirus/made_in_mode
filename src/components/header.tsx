@@ -33,10 +33,12 @@ export default function Header() {
        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="h-20 mt-4 flex items-center justify-between bg-primary/90 backdrop-blur-lg rounded-full px-4 shadow-lg gap-2">
           <div className="flex items-center gap-3 overflow-hidden">
-            <Avatar className="h-12 w-12 border-2 border-primary-foreground/50">
-              <AvatarImage src="https://placehold.co/80x80.png" alt="Vanessa" data-ai-hint="female portrait"/>
-              <AvatarFallback>V</AvatarFallback>
-            </Avatar>
+             <Link href="/profile">
+                <Avatar className="h-12 w-12 border-2 border-primary-foreground/50">
+                <AvatarImage src="https://placehold.co/80x80.png" alt="Vanessa" data-ai-hint="female portrait"/>
+                <AvatarFallback>V</AvatarFallback>
+                </Avatar>
+             </Link>
             <div className="text-primary-foreground truncate hidden sm:block">
               <h1 className="font-bold text-lg truncate">Bonjour, Vanessa</h1>
               <p className="text-sm text-primary-foreground/80 truncate">Prête pour une séance shopping ?</p>
@@ -65,10 +67,10 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0 hidden sm:flex">
+            <Button asChild variant="ghost" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0">
                 <Link href="/about">
                     <Info className="h-5 w-5" />
-                    <span className="ml-2">À Propos</span>
+                    <span className="ml-2 hidden sm:inline">À Propos</span>
                 </Link>
             </Button>
             <Button variant="ghost" size="icon" aria-label="Filters" className="rounded-full bg-black/10 text-primary-foreground hover:bg-black/20 flex-shrink-0" onClick={handleFiltersClick}>
