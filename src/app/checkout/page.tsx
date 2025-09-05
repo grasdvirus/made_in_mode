@@ -84,124 +84,130 @@ export default function CheckoutPage() {
   }
   
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 min-h-[80vh]">
-        
-        {/* Left Side: Order Summary & Payment Info */}
-        <div className="space-y-6">
-            <Card className="bg-secondary/50 border-none">
-                 <CardHeader>
-                    <CardTitle>Résumé de votre commande</CardTitle>
-                 </CardHeader>
-                 <CardContent className="space-y-4">
-                     {cartItems.map(item => (
-                         <div key={item.id} className="flex items-center gap-4">
-                            <div className="relative w-16 h-16 rounded-md overflow-hidden">
-                                <Image src={item.image} alt={item.name} fill className="object-cover" />
-                                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">{item.quantity}</span>
-                            </div>
-                            <div className="flex-grow">
-                                <p className="font-semibold">{item.name}</p>
-                                <p className="text-sm text-muted-foreground">{item.size} / {item.color}</p>
-                            </div>
-                            <p className="font-medium">FCFA {(item.price * item.quantity).toLocaleString()}</p>
-                         </div>
-                     ))}
-                     <Separator />
-                     <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <span>Sous-total</span>
-                            <span className="font-medium">FCFA {subtotal.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Livraison</span>
-                            <span className="font-medium">FCFA {shipping.toLocaleString()}</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between font-bold text-lg">
-                            <span>Total à payer</span>
-                            <span>FCFA {total.toLocaleString()}</span>
-                        </div>
-                     </div>
-                 </CardContent>
-            </Card>
-
-            <Card className="border-primary/50 bg-primary/5">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><CreditCard /> Instructions de Paiement</CardTitle>
-                    <CardDescription>Veuillez effectuer votre paiement avant de soumettre le formulaire.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                     <p>Veuillez transférer le montant total de <strong>FCFA {total.toLocaleString()}</strong> via l'une des méthodes ci-dessous :</p>
-                     <div className="p-4 bg-background/50 rounded-lg space-y-2">
-                        <div>
-                            <p className="font-semibold">Orange Money / Wave</p>
-                            <p className="text-muted-foreground">Numéro: <span className="font-mono text-foreground">+221 77 123 45 67</span></p>
-                            <p className="text-muted-foreground">Nom: <span className="text-foreground">Vanessa Ace</span></p>
-                        </div>
-                        <Separator/>
-                         <div>
-                            <p className="font-semibold">Virement Bancaire</p>
-                            <p className="text-muted-foreground">Banque: <span className="text-foreground">UBA Sénégal</span></p>
-                            <p className="text-muted-foreground">Titulaire: <span className="text-foreground">ACEPLACE SARL</span></p>
-                            <p className="text-muted-foreground">IBAN: <span className="font-mono text-foreground">SN01 2002 1001 123456789012 85</span></p>
-                        </div>
-                     </div>
-                     <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/50 text-destructive">
-                         <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0"/>
-                         <p className="text-xs">Après le paiement, veuillez utiliser l'ID de la transaction ou le nom de l'expéditeur comme référence de transaction dans le formulaire ci-contre.</p>
-                     </div>
-                </CardContent>
-            </Card>
-        </div>
-
-        {/* Right Side: Customer Form */}
-        <div>
-           <form onSubmit={handleSubmit(onSubmit)}>
-            <Card className="sticky top-24 bg-secondary/50 border-none">
+    <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 min-h-[80vh]">
+            
+            {/* Left Side: Payment Info & Customer Form */}
+            <div className="space-y-8">
+                <Card className="border-primary/50 bg-secondary/30">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Info/> Vos Informations</CardTitle>
-                        <CardDescription>Remplissez vos informations pour finaliser la commande.</CardDescription>
+                        <CardTitle className="flex items-center gap-3"><CreditCard /> Paiement Manuel</CardTitle>
+                        <CardDescription>Pour finaliser votre commande, veuillez effectuer un transfert via l'un des services ci-dessous.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                         <div className="space-y-2">
-                            <Label htmlFor="fullName">Nom complet</Label>
-                            <Input id="fullName" {...register('fullName')} placeholder="ex: Vanessa Ace" />
-                            {errors.fullName && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
-                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="phone">Numéro de téléphone</Label>
-                            <Input id="phone" type="tel" {...register('phone')} placeholder="ex: 77 123 45 67" />
-                            {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
-                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="address">Adresse de livraison complète</Label>
-                            <Textarea id="address" {...register('address')} placeholder="ex: Cité Keur Gorgui, Villa 123, Dakar, Sénégal" />
-                            {errors.address && <p className="text-sm text-destructive">{errors.address.message}</p>}
-                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="transactionId">ID/Référence de la transaction</Label>
-                            <Input id="transactionId" {...register('transactionId')} placeholder="ID de la transaction ou nom de l'expéditeur" />
-                            {errors.transactionId && <p className="text-sm text-destructive">{errors.transactionId.message}</p>}
-                         </div>
+                        <p className="font-semibold">Veuillez envoyer le montant total de <strong className="text-primary">FCFA {total.toLocaleString()}</strong> à l'un des contacts suivants :</p>
+                        <div className="p-4 bg-background/50 rounded-lg space-y-3">
+                            <div className="flex items-start gap-3">
+                                <span className="text-primary mt-1">&#9830;</span>
+                                <div>
+                                    <p className="font-semibold">Orange Money :</p>
+                                    <p className="text-muted-foreground">+225 07 08 22 56 82 (Nom: N'guia Achi Nadege)</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <span className="text-primary mt-1">&#9830;</span>
+                                <div>
+                                    <p className="font-semibold">WAVE :</p>
+                                    <p className="text-muted-foreground">+225 05 03 65 48 86</p>
+                                </div>
+                            </div>
+                              <div className="flex items-start gap-3">
+                                <span className="text-primary mt-1">&#9830;</span>
+                                <div>
+                                    <p className="font-semibold">WAVE :</p>
+                                    <p className="text-muted-foreground">+225 07 08 22 56 82</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Après le paiement, veuillez remplir et soumettre le formulaire avec vos informations de livraison. Nous vous contacterons pour confirmer.</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-secondary/30 border-none">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-3"><Info/> Vos Informations</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="fullName">Nom complet</Label>
+                                <Input id="fullName" {...register('fullName')} placeholder="Prénom et Nom" className="bg-background"/>
+                                {errors.fullName && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Numéro de téléphone</Label>
+                                <Input id="phone" type="tel" {...register('phone')} placeholder="Pour la confirmation de la commande" className="bg-background" />
+                                {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="address">Adresse de livraison complète</Label>
+                                <Textarea id="address" {...register('address')} placeholder="ex: Cité Keur Gorgui, Villa 123, Dakar" className="bg-background"/>
+                                {errors.address && <p className="text-sm text-destructive">{errors.address.message}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="transactionId">ID/Référence de la transaction</Label>
+                                <Input id="transactionId" {...register('transactionId')} placeholder="ID de la transaction ou nom de l'expéditeur" className="bg-background" />
+                                {errors.transactionId && <p className="text-sm text-destructive">{errors.transactionId.message}</p>}
+                            </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Right Side: Order Summary */}
+            <div className="sticky top-24 h-fit">
+                <Card className="bg-secondary/30 border-none">
+                    <CardHeader>
+                        <CardTitle>Résumé de la commande</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {cartItems.map(item => (
+                            <div key={item.id} className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                                        <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold">{item.name}</p>
+                                        <p className="text-sm text-muted-foreground">Qté: {item.quantity}</p>
+                                    </div>
+                                </div>
+                                <p className="font-medium">FCFA {(item.price * item.quantity).toLocaleString()}</p>
+                            </div>
+                        ))}
+                        <Separator />
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span>Sous-total</span>
+                                <span className="font-medium">FCFA {subtotal.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Livraison</span>
+                                <span className="font-medium">FCFA {shipping.toLocaleString()}</span>
+                            </div>
+                            <Separator />
+                            <div className="flex justify-between font-bold text-lg">
+                                <span>Total</span>
+                                <span>FCFA {total.toLocaleString()}</span>
+                            </div>
+                        </div>
                     </CardContent>
                     <CardFooter>
-                         <Button type="submit" size="lg" className="w-full text-lg" disabled={isSubmitting}>
-                            {isSubmitting ? (
-                                <>
-                                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                  Soumission en cours...
-                                </>
-                            ) : (
-                                <>
-                                  <Send className="mr-2 h-5 w-5" />
-                                  Confirmer ma commande
-                                </>
-                            )}
-                         </Button>
+                            <Button type="submit" size="lg" className="w-full text-lg" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <>
+                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                    Soumission en cours...
+                                    </>
+                                ) : (
+                                    <>
+                                    <Send className="mr-2 h-5 w-5" />
+                                    Confirmer ma commande
+                                    </>
+                                )}
+                            </Button>
                     </CardFooter>
-            </Card>
-           </form>
+                </Card>
+            </div>
         </div>
-    </div>
+    </form>
   );
 }
