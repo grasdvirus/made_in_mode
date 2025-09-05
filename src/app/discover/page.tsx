@@ -187,7 +187,7 @@ export default function DiscoverPage() {
         <h2 className="text-3xl font-bold text-center">Nos Recommandations</h2>
         
          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(3)].map((_, i) => (
                     <Card key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
                         <div className="flex items-center gap-4">
@@ -201,7 +201,7 @@ export default function DiscoverPage() {
                 ))}
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {homepageData?.recommendedProducts?.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
                         <Card className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">

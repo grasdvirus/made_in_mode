@@ -12,11 +12,13 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeItem } = useCart();
   const [animate, setAnimate] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     // Trigger entrance animation
@@ -32,11 +34,7 @@ export default function CartPage() {
       });
       return;
     }
-    toast({
-      title: "Redirection vers le paiement",
-      description: "Vous allez être redirigé vers une page de paiement sécurisée.",
-    });
-    // In a real app, you would redirect to a checkout page.
+    router.push('/checkout');
   };
   
   const subtotal = cartItems.reduce(
