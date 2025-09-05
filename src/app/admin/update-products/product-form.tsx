@@ -39,6 +39,7 @@ type ProductFormProps = {
   onSave: (data: ProductFormData) => void;
   isSaving: boolean;
   isAddForm?: boolean;
+  availableCategories: string[];
 };
 
 const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange: (url: string) => void, disabled: boolean }) => {
@@ -115,12 +116,12 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 };
 
 
-export function ProductForm({ product, onSave, isSaving, isAddForm = false }: ProductFormProps) {
+export function ProductForm({ product, onSave, isSaving, isAddForm = false, availableCategories = [] }: ProductFormProps) {
   const { register, handleSubmit, formState: { errors }, control, watch, reset } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
         name: product?.name || '',
-        category: product?.category || 'Robes',
+        category: product?.category || (availableCategories[0] || ''),
         price: product?.price || 0,
         images: product?.images || ['', ''],
         hint: product?.hint || '',
@@ -232,12 +233,13 @@ export function ProductForm({ product, onSave, isSaving, isAddForm = false }: Pr
                                             <SelectValue placeholder="Sélectionner une catégorie" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Robes">Robes</SelectItem>
-                                            <SelectItem value="Hauts">Hauts</SelectItem>
-                                            <SelectItem value="Pantalons">Pantalons</SelectItem>
-                                            <SelectItem value="Chaussures">Chaussures</SelectItem>
-                                            <SelectItem value="Sacs">Sacs</SelectItem>
-                                            <SelectItem value="Accessoires">Accessoires</SelectItem>
+                                            {availableCategories.length > 0 ? (
+                                                availableCategories.map(cat => (
+                                                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                                ))
+                                            ) : (
+                                                <p className="p-4 text-sm text-muted-foreground">Aucune catégorie. Créez-en dans "Réglages Accueil".</p>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 )}

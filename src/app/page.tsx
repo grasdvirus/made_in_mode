@@ -61,8 +61,10 @@ export default function HomePage() {
             
             setHomepageData(data);
 
-            // Enrich categories with dynamic images
+            // Enrich categories with dynamic images from the latest product in that category
             const categoryMap = new Map<string, string>();
+            // The product list is already sorted with the newest first from the admin panel.
+            // So we just need to iterate and grab the first image we find for each category.
             for (const product of products) {
                 if (product.category && !categoryMap.has(product.category) && product.images && product.images[0]) {
                     categoryMap.set(product.category, product.images[0]);
@@ -77,6 +79,7 @@ export default function HomePage() {
 
         } catch (error) {
             console.error(error);
+            setHomepageData({ categories: [], featuredProducts: [], products: [], recommendedProducts: [] }); // Set default empty data on error
             toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de charger le contenu de la page d'accueil." });
         } finally {
             setIsLoading(false);
@@ -177,7 +180,7 @@ export default function HomePage() {
                             <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
                                 <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
                                     <div className="relative w-24 h-24">
-                                        <Image src={category.dynamicImage || category.image} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
+                                        <Image src={category.dynamicImage || 'https://placehold.co/100x100.png'} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
                                     </div>
                                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
                                 </Link>

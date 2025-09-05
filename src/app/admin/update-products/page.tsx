@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { Button } from "@/components/ui/button";
-import { getProducts, addProduct, editProduct, deleteProduct, type Product, type ProductFormData } from "./actions";
+import { getProducts, addProduct, editProduct, deleteProduct, type Product, type ProductFormData, getCategoriesForSelect } from "./actions";
 import { ProductForm } from './product-form';
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
@@ -26,6 +26,7 @@ import {
 
 export default function AdminProductsPage() {
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [categories, setCategories] = React.useState<string[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
   const [openAccordion, setOpenAccordion] = React.useState<string | undefined>();
@@ -33,19 +34,23 @@ export default function AdminProductsPage() {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    async function loadProducts() {
+    async function loadData() {
       setIsLoading(true);
       try {
-        const fetchedProducts = await getProducts();
+        const [fetchedProducts, fetchedCategories] = await Promise.all([
+            getProducts(),
+            getCategoriesForSelect()
+        ]);
         setProducts(fetchedProducts);
+        setCategories(fetchedCategories);
       } catch (error) {
-        console.error("Failed to fetch products", error);
-        toast({ variant: "destructive", title: "Erreur", description: "Impossible de charger les produits." });
+        console.error("Failed to fetch data", error);
+        toast({ variant: "destructive", title: "Erreur", description: "Impossible de charger les données." });
       } finally {
         setIsLoading(false);
       }
     }
-    loadProducts();
+    loadData();
   }, [toast]);
 
   const handleAddProduct = async (formData: ProductFormData) => {
@@ -99,7 +104,7 @@ export default function AdminProductsPage() {
   }
   
   const defaultNewProduct: Product = {
-      id: '', name: 'Nouveau Produit', category: 'Robes', price: 10000,
+      id: '', name: 'Nouveau Produit', category: categories[0] || '', price: 10000,
       images: ['', ''], hint: 'fashion product',
       originalPrice: 12000, rating: 0, reviews: 0,
       description: '', sizes: ['S','M','L'], colors: [{name: 'Black', hex: '#000000'}]
@@ -126,6 +131,7 @@ export default function AdminProductsPage() {
                 onSave={(formData) => handleAddProduct(formData)}
                 isSaving={isSaving}
                 isAddForm
+                availableCategories={categories}
               />
            </CardContent>
          </Card>
@@ -179,6 +185,7 @@ export default function AdminProductsPage() {
                 product={product}
                 onSave={(formData) => handleEditProduct(product.id!, formData)}
                 isSaving={isSaving}
+                availableCategories={categories}
               />
             </AccordionContent>
           </AccordionItem>

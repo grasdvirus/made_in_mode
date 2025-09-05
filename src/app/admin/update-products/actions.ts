@@ -6,7 +6,8 @@ import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-const dataFilePath = path.join(process.cwd(), 'public/products.json');
+const productsDataFilePath = path.join(process.cwd(), 'public/products.json');
+const homepageDataFilePath = path.join(process.cwd(), 'public/homepage.json');
 
 const ColorSchema = z.object({
   name: z.string(),
@@ -36,13 +37,13 @@ export type ProductFormData = z.infer<typeof ProductUpdateSchema>;
 
 async function readProductsFromFile(): Promise<Product[]> {
     try {
-        const fileContent = await fs.readFile(dataFilePath, 'utf-8');
+        const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
         const products = JSON.parse(fileContent);
         // We use passthrough to avoid failing on old data with missing fields.
         return z.array(ProductSchema.passthrough()).parse(products);
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-            await fs.writeFile(dataFilePath, '[]');
+            await fs.writeFile(productsDataFilePath, '[]');
             return [];
         }
         console.error('Failed to read or parse products:', error);
@@ -52,10 +53,11 @@ async function readProductsFromFile(): Promise<Product[]> {
 
 async function writeProductsToFile(products: Product[]) {
     const jsonData = JSON.stringify(products, null, 2);
-    await fs.writeFile(dataFilePath, jsonData);
+    await fs.writeFile(productsDataFilePath, jsonData);
     revalidatePath('/discover');
     revalidatePath('/admin/update-products');
     revalidatePath('/discover/[id]', 'page');
+    revalidatePath('/'); // Revalidate homepage for category images
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -125,5 +127,19 @@ export async function deleteProduct(productId: string): Promise<{ success: boole
     } catch (error) {
         console.error('Failed to delete product:', error);
         return { success: false, message: 'Échec de la suppression du produit.' };
+    }
+}
+
+export async function getCategoriesForSelect(): Promise<string[]> {
+    try {
+        const fileContent = await fs.readFile(homepageDataFilePath, 'utf-8');
+        const data = JSON.parse(fileContent);
+        if (data && Array.isArray(data.categories)) {
+            return data.categories.map((c: any) => c.name).filter(Boolean);
+        }
+        return [];
+    } catch (error) {
+        console.error('Failed to read categories:', error);
+        return [];
     }
 }

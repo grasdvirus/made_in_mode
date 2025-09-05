@@ -5,6 +5,12 @@
       "image": "https://placehold.co/200x200.png",
       "hint": "nouvelle categorie",
       "link": "/discover"
+    },
+    {
+      "name": "sacs",
+      "image": "https://placehold.co/200x200.png",
+      "hint": "nouvelle categorie",
+      "link": "/discover"
     }
   ],
   "featuredProducts": [
