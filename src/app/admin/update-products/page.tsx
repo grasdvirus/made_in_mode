@@ -8,10 +8,21 @@ import { ProductForm } from './product-form';
 import { useToast } from '@/hooks/use-toast';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { PlusCircle, Trash, GripVertical, ChevronsUpDown } from 'lucide-react';
+import { PlusCircle, Trash, GripVertical } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function AdminProductsPage() {
   const [products, setProducts] = React.useState<Product[]>([]);
@@ -67,10 +78,6 @@ export default function AdminProductsPage() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-      return;
-    }
-    
     setIsSaving(true);
     const result = await deleteProduct(productId);
     setIsSaving(false);
@@ -136,19 +143,41 @@ export default function AdminProductsPage() {
       >
         {products.map((product, index) => (
           <AccordionItem value={product.id!} key={product.id} className="bg-secondary/50 border-border/50 rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              <div className="flex items-center gap-4 w-full">
-                <span className="text-sm font-bold text-primary w-6 text-center">{index + 1}.</span>
-                <GripVertical className="h-5 w-5 text-muted-foreground" />
-                <span className="font-semibold">{product.name}</span>
-                <span className="text-sm text-muted-foreground ml-auto">{product.category} - {product.price} FCFA</span>
-              </div>
-            </AccordionTrigger>
+            <div className="flex items-center w-full">
+                <AccordionTrigger className="hover:no-underline flex-grow">
+                  <div className="flex items-center gap-4 w-full">
+                    <span className="text-sm font-bold text-primary w-6 text-center">{index + 1}.</span>
+                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-semibold">{product.name}</span>
+                    <span className="text-sm text-muted-foreground ml-auto">{product.category} - {product.price} FCFA</span>
+                  </div>
+                </AccordionTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8 ml-2">
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Êtes-vous absolument sûr?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Cette action est irréversible. Le produit "{product.name}" sera définitivement supprimé.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDeleteProduct(product.id!)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                        Oui, supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+            </div>
             <AccordionContent>
               <ProductForm
                 product={product}
                 onSave={(formData) => handleEditProduct(product.id!, formData)}
-                onDelete={() => handleDeleteProduct(product.id!)}
                 isSaving={isSaving}
               />
             </AccordionContent>

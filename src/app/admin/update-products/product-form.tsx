@@ -11,13 +11,12 @@ import { Label } from '@/components/ui/label';
 import { type ProductFormData, type Product } from './actions';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
-import { Trash, UploadCloud, PlusCircle, Palette } from 'lucide-react';
+import { Trash, UploadCloud, PlusCircle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 const ColorSchema = z.object({
   name: z.string().min(1, "Le nom de la couleur est requis."),
@@ -38,7 +37,6 @@ const ProductFormSchema = z.object({
 type ProductFormProps = {
   product?: Product;
   onSave: (data: ProductFormData) => void;
-  onDelete?: () => void;
   isSaving: boolean;
   isAddForm?: boolean;
 };
@@ -117,7 +115,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
 };
 
 
-export function ProductForm({ product, onSave, onDelete, isSaving, isAddForm = false }: ProductFormProps) {
+export function ProductForm({ product, onSave, isSaving, isAddForm = false }: ProductFormProps) {
   const { register, handleSubmit, formState: { errors }, control, watch, reset } = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema as any),
     defaultValues: {
@@ -277,15 +275,7 @@ export function ProductForm({ product, onSave, onDelete, isSaving, isAddForm = f
         </div>
       </div>
       
-      <div className="flex justify-between items-center pt-4">
-        {isAddForm ? (
-             <div></div>
-        ) : (
-             <Button type="button" variant="destructive" size="sm" onClick={onDelete} disabled={isSaving}>
-                <Trash className="mr-2 h-4 w-4" />
-                Supprimer
-             </Button>
-        )}
+      <div className="flex justify-end pt-4">
         <Button type="submit" disabled={isSaving}>
           {isSaving ? <div className="h-6"><Loader /></div> : (isAddForm ? 'Ajouter le produit' : 'Enregistrer les modifications')}
         </Button>
