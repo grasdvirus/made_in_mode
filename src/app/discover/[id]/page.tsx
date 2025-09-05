@@ -163,7 +163,7 @@ export default function ProductDetailPage() {
         </header>
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 pb-32">
-             <section className="mb-4">
+             <section className="mb-2">
                 <div className="grid grid-cols-2 gap-2">
                     {product.images.map((image, index) => (
                         <div key={index} className="aspect-square relative">
@@ -179,7 +179,7 @@ export default function ProductDetailPage() {
                 </div>
             </section>
 
-            <section className="space-y-3">
+            <section className="space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-muted-foreground">{product.category}</p>
@@ -195,7 +195,7 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                     <div>
                       <Label className="text-base font-medium flex items-center gap-2"><Palette/> Couleur</Label>
                       <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-1">
@@ -240,8 +240,8 @@ export default function ProductDetailPage() {
                     </AccordionItem>
                      <AccordionItem value="reviews" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Avis des clients ({reviews.length})</AccordionTrigger>
-                        <AccordionContent className="px-4 space-y-3">
-                            <div className="space-y-3">
+                        <AccordionContent className="px-4 space-y-2">
+                            <div className="space-y-2">
                                {reviews.slice(0, displayedReviews).map(review => (
                                    <div key={review.id} className="border-b border-border pb-2 last:border-none last:pb-0">
                                        <div className="flex items-center justify-between mb-1">
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
                     <AccordionItem value="add-review" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Laissez votre avis</AccordionTrigger>
                         <AccordionContent className="px-4">
-                            <form onSubmit={handleReviewSubmit} className="space-y-3">
+                            <form onSubmit={handleReviewSubmit} className="space-y-2">
                                 <div>
                                     <Label>Votre note</Label>
                                     <div className="flex items-center gap-1 mt-1">
@@ -289,7 +289,7 @@ export default function ProductDetailPage() {
                     </AccordionItem>
                 </Accordion>
                 
-                <div className="pt-4 flex items-center justify-between gap-4">
+                <div className="pt-2 flex items-center justify-between gap-4">
                     <Button variant="outline" size="lg" onClick={handleFavorite} className="bg-card border-card h-14">
                         <Heart className={cn("h-7 w-7 transition-colors", isFavorited ? "text-primary fill-primary" : "text-muted-foreground")} />
                     </Button>

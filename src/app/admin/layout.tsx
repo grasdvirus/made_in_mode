@@ -121,7 +121,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             <h1 className="text-xl font-semibold">Tableau de bord Admin</h1>
             <Button variant="outline" onClick={() => router.push('/')}>Voir le site</Button>
         </header>
-        <main className="p-4">
+        <main className="p-2 md:p-4">
             {children}
         </main>
         <ScrollToTopButton />

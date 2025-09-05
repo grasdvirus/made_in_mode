@@ -69,7 +69,7 @@ export default function ProfilePage() {
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
     return (
-        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-4">
+        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-2">
             <div className="flex items-center justify-between">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                     <ChevronLeft className="h-6 w-6" />
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{displayEmail}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 
                 <Card className="lg:col-span-3 bg-secondary border-primary/50">
                     <CardHeader>
@@ -107,7 +107,7 @@ export default function ProfilePage() {
                         <CardTitle className="flex items-center gap-2"><User /> Informations personnelles</CardTitle>
                         <CardDescription>Gérez vos informations personnelles et vos coordonnées.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nom complet</Label>
                             <Input id="name" defaultValue={displayName} disabled={!editMode} />
@@ -139,7 +139,7 @@ export default function ProfilePage() {
                         <CardTitle className="flex items-center gap-2"><KeyRound /> Sécurité</CardTitle>
                         <CardDescription>Gérez vos paramètres de sécurité.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                         <div>
                             <p className="text-sm font-medium">Méthode d’authentification</p>
                             <p className="text-sm text-muted-foreground">{user.providerData[0]?.providerId === 'password' ? 'Email & Mot de passe' : 'Google'}</p>
@@ -154,7 +154,7 @@ export default function ProfilePage() {
                         <CardTitle className="flex items-center gap-2"><Bell /> Notifications</CardTitle>
                         <CardDescription>Choisissez comment nous vous contactons.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="email-offers" className="flex items-center gap-2 cursor-pointer"><Mail /> Offres par email</Label>
                             <Switch id="email-offers" defaultChecked />
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                         <CardDescription>Consultez vos transactions passées.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                             {paymentHistory.map(payment => (
                                 <li key={payment.id} className="flex items-center justify-between flex-wrap gap-2">
                                     <div >
@@ -194,12 +194,12 @@ export default function ProfilePage() {
                 </Card>
 
                 {/* Support & Actions */}
-                <div className="lg:col-span-3 space-y-4">
+                <div className="lg:col-span-3 space-y-2">
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><LifeBuoy /> Support</CardTitle>
                         </CardHeader>
-                         <CardContent className="space-y-4">
+                         <CardContent className="space-y-2">
                             <form className="space-y-2" onSubmit={(e) => { e.preventDefault(); handleGenericClick('Votre question a été envoyée à notre équipe de support.'); }}>
                                 <Label htmlFor="question">Envoyer une question</Label>
                                 <Input id="question" placeholder="Votre question..." />

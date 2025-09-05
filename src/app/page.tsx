@@ -160,7 +160,7 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main>
-        <div className="space-y-1">
+        <div className="space-y-2">
           {/* Categories Section */}
           <section className="p-4 pb-0">
                <Carousel

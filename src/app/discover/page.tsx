@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Compass } from 'lucide-react';
+import { Compass, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -72,8 +72,8 @@ function DiscoverContent() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-4">
-      <div className="text-center space-y-1 pt-24">
+    <div className="space-y-2">
+      <div className="text-center space-y-1 pt-4">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Explorez nos collections et trouvez les pièces qui expriment votre style unique.
@@ -123,7 +123,7 @@ function DiscoverContent() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <Link key={product.id} href={`/discover/${product.id}`} className="block group">
@@ -159,7 +159,7 @@ function DiscoverContent() {
         <h2 className="text-2xl font-bold text-center">Nos Recommandations</h2>
         
          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {[...Array(3)].map((_, i) => (
                     <div key={i} className="bg-secondary/50 border-none shadow-lg rounded-2xl p-4 animate-pulse">
                         <div className="flex items-center gap-4">
@@ -173,7 +173,7 @@ function DiscoverContent() {
                 ))}
             </div>
         ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {homepageData?.recommendedProducts?.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
                         <div className="bg-secondary/50 border-none shadow-lg rounded-2xl p-3 group transition-all duration-300 hover:shadow-xl hover:bg-secondary h-full">

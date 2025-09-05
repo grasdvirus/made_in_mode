@@ -46,9 +46,9 @@ export default function CartPage() {
 
   return (
     <div className="mt-8 bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-2">
            <h2 className="text-2xl font-bold flex items-center gap-3">
               <ShoppingCart className="w-7 h-7 text-primary" />
               Mon Panier ({cartItems.length})
@@ -108,7 +108,7 @@ export default function CartPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3"><Ticket className="w-7 h-7 text-primary" /> Résumé de la commande</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2">
               <div className="flex justify-between">
                 <span>Sous-total</span>
                 <span className="font-medium">FCFA {subtotal.toLocaleString('fr-FR')}</span>

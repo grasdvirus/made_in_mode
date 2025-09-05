@@ -85,18 +85,18 @@ export default function CheckoutPage() {
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             
             {/* Left Side: Payment Info & Customer Form */}
-            <div className="space-y-8">
+            <div className="space-y-4">
                 <Card className="border-primary/50 bg-secondary/30">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3"><CreditCard /> Paiement Manuel</CardTitle>
                         <CardDescription>Pour finaliser votre commande, veuillez effectuer un transfert via l'un des services ci-dessous.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                         <p className="font-semibold">Veuillez envoyer le montant total de <strong className="text-primary">FCFA {total.toLocaleString()}</strong> à l'un des contacts suivants :</p>
-                        <div className="p-4 bg-background/50 rounded-lg space-y-3">
+                        <div className="p-4 bg-background/50 rounded-lg space-y-2">
                             <div className="flex items-start gap-3">
                                 <span className="text-primary mt-1">&#9830;</span>
                                 <div>
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3"><Info/> Vos Informations</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">Nom complet</Label>
                                 <Input id="fullName" {...register('fullName')} placeholder="Prénom et Nom" className="bg-background"/>
@@ -158,7 +158,7 @@ export default function CheckoutPage() {
                     <CardHeader>
                         <CardTitle>Résumé de la commande</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-2">
                         {cartItems.map(item => (
                             <div key={item.id + item.size + item.color} className="flex items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
@@ -211,5 +211,3 @@ export default function CheckoutPage() {
     </form>
   );
 }
-
-    
