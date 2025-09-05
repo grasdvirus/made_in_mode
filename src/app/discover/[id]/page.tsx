@@ -129,7 +129,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen flex flex-col -mx-4 -mt-8">
-        <header className="flex items-center justify-between p-4 z-10 w-full max-w-4xl mx-auto">
+        <header className="flex items-center justify-between p-4 z-10 w-full max-w-4xl mx-auto pt-6">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-card text-card-foreground rounded-full shadow-md">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -249,10 +249,10 @@ export default function ProductDetailPage() {
         
         <footer className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur-lg border-t border-border">
              <div className="max-w-4xl mx-auto p-4 flex items-center justify-between gap-4">
-                <Button variant="outline" size="lg" onClick={handleFavorite} className="bg-card border-card h-14 w-16">
+                <Button variant="outline" size="icon" onClick={handleFavorite} className="bg-card border-card h-14 w-16">
                     <svg viewBox="0 0 24 24" className={cn("h-7 w-7 transition-colors", isFavorited ? "text-primary" : "text-muted-foreground")}><path fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.682l1.318-1.364a4.5 4.5 0 016.364 6.364L12 20l-7.682-7.682a4.5 4.5 0 010-6.364z"></path></svg>
                 </Button>
-                <Button size="lg" onClick={handleAddToCart} className="flex-grow text-lg h-14 rounded-2xl">
+                <Button size="lg" onClick={handleAddToCart} className="text-lg h-14 rounded-2xl">
                     Ajouter au Panier
                 </Button>
             </div>
