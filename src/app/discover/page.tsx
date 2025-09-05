@@ -5,13 +5,13 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Compass, Loader2, Star, Heart } from 'lucide-react';
+import { Compass, Star, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
-import type { HomepageData } from '../admin/home-settings/actions';
+import { getHomepageData, getProductsForHomepage, type HomepageData } from '../admin/home-settings/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import Loader from '@/components/ui/loader';
 import '@/components/ui/loader.css';
@@ -51,25 +51,6 @@ function DiscoverContent() {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        // This is not a reliable way to fetch data in production,
-        // using server actions would be better. For the purpose of this demo, we'll keep it.
-        const [productsRes, homepageRes] = await Promise.all([
-          fetch('/products.json').then(res => res.json()),
-          fetch('/homepage.json').then(res => res.json())
-        ]);
-        
-        setProducts(productsRes);
-        setHomepageData(homepageContent);
-      } catch (err) {
-        console.error("Failed to load page data", err);
-        toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger le contenu.' });
-      } finally {
-        setIsLoading(false);
-      }
-    }
      async function loadData() {
         setIsLoading(true);
         try {
@@ -113,7 +94,7 @@ function DiscoverContent() {
   
   return (
     <div className="space-y-2">
-      <div className="text-center space-y-1 pt-4">
+      <div className="text-center space-y-1 pt-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Explorez nos collections et trouvez les pièces qui expriment votre style unique.
@@ -158,7 +139,7 @@ function DiscoverContent() {
          {isLoading ? (
             <div className="px-4"><Skeleton className="w-full h-72 rounded-2xl" /></div>
          ) : (
-            <Carousel setApi={setFeaturedApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
+            <Carousel setApi={featuredApi} opts={{ align: "start" }} className="w-full horizontal-scroll-fade no-scrollbar">
                 <CarouselContent className="ml-4">
                 {homepageData?.featuredProducts.map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-4/5 sm:basis-1/2">
@@ -290,5 +271,3 @@ export default function DiscoverPage() {
         </Suspense>
     )
 }
-
-    
