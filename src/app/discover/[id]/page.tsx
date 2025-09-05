@@ -28,6 +28,7 @@ export default function ProductDetailPage() {
   const productId = params.id as string;
   
   const [isFavorited, setIsFavorited] = useState(false);
+  const [likes, setLikes] = useState(0);
   const [reviews, setReviews] = useState(0);
 
   useEffect(() => {
@@ -48,12 +49,13 @@ export default function ProductDetailPage() {
             colors: foundProduct.colors || [{ name: 'Default', hex: '#000000' }],
             originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
             rating: foundProduct.rating || 4.5,
-            reviews: foundProduct.reviews || 0,
+            reviews: foundProduct.reviews || Math.floor(Math.random() * 50) + 5, // Random initial reviews
             category: foundProduct.category || 'Non classé',
             description: foundProduct.description || 'Aucune description disponible.'
           };
           setProduct(hydratedProduct);
           setReviews(hydratedProduct.reviews);
+          setLikes(Math.floor(Math.random() * 200) + 20); // Random initial likes
         } else {
           setProduct(null);
         }
@@ -87,6 +89,7 @@ export default function ProductDetailPage() {
     e.preventDefault();
     e.stopPropagation();
     setIsFavorited(!isFavorited);
+    setLikes(l => isFavorited ? l - 1 : l + 1);
     toast({
         title: "Favoris",
         description: `${product?.name} a été ${!isFavorited ? 'ajouté à' : 'retiré de'} votre liste de souhaits !`,
@@ -138,18 +141,21 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="bg-background rounded-t-3xl min-h-[80vh] shadow-2xl space-y-6">
+        <div className="flex items-center justify-between p-4 sm:p-0">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
             <h1 className="text-xl font-bold truncate px-4">{product.name}</h1>
-            <Button variant="ghost" size="icon" onClick={handleFavorite} className="bg-secondary text-foreground rounded-full">
-                <Heart className={cn("h-6 w-6", isFavorited ? "fill-red-500 text-red-500" : "")} />
-            </Button>
+            <div className="flex items-center gap-2">
+                 <span className="text-sm font-medium text-muted-foreground">{likes}</span>
+                <Button variant="ghost" size="icon" onClick={handleFavorite} className="bg-secondary text-foreground rounded-full">
+                    <Heart className={cn("h-6 w-6", isFavorited ? "fill-red-500 text-red-500" : "")} />
+                </Button>
+            </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start p-4 sm:p-0">
           <Carousel className="w-full">
             <CarouselContent>
               {product.images && product.images.length > 0 ? (
@@ -191,7 +197,7 @@ export default function ProductDetailPage() {
               <p className="text-sm text-primary font-semibold">{product.category}</p>
               <h1 className="text-3xl font-bold lg:text-4xl">{product.name}</h1>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5 cursor-pointer" onClick={handleReview}>
+                <div className="flex items-center gap-0.5 cursor-pointer" onClick={handleReview} title="Donner un avis">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className={cn("w-5 h-5", i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20')} />
                   ))}
@@ -266,21 +272,8 @@ export default function ProductDetailPage() {
             </div>
             
              <Card className="bg-secondary/50 border-border/50">
-                 <CardContent className="p-4 space-y-4">
+                 <CardContent className="p-4">
                     <p className="text-muted-foreground text-sm">{product.description}</p>
-                    <Separator/>
-                     <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2"><Shirt className="w-4 h-4 text-primary"/> Composition & Entretien</h4>
-                        <p className="text-sm text-muted-foreground">Matière: 95% Coton, 5% Élasthanne. Lavage en machine à 30°C.</p>
-                     </div>
-                     <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2"><Ruler className="w-4 h-4 text-primary"/> Guide des tailles</h4>
-                        <p className="text-sm text-muted-foreground">Le mannequin mesure 1m75 et porte une taille M.</p>
-                     </div>
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2"><Diamond className="w-4 h-4 text-primary"/> Référence</h4>
-                        <p className="text-sm text-muted-foreground">ACE-{product.id?.slice(-6)}</p>
-                     </div>
                  </CardContent>
              </Card>
 
@@ -289,3 +282,5 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+    
