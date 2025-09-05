@@ -1,0 +1,76 @@
+
+'use server';
+
+import fs from 'fs/promises';
+import path from 'path';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+
+const reviewsDataFilePath = path.join(process.cwd(), 'public/reviews.json');
+
+const ReviewSchema = z.object({
+  id: z.string(),
+  productId: z.string(),
+  rating: z.number().min(1).max(5),
+  text: z.string().optional(),
+  author: z.string(),
+  date: z.string(),
+});
+
+export type Review = z.infer<typeof ReviewSchema>;
+
+type ReviewSubmission = Omit<Review, 'id' | 'date'>;
+
+async function readReviews(): Promise<Review[]> {
+    try {
+        await fs.access(reviewsDataFilePath);
+        const fileContent = await fs.readFile(reviewsDataFilePath, 'utf-8');
+        if (!fileContent) return [];
+        return ReviewSchema.array().parse(JSON.parse(fileContent));
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            await fs.writeFile(reviewsDataFilePath, '[]'); // Create file if it doesn't exist
+            return [];
+        }
+        console.error("Failed to read reviews file:", error);
+        return [];
+    }
+}
+
+async function writeReviews(reviews: Review[]) {
+    await fs.writeFile(reviewsDataFilePath, JSON.stringify(reviews, null, 2));
+    reviews.forEach(review => {
+        revalidatePath(`/discover/${review.productId}`);
+    });
+}
+
+export async function getReviews(productId: string): Promise<Review[]> {
+    const reviews = await readReviews();
+    return reviews
+        .filter(r => r.productId === productId)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export async function addReview(reviewData: ReviewSubmission): Promise<{ success: boolean; message?: string; review?: Review }> {
+  try {
+    const reviews = await readReviews();
+    const newReview: Review = {
+      ...reviewData,
+      id: new Date().getTime().toString(),
+      date: new Date().toISOString(),
+    };
+
+    ReviewSchema.parse(newReview); // Validate new review
+
+    const updatedReviews = [newReview, ...reviews];
+    await writeReviews(updatedReviews);
+
+    return { success: true, review: newReview };
+  } catch (error) {
+    console.error("Failed to add review:", error);
+    if (error instanceof z.ZodError) {
+        return { success: false, message: 'Données d\'avis invalides.' };
+    }
+    return { success: false, message: 'Une erreur est survenue.' };
+  }
+}

@@ -2,39 +2,42 @@
 'use client';
 
 import * as React from 'react';
-import { getOrders, updateOrderStatus, type Order } from './actions';
+import { getOrders, updateOrderStatus, deleteOrder, type Order, type OrderStatus } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Package, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Package, CheckCircle, Clock, XCircle, Loader2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const statusConfig = {
     "En attente": {
-        variant: "default",
         icon: Clock,
-        label: "En attente",
         color: "bg-blue-500",
     },
     "Traitée": {
-        variant: "secondary",
         icon: CheckCircle,
-        label: "Traitée",
         color: "bg-green-500",
     },
     "Annulée": {
-        variant: "destructive",
         icon: XCircle,
-        label: "Annulée",
         color: "bg-red-500",
     },
 } as const;
 
-type OrderStatus = keyof typeof statusConfig;
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = React.useState<Order[]>([]);
@@ -45,6 +48,8 @@ export default function AdminOrdersPage() {
         async function loadOrders() {
             setIsLoading(true);
             const fetchedOrders = await getOrders();
+            // Sort orders by date descending
+            fetchedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             setOrders(fetchedOrders);
             setIsLoading(false);
         }
@@ -60,6 +65,16 @@ export default function AdminOrdersPage() {
             toast({ variant: 'destructive', title: "Erreur", description: result.message });
         }
     };
+    
+    const handleDeleteOrder = async (orderId: string) => {
+        const result = await deleteOrder(orderId);
+        if (result.success) {
+            setOrders(orders.filter(o => o.id !== orderId));
+            toast({ title: "Succès", description: "La commande a été supprimée." });
+        } else {
+            toast({ variant: 'destructive', title: "Erreur", description: result.message });
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -116,6 +131,26 @@ export default function AdminOrdersPage() {
                                                             Marquer comme "{status}"
                                                          </DropdownMenuItem>
                                                     ))}
+                                                    <DropdownMenuSeparator />
+                                                     <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                                                <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                                                            </DropdownMenuItem>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Cette action est irréversible et supprimera définitivement la commande.
+                                                            </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDeleteOrder(order.id)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Oui, supprimer</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

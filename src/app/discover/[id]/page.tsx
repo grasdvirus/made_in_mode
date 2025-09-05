@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Star, ChevronLeft, ShoppingBag, Send, Palette, Ruler } from 'lucide-react';
+import { Star, ChevronLeft, ShoppingBag, Send, Palette, Ruler, MessageSquare, Plus } from 'lucide-react';
 import { type Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,12 +18,17 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { addReview, getReviews, type Review } from './actions';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/lib/firebase';
+import { Separator } from '@/components/ui/separator';
 
 export default function ProductDetailPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
   const { addItem } = useCart();
+  const [user, loadingAuth] = useAuthState(auth);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +39,10 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [selectedColor, setSelectedColor] = useState<Product['colors'][0] | undefined>(undefined);
   const [reviewRating, setReviewRating] = useState(0);
+
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [displayedReviews, setDisplayedReviews] = useState(10);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -47,13 +56,17 @@ export default function ProductDetailPage() {
   }, [api]);
 
   useEffect(() => {
-    async function fetchProduct() {
+    async function fetchProductAndReviews() {
       setIsLoading(true);
       try {
-        const response = await fetch('/products.json');
-        if (!response.ok) throw new Error('Failed to fetch products');
+        const [productResponse, reviewsResponse] = await Promise.all([
+          fetch('/products.json'),
+          getReviews(productId)
+        ]);
+
+        if (!productResponse.ok) throw new Error('Failed to fetch products');
         
-        const products: Product[] = await response.json();
+        const products: Product[] = await productResponse.json();
         const foundProduct = products.find(p => p.id === productId);
         
         if (foundProduct) {
@@ -63,7 +76,7 @@ export default function ProductDetailPage() {
             colors: foundProduct.colors || [{ name: 'Default', hex: '#000000' }],
             originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
             rating: foundProduct.rating || 4.5,
-            reviews: foundProduct.reviews || Math.floor(Math.random() * 50) + 5,
+            reviews: reviewsResponse.length, // Update reviews count from fetched reviews
             category: foundProduct.category || 'Non classé',
             description: foundProduct.description || 'Aucune description disponible.'
           };
@@ -73,14 +86,15 @@ export default function ProductDetailPage() {
         } else {
           setProduct(null);
         }
+        setReviews(reviewsResponse);
       } catch (error) {
-        console.error("Failed to fetch product", error);
+        console.error("Failed to fetch data", error);
         toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de charger les détails du produit.' });
       } finally {
         setIsLoading(false);
       }
     }
-    if (productId) fetchProduct();
+    if (productId) fetchProductAndReviews();
   }, [productId, toast]);
   
   const handleFavorite = (e: React.MouseEvent) => {
@@ -107,19 +121,41 @@ export default function ProductDetailPage() {
     toast({ title: "Ajouté au Panier!", description: `1 x ${product.name} (${selectedSize}, ${selectedColor.name})` });
   };
   
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(reviewRating === 0) {
+    const form = e.target as HTMLFormElement;
+    const reviewMessage = (form.elements.namedItem('review-message') as HTMLTextAreaElement).value;
+
+    if (reviewRating === 0) {
         toast({ variant: 'destructive', title: 'Note requise', description: 'Veuillez sélectionner au moins une étoile.'});
         return;
     }
-    toast({ title: 'Avis Soumis!', description: 'Merci pour votre retour !'});
-    setReviewRating(0);
-    const form = e.target as HTMLFormElement;
-    (form.elements.namedItem('review-message') as HTMLTextAreaElement).value = '';
+     if (!user) {
+        toast({ variant: 'destructive', title: 'Connexion requise', description: 'Vous devez être connecté pour laisser un avis.'});
+        router.push('/login');
+        return;
+    }
+
+    setIsSubmittingReview(true);
+    const result = await addReview({
+        productId: productId,
+        rating: reviewRating,
+        text: reviewMessage,
+        author: user.displayName || 'Anonyme'
+    });
+
+    if (result.success && result.review) {
+        setReviews([result.review, ...reviews]);
+        toast({ title: 'Avis Soumis!', description: 'Merci pour votre retour !'});
+        setReviewRating(0);
+        (form.elements.namedItem('review-message') as HTMLTextAreaElement).value = '';
+    } else {
+        toast({ variant: 'destructive', title: 'Erreur', description: result.message || 'Impossible de soumettre l\'avis.'});
+    }
+     setIsSubmittingReview(false);
   }
 
-  if (isLoading) {
+  if (isLoading || loadingAuth) {
     return <div className="flex flex-col items-center justify-center min-h-[80vh] bg-background"><Loader /><p className="mt-4 text-lg">Chargement du produit...</p></div>
   }
 
@@ -172,9 +208,10 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="text-right shrink-0">
                          <p className="text-2xl font-bold text-primary">FCFA {product.price.toLocaleString()}</p>
-                         <div className="flex items-center justify-end gap-1">
-                            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                            <p className="font-bold">({product.rating.toFixed(1)})</p>
+                         <div className="flex items-center justify-end gap-1 text-sm text-muted-foreground">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <p className="font-bold text-foreground">({product.rating.toFixed(1)})</p>
+                            <span>- {product.reviews} avis</span>
                         </div>
                     </div>
                 </div>
@@ -183,16 +220,16 @@ export default function ProductDetailPage() {
                     <div>
                       <Label className="text-lg font-medium mb-2 flex items-center gap-2"><Palette/> Couleur</Label>
                       <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-2">
-                        {product.colors.map((color) => (
-                            <RadioGroupItem key={color.hex} value={color.hex} id={color.hex} className="sr-only" />
-                        ))}
                          {product.colors.map((color) => (
-                            <Label key={color.hex} htmlFor={color.hex} className={cn(
+                           <div key={color.hex}>
+                            <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
+                            <Label htmlFor={color.hex} className={cn(
                                 "w-10 h-10 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
                                 selectedColor?.hex === color.hex ? 'border-primary scale-110' : 'border-card hover:border-muted-foreground'
                             )} style={{ backgroundColor: color.hex }} title={color.name}>
                                 { selectedColor?.hex === color.hex && <div className="w-4 h-4 rounded-full bg-white mix-blend-difference"/>}
                             </Label>
+                           </div>
                         ))}
                       </RadioGroup>
                     </div>
@@ -213,7 +250,7 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
-                <Accordion type="single" collapsible className="w-full space-y-3">
+                <Accordion type="single" collapsible className="w-full space-y-3" defaultValue='description'>
                     <AccordionItem value="description" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Description</AccordionTrigger>
                         <AccordionContent className="px-4 text-muted-foreground">{product.description}</AccordionContent>
@@ -222,7 +259,36 @@ export default function ProductDetailPage() {
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Livraison & Retours</AccordionTrigger>
                         <AccordionContent className="px-4 text-muted-foreground">Livraison gratuite pour les commandes de plus de 50 000 FCFA. Retours acceptés sous 7 jours.</AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="review" className="bg-card border-none rounded-xl">
+                     <AccordionItem value="reviews" className="bg-card border-none rounded-xl">
+                        <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Avis des clients ({reviews.length})</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-6">
+                            <div className="space-y-4">
+                               {reviews.slice(0, displayedReviews).map(review => (
+                                   <div key={review.id} className="border-b border-border pb-4 last:border-none">
+                                       <div className="flex items-center justify-between mb-1">
+                                           <p className="font-semibold">{review.author}</p>
+                                            <div className="flex items-center gap-1">
+                                                {[1, 2, 3, 4, 5].map(star => (
+                                                    <Star key={star} className={cn("w-4 h-4", review.rating >= star ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/30")} />
+                                                ))}
+                                            </div>
+                                       </div>
+                                       <p className="text-muted-foreground text-sm">{review.text}</p>
+                                       <p className="text-xs text-muted-foreground/70 mt-2">{new Date(review.date).toLocaleDateString()}</p>
+                                   </div>
+                               ))}
+                               {reviews.length > displayedReviews && (
+                                   <Button variant="outline" className="w-full" onClick={() => setDisplayedReviews(reviews.length)}>
+                                       Afficher plus d'avis
+                                   </Button>
+                               )}
+                               {reviews.length === 0 && (
+                                   <p className="text-muted-foreground text-center py-4">Aucun avis pour ce produit pour le moment.</p>
+                               )}
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="add-review" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Laissez votre avis</AccordionTrigger>
                         <AccordionContent className="px-4">
                             <form onSubmit={handleReviewSubmit} className="space-y-4">
@@ -230,15 +296,14 @@ export default function ProductDetailPage() {
                                     <Label>Votre note</Label>
                                     <div className="flex items-center gap-1 mt-1">
                                         {[1, 2, 3, 4, 5].map(star => (
-                                            <Star key={star} className={cn("w-6 h-6 cursor-pointer transition-all", reviewRating >= star ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/50")}
+                                            <Star key={star} className={cn("w-6 h-6 cursor-pointer transition-all", reviewRating >= star ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/50 hover:text-yellow-400/50")}
                                             onClick={() => setReviewRating(star)} />
                                         ))}
                                     </div>
                                 </div>
                                 <Textarea name="review-message" placeholder="Partagez votre expérience..." className="bg-secondary border-border" />
-                                <Button type="submit" size="sm">
-                                    <Send className="w-4 h-4 mr-2"/>
-                                    Envoyer mon avis
+                                <Button type="submit" size="sm" disabled={isSubmittingReview}>
+                                    {isSubmittingReview ? 'Envoi...' : <><Send className="w-4 h-4 mr-2"/>Envoyer mon avis</>}
                                 </Button>
                             </form>
                         </AccordionContent>
@@ -260,4 +325,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-

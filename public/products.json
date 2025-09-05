@@ -21,8 +21,20 @@
     ],
     "colors": [
       {
-        "name": "Black",
-        "hex": "#000000"
+        "name": "Blanc",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Gris",
+        "hex": "#808080"
+      },
+      {
+        "name": "Rose",
+        "hex": "#FFC0CB"
+      },
+      {
+        "name": "Rouge",
+        "hex": "#FF0000"
       }
     ]
   },

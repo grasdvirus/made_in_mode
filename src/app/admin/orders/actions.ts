@@ -76,3 +76,21 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
         return { success: false, message: 'Une erreur technique est survenue.' };
     }
 }
+
+
+export async function deleteOrder(orderId: string): Promise<{ success: boolean, message?: string }> {
+    try {
+        const orders = await readOrders();
+        const updatedOrders = orders.filter(o => o.id !== orderId);
+
+        if (orders.length === updatedOrders.length) {
+            return { success: false, message: 'Commande non trouvée.' };
+        }
+
+        await writeOrders(updatedOrders);
+        return { success: true, message: 'Commande supprimée avec succès.' };
+    } catch (error) {
+        console.error("Failed to delete order:", error);
+        return { success: false, message: 'Une erreur est survenue lors de la suppression.' };
+    }
+}
