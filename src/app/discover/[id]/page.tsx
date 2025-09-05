@@ -55,9 +55,11 @@ export default function ProductDetailPage() {
             description: foundProduct.description || 'Aucune description disponible.'
           };
           setProduct(hydratedProduct);
-          setReviews(hydratedProduct.reviews);
+          // Use a random base for likes and reviews for more dynamic feel
           setLikes(Math.floor(Math.random() * 200) + 20);
+          setReviews(hydratedProduct.reviews);
           setRating(hydratedProduct.rating);
+
         } else {
           setProduct(null);
         }
@@ -93,7 +95,7 @@ export default function ProductDetailPage() {
     setIsFavorited(!isFavorited);
     setLikes(l => isFavorited ? l - 1 : l + 1);
     toast({
-        title: "Favoris",
+        title: !isFavorited ? "Ajouté aux favoris!" : "Retiré des favoris",
         description: `${product?.name} a été ${!isFavorited ? 'ajouté à' : 'retiré de'} votre liste de souhaits !`,
     });
   };
@@ -152,7 +154,7 @@ export default function ProductDetailPage() {
             <div className="flex items-center gap-2">
                  <span className="text-sm font-medium text-muted-foreground">{likes}</span>
                 <Button variant="ghost" size="icon" onClick={handleFavorite} className="bg-secondary text-foreground rounded-full">
-                    <Heart className={cn("h-6 w-6", isFavorited ? "fill-red-500 text-red-500" : "")} />
+                    <Heart className={cn("h-6 w-6 transition-colors", isFavorited ? "fill-red-500 text-red-500" : "text-foreground")} />
                 </Button>
             </div>
         </div>
@@ -201,7 +203,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-0.5 cursor-pointer" onClick={handleReview} title="Donner un avis">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={cn("w-5 h-5 transition-colors", i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20 hover:text-yellow-400/50')} />
+                    <Star key={i} className={cn("w-5 h-5 transition-colors", i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50 fill-muted-foreground/20 hover:text-yellow-400/50')} />
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground">({reviews} avis)</p>
@@ -225,7 +227,7 @@ export default function ProductDetailPage() {
                         <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
                         <label htmlFor={color.hex} className={cn(
                           "w-8 h-8 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
-                          selectedColor?.hex === color.hex ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
+                          selectedColor?.hex === color.hex ? 'border-primary scale-110' : 'border-transparent hover:border-muted-foreground'
                         )} style={{ backgroundColor: color.hex }}>
                            { selectedColor?.hex === color.hex && <div className="w-3 h-3 rounded-full bg-white mix-blend-difference"/>}
                         </label>
@@ -243,7 +245,7 @@ export default function ProductDetailPage() {
                        <div key={size}>
                         <RadioGroupItem value={size} id={size} className="sr-only" />
                         <label htmlFor={size} className={cn(
-                          "px-4 py-2 rounded-lg border cursor-pointer text-sm font-semibold",
+                          "px-4 py-2 rounded-lg border cursor-pointer text-sm font-semibold transition-colors",
                           selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary hover:bg-muted'
                         )}>
                           {size}
@@ -275,7 +277,7 @@ export default function ProductDetailPage() {
             
              <Card className="bg-secondary/50 border-border/50">
                  <CardContent className="p-4">
-                    <p className="text-muted-foreground text-sm font-semibold">{product.description}</p>
+                    <p className="text-muted-foreground font-medium">{product.description}</p>
                  </CardContent>
              </Card>
 

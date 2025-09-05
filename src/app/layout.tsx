@@ -53,7 +53,7 @@ export default function RootLayout({
         <CartProvider>
           <div className="flex flex-col min-h-screen">
             {CurrentHeader}
-            <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-20 md:pb-8' : ''}`}>
+            <main className={`flex-1 w-full max-w-7xl mx-auto px-4 ${pathname === '/' ? '' : mainMarginTop} ${showFooterNav ? 'pb-24 md:pb-8' : ''}`}>
               {children}
             </main>
             {showFooterNav && (

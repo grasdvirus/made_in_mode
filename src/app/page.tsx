@@ -120,7 +120,7 @@ export default function HomePage() {
       {/* Header with Background Image */}
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
         <Image
-          src="https://placehold.co/1200x800.png"
+          src="https://picsum.photos/1200/800"
           alt="Boutique de mode"
           layout="fill"
           objectFit="cover"
@@ -180,7 +180,7 @@ export default function HomePage() {
                             <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6">
                                 <Link href={category.link} className="flex flex-col items-center gap-2 flex-shrink-0 text-center w-24 mx-auto group">
                                     <div className="relative w-24 h-24">
-                                        <Image src={category.dynamicImage || 'https://placehold.co/100x100.png'} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
+                                        <Image src={category.dynamicImage || 'https://picsum.photos/100/100'} alt={category.name} fill className="rounded-full object-cover border-2 border-primary/50 group-hover:border-primary transition-colors" data-ai-hint={category.hint} />
                                     </div>
                                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{category.name}</span>
                                 </Link>
@@ -209,7 +209,7 @@ export default function HomePage() {
                                 <CardContent className="p-0">
                                     <div className="relative">
                                     <Image
-                                        src={(product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/600x400.png'}
+                                        src={(product.images && product.images.length > 0) ? product.images[0] : 'https://picsum.photos/600/400'}
                                         alt={product.name}
                                         width={600}
                                         height={400}
@@ -274,7 +274,7 @@ export default function HomePage() {
                ) : (
                 homepageData?.products.map((product) => (
                     <Link href={`/discover/${product.id}`} key={product.id} className="block">
-                        <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary">
+                        <Card className="bg-secondary/50 border-none shadow-md rounded-2xl p-4 group transition-all duration-300 hover:bg-secondary hover:shadow-xl">
                             <div className="flex items-center gap-4">
                                 <div className="relative w-16 h-16 flex-shrink-0">
                                     <Image src={product.image} alt={product.name} fill className="rounded-full object-cover" data-ai-hint={product.hint} />
