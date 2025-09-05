@@ -145,7 +145,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="bg-background rounded-t-3xl min-h-[80vh] shadow-2xl space-y-6">
+    <div className="bg-background rounded-t-3xl min-h-[80vh] shadow-2xl space-y-6 mt-8">
         <div className="flex items-center justify-between p-4 sm:p-0">
             <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                 <ChevronLeft className="h-6 w-6" />

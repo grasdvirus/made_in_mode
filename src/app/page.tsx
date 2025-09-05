@@ -116,7 +116,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-background min-h-screen -mx-4 -mt-8">
+    <div className="bg-background min-h-screen -mx-4">
       {/* Header with Background Image */}
       <header className="relative h-64 md:h-80 rounded-b-3xl overflow-hidden">
         <Image
