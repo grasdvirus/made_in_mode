@@ -1,42 +1,5 @@
 {
-  "categories": [
-    {
-      "name": "Nouveautés",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "new fashion",
-      "link": "/discover?category=Tout"
-    },
-    {
-      "name": "Vêtements",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "clothing rack",
-      "link": "/discover?category=Tout"
-    },
-    {
-      "name": "Chaussures",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "stylish shoes",
-      "link": "/discover?category=Chaussures"
-    },
-    {
-      "name": "Accessoires",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "fashion accessories",
-      "link": "/discover?category=Accessoires"
-    },
-    {
-      "name": "Robes",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "elegant dress",
-      "link": "/discover?category=Robes"
-    },
-    {
-      "name": "Sacs",
-      "image": "https://placehold.co/200x200.png",
-      "hint": "handbag collection",
-      "link": "/discover?category=Sacs"
-    }
-  ],
+  "categories": [],
   "featuredProducts": [
     {
       "id": "1757030702674",

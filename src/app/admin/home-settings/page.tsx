@@ -19,7 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const CategorySchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
-  image: z.string().url('URL d\'image invalide'),
+  // image is now optional as it will be handled dynamically or have a default
+  image: z.string().url('URL d\'image invalide').optional(),
   hint: z.string(),
   link: z.string().min(1, 'Le lien est requis'),
 });
@@ -49,8 +50,14 @@ const RecommendedProductSchema = z.object({
   hint: z.string(),
 });
 
+// Remove 'image' from the form schema as it's not user-editable anymore
 const HomepageFormSchema = z.object({
-  categories: z.array(CategorySchema),
+  categories: z.array(z.object({
+    name: z.string().min(1, 'Le nom est requis'),
+    hint: z.string(),
+    link: z.string().min(1, 'Le lien est requis'),
+    image: z.string().optional(), // Keep for data structure, but not in form
+  })),
   featuredProducts: z.array(FeaturedProductSchema),
   products: z.array(MinimalistProductSchema),
   recommendedProducts: z.array(RecommendedProductSchema),
@@ -163,27 +170,23 @@ export default function HomeSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Section Catégories (Accueil & Découvrir)</CardTitle>
-          <CardDescription>Gérez les catégories affichées en haut de la page d'accueil.</CardDescription>
+          <CardDescription>Gérez les catégories affichées. L'image est définie automatiquement par le dernier produit de la catégorie.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {categoryFields.map((field, index) => (
             <div key={field.id} className="p-4 border rounded-lg space-y-2 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <Label>Nom</Label>
-                        <Input {...register(`categories.${index}.name`)} />
+                        <Label>Nom de la Catégorie</Label>
+                        <Input {...register(`categories.${index}.name`)} placeholder="ex: Robes" />
                     </div>
                      <div className="space-y-1">
-                        <Label>Lien</Label>
-                        <Input {...register(`categories.${index}.link`)} />
+                        <Label>Lien de Destination</Label>
+                        <Input {...register(`categories.${index}.link`)} placeholder="ex: /discover?category=Robes" />
                     </div>
-                     <div className="space-y-1">
-                        <Label>URL de l'image</Label>
-                        <Input {...register(`categories.${index}.image`)} />
-                    </div>
-                     <div className="space-y-1">
-                        <Label>Indice IA</Label>
-                        <Input {...register(`categories.${index}.hint`)} />
+                     <div className="space-y-1 col-span-full">
+                        <Label>Indice IA (pour l'image dynamique)</Label>
+                        <Input {...register(`categories.${index}.hint`)} placeholder="ex: robe femme" />
                     </div>
                 </div>
                  <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeCategory(index)}>
@@ -191,7 +194,7 @@ export default function HomeSettingsPage() {
                 </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendCategory({ name: 'Nouvelle Catégorie', image: 'https://placehold.co/200x200.png', hint: 'new category', link: '/discover' })}>
+          <Button type="button" variant="outline" onClick={() => appendCategory({ name: '', link: '/discover', hint: 'nouvelle categorie', image: 'https://placehold.co/200x200.png' })}>
             <PlusCircle className="mr-2 h-4 w-4" /> Ajouter une catégorie
           </Button>
         </CardContent>

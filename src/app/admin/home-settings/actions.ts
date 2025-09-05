@@ -95,7 +95,17 @@ export async function getHomepageData(): Promise<HomepageData> {
 
 export async function updateHomepageData(data: HomepageData): Promise<{ success: boolean; message: string }> {
     try {
-        const validatedData = HomepageDataSchema.parse(data);
+        // We add a placeholder image URL for validation, as it's not submitted from the form anymore
+        const categoriesWithImages = data.categories.map(c => ({
+            ...c,
+            image: c.image || 'https://placehold.co/200x200.png'
+        }));
+        
+        const validatedData = HomepageDataSchema.parse({
+            ...data,
+            categories: categoriesWithImages
+        });
+        
         await writeHomepageData(validatedData);
         return { success: true, message: 'Page d\'accueil mise à jour avec succès.' };
     } catch (error) {
