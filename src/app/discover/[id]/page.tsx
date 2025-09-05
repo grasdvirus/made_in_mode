@@ -7,7 +7,6 @@ import { Star, ChevronLeft, ShoppingBag, Send, Palette, Ruler, MessageSquare, Pl
 import { type Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useRouter, useParams } from 'next/navigation';
@@ -21,7 +20,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { addReview, getReviews, type Review } from './actions';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
-import { Separator } from '@/components/ui/separator';
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -43,17 +41,6 @@ export default function ProductDetailPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [displayedReviews, setDisplayedReviews] = useState(10);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-
-  const [api, setApi] = useState<CarouselApi>()
-  const [current, setCurrent] = useState(0)
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    if (!api) return;
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-    api.on("select", () => setCurrent(api.selectedScrollSnap() + 1));
-  }, [api]);
 
   useEffect(() => {
     async function fetchProductAndReviews() {
@@ -176,31 +163,23 @@ export default function ProductDetailPage() {
         </header>
         
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 pb-32">
-            <section className="mb-4">
-                <Carousel setApi={setApi} className="w-full">
-                    <CarouselContent>
+             <section className="mb-4">
+                <div className="grid grid-cols-2 gap-4">
                     {product.images.map((image, index) => (
-                        <CarouselItem key={index}>
-                            <Card className="bg-secondary aspect-square overflow-hidden rounded-3xl border-none">
+                        <div key={index} className="aspect-square relative">
+                             <Card className="bg-secondary h-full w-full overflow-hidden rounded-3xl border-none">
                                 <Image
                                 src={image} alt={`${product.name} - vue ${index + 1}`} fill
-                                className="object-contain p-4" sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-contain p-2" sizes="(max-width: 768px) 50vw, 50vw"
                                 data-ai-hint={product.hint}
                                 />
                             </Card>
-                        </CarouselItem>
-                    ))}
-                    </CarouselContent>
-                </Carousel>
-                 <div className="flex justify-center gap-2 pt-4">
-                    {Array.from({ length: count }).map((_, i) => (
-                        <button key={i} onClick={() => api?.scrollTo(i)}
-                            className={cn("h-2 w-2 rounded-full transition-all duration-300", i === current - 1 ? 'w-4 bg-primary' : 'bg-muted-foreground/50')} />
+                        </div>
                     ))}
                 </div>
             </section>
 
-            <section className="space-y-6">
+            <section className="space-y-4">
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-muted-foreground">{product.category}</p>
@@ -216,18 +195,18 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
                     <div>
-                      <Label className="text-lg font-medium mb-2 flex items-center gap-2"><Palette/> Couleur</Label>
+                      <Label className="text-base font-medium mb-2 flex items-center gap-2"><Palette/> Couleur</Label>
                       <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-2">
                          {product.colors.map((color) => (
                            <div key={color.hex}>
                             <RadioGroupItem value={color.hex} id={color.hex} className="sr-only" />
                             <Label htmlFor={color.hex} className={cn(
-                                "w-10 h-10 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
+                                "w-8 h-8 rounded-full border-2 cursor-pointer transition-all flex items-center justify-center",
                                 selectedColor?.hex === color.hex ? 'border-primary scale-110' : 'border-card hover:border-muted-foreground'
                             )} style={{ backgroundColor: color.hex }} title={color.name}>
-                                { selectedColor?.hex === color.hex && <div className="w-4 h-4 rounded-full bg-white mix-blend-difference"/>}
+                                { selectedColor?.hex === color.hex && <div className="w-3 h-3 rounded-full bg-white mix-blend-difference"/>}
                             </Label>
                            </div>
                         ))}
@@ -235,13 +214,13 @@ export default function ProductDetailPage() {
                     </div>
 
                     <div>
-                      <Label className="text-lg font-medium mb-2 flex items-center gap-2"><Ruler/> Taille</Label>
+                      <Label className="text-base font-medium mb-2 flex items-center gap-2"><Ruler/> Taille</Label>
                       <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 flex-wrap mt-2">
                         {product.sizes.map((size) => (
                            <div key={size}>
                             <RadioGroupItem id={size} value={size} className="sr-only" />
                             <Label htmlFor={size} className={cn(
-                              "px-6 py-3 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
+                              "px-5 py-2.5 rounded-xl border-2 cursor-pointer text-base font-semibold transition-colors duration-200",
                               selectedSize === size ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-card hover:border-primary/50'
                             )}>{size}</Label>
                           </div>
@@ -261,10 +240,10 @@ export default function ProductDetailPage() {
                     </AccordionItem>
                      <AccordionItem value="reviews" className="bg-card border-none rounded-xl">
                         <AccordionTrigger className="px-4 text-base font-medium hover:no-underline">Avis des clients ({reviews.length})</AccordionTrigger>
-                        <AccordionContent className="px-4 space-y-6">
+                        <AccordionContent className="px-4 space-y-4">
                             <div className="space-y-4">
                                {reviews.slice(0, displayedReviews).map(review => (
-                                   <div key={review.id} className="border-b border-border pb-4 last:border-none">
+                                   <div key={review.id} className="border-b border-border pb-3 last:border-none last:pb-0">
                                        <div className="flex items-center justify-between mb-1">
                                            <p className="font-semibold">{review.author}</p>
                                             <div className="flex items-center gap-1">
@@ -310,7 +289,7 @@ export default function ProductDetailPage() {
                     </AccordionItem>
                 </Accordion>
                 
-                <div className="pt-6 flex items-center justify-between gap-4">
+                <div className="pt-4 flex items-center justify-between gap-4">
                     <Button variant="outline" size="lg" onClick={handleFavorite} className="bg-card border-card h-14">
                         <Heart className={cn("h-7 w-7 transition-colors", isFavorited ? "text-primary fill-primary" : "text-muted-foreground")} />
                     </Button>

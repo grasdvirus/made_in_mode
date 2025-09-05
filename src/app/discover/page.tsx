@@ -58,7 +58,7 @@ export default function DiscoverPage() {
   }, [selectedCategory, products]);
   
   return (
-    <div className="space-y-12 mt-32">
+    <div className="space-y-8 mt-32">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Découvrir</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
