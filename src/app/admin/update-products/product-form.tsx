@@ -67,8 +67,8 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
         const file = event.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 1 * 1024 * 1024) { // 1MB limit
-            toast({ variant: "destructive", title: "Erreur", description: "Le fichier est trop volumineux. La taille maximale est de 1 Mo." });
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            toast({ variant: "destructive", title: "Erreur", description: "Le fichier est trop volumineux. La taille maximale est de 10 Mo." });
             return;
         }
 
@@ -122,7 +122,7 @@ const ImageUploader = ({ value, onChange, disabled }: { value: string, onChange:
                         <div className="text-center text-muted-foreground p-4">
                             <UploadCloud className="mx-auto h-12 w-12" />
                             <p className="mt-2 text-sm font-semibold">Cliquez pour téléverser</p>
-                            <p className="text-xs">Taille max: 1MB</p>
+                            <p className="text-xs">Taille max: 10MB</p>
                         </div>
                     )}
                 </div>
