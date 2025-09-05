@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 min-h-[80vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             
             {/* Left Side: Payment Info & Customer Form */}
             <div className="space-y-8">

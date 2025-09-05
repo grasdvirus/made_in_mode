@@ -69,7 +69,7 @@ export default function ProfilePage() {
     const avatarFallback = displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
     return (
-        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6 mt-8">
+        <div className="bg-background rounded-t-3xl p-4 sm:p-0 min-h-[80vh] shadow-2xl space-y-6">
             <div className="flex items-center justify-between">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="bg-secondary text-foreground rounded-full">
                     <ChevronLeft className="h-6 w-6" />
