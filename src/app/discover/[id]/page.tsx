@@ -59,8 +59,8 @@ export default function ProductDetailPage() {
         if (foundProduct) {
           const hydratedProduct: Product = {
             ...foundProduct,
-            sizes: foundProduct.sizes || ['S', 'M', 'L'],
-            colors: foundProduct.colors || [{ name: 'Default', hex: '#000000' }],
+            sizes: foundProduct.sizes || [],
+            colors: foundProduct.colors || [],
             originalPrice: foundProduct.originalPrice || foundProduct.price * 1.2,
             rating: foundProduct.rating || 4.5,
             reviews: reviewsResponse.length, // Update reviews count from fetched reviews
@@ -94,18 +94,23 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    if (!product || !selectedSize || !selectedColor) {
-        toast({ variant: "destructive", title: "Sélection requise", description: "Veuillez sélectionner une taille et une couleur." });
+    if (!product) return;
+    if (product.sizes.length > 0 && !selectedSize) {
+        toast({ variant: "destructive", title: "Sélection requise", description: "Veuillez sélectionner une taille." });
+        return;
+    }
+     if (product.colors.length > 0 && !selectedColor) {
+        toast({ variant: "destructive", title: "Sélection requise", description: "Veuillez sélectionner une couleur." });
         return;
     }
     
     addItem({
         id: product.id!, name: product.name, price: product.price, quantity: 1,
         image: product.images[0], hint: product.hint || '', category: product.category,
-        size: selectedSize, color: selectedColor.name,
+        size: selectedSize || 'Unique', color: selectedColor?.name || 'Default',
     });
     
-    toast({ title: "Ajouté au Panier!", description: `1 x ${product.name} (${selectedSize}, ${selectedColor.name})` });
+    toast({ title: "Ajouté au Panier!", description: `1 x ${product.name} (${selectedSize}, ${selectedColor?.name})` });
   };
   
   const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -196,6 +201,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="space-y-2">
+                    {product.colors && product.colors.length > 0 && (
                     <div>
                       <Label className="text-base font-medium flex items-center gap-2"><Palette/> Couleur</Label>
                       <RadioGroup value={selectedColor?.hex} onValueChange={(hex) => setSelectedColor(product.colors.find(c => c.hex === hex))} className="flex items-center gap-2 mt-1">
@@ -212,7 +218,9 @@ export default function ProductDetailPage() {
                         ))}
                       </RadioGroup>
                     </div>
+                    )}
 
+                    {product.sizes && product.sizes.length > 0 && (
                     <div>
                       <Label className="text-base font-medium flex items-center gap-2"><Ruler/> Taille</Label>
                       <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex items-center gap-2 flex-wrap mt-1">
@@ -227,6 +235,7 @@ export default function ProductDetailPage() {
                         ))}
                       </RadioGroup>
                     </div>
+                    )}
                 </div>
 
                 <Accordion type="single" collapsible className="w-full space-y-2" defaultValue='description'>
