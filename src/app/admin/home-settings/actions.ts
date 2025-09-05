@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { type Product } from '@/lib/types';
 
 const dataDir = path.join(process.cwd(), 'src/data');
 const homepageDataFilePath = path.join(dataDir, 'homepage.json');
@@ -77,6 +78,7 @@ async function ensureDataDirExists() {
 async function readHomepageData(): Promise<HomepageData> {
     await ensureDataDirExists();
     try {
+        await fs.access(homepageDataFilePath);
         const fileContent = await fs.readFile(homepageDataFilePath, 'utf-8');
         const data = HomepageDataSchema.parse(JSON.parse(fileContent));
         // Ensure recommendedProducts is an array
@@ -146,6 +148,7 @@ export async function updateHomepageData(data: HomepageData): Promise<{ success:
 export async function getFullProductsForSelect(): Promise<FullProduct[]> {
     await ensureDataDirExists();
     try {
+        await fs.access(productsDataFilePath);
         const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
         const products: FullProduct[] = JSON.parse(fileContent);
         // Ensure all products conform to the schema, providing defaults if needed
@@ -160,6 +163,24 @@ export async function getFullProductsForSelect(): Promise<FullProduct[]> {
          if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
             return []; // File doesn't exist yet, return empty array
         }
+        return [];
+    }
+}
+
+// New function to be called from the homepage
+export async function getProductsForHomepage(): Promise<Product[]> {
+    await ensureDataDirExists();
+    try {
+        await fs.access(productsDataFilePath);
+        const fileContent = await fs.readFile(productsDataFilePath, 'utf-8');
+        // This can be a simpler schema if not all product fields are needed on the homepage
+        const products: Product[] = JSON.parse(fileContent);
+        return products;
+    } catch (error) {
+         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return [];
+        }
+        console.error('Failed to read products for homepage:', error);
         return [];
     }
 }

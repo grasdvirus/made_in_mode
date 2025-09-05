@@ -12,8 +12,8 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { HomepageData } from './admin/home-settings/actions';
-import { Product } from '@/lib/types';
+import { type HomepageData, getHomepageData, getProductsForHomepage } from './admin/home-settings/actions';
+import { type Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const AcePlaceLogo = () => (
@@ -49,15 +49,10 @@ export default function HomePage() {
     async function fetchData() {
         setIsLoading(true);
         try {
-            const homepageRes = await fetch('/api/homepage');
-            const productsRes = await fetch('/api/products');
-
-            if (!homepageRes.ok || !productsRes.ok) {
-                throw new Error("Failed to fetch initial data");
-            }
-            
-            const data: HomepageData = await homepageRes.json();
-            const products: Product[] = await productsRes.json();
+            const [data, products] = await Promise.all([
+                getHomepageData(),
+                getProductsForHomepage()
+            ]);
             
             setHomepageData(data);
 
