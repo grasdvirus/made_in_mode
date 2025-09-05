@@ -24,7 +24,7 @@ export const AboutPageDataSchema = z.object({
   commitment3Title: z.string(),
   commitment3Text: z.string(),
   teamTitle: z.string(),
-  teamParagraph1: z_string(),
+  teamParagraph1: z.string(),
   teamParagraph2: z.string(),
   teamImage: z.string().url(),
   contactTitle: z.string(),
